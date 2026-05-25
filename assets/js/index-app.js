@@ -4,6 +4,20 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const fmt = n => n > 0 ? '$' + Math.round(n).toLocaleString('es-AR') : null;
 
+function toast(msg) {
+  let el = document.getElementById('cubo-toast');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'cubo-toast';
+    el.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#2A2A2A;color:#fff;padding:14px 22px;font:600 13px Inter,system-ui;letter-spacing:.2px;border-radius:2px;box-shadow:0 4px 24px rgba(0,0,0,.25);z-index:9999;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90vw;text-align:center';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.opacity = '1';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.style.opacity = '0'; }, 3500);
+}
+
 let categorias = [], itemsPorCat = {}, correlaciones = [];
 let catActiva = null, carrito = {}, cantidades = {};
 let leadGuardado = false, leadData = {};
@@ -53,16 +67,58 @@ async function guardarLead() {
 
 // ── CARGA DATOS ──
 async function cargarDatos() {
-  const { data: cats } = await sb.from('categorias').select('*').eq('activo', true).order('orden');
-  const { data: items } = await sb.from('items').select('*').eq('activo_publico', true).order('orden');
-  const { data: corrs } = await sb.from('correlaciones').select('*').eq('activo', true);
-  categorias = cats || [];
-  correlaciones = corrs || [];
+  const [catsRes, recsRes, corrsRes] = await Promise.all([
+    sb.from('categorias').select('*').eq('activo', true).order('orden'),
+    sb.from('recetas').select('*').eq('activo_publico', true).order('orden'),
+    sb.from('correlaciones').select('*').eq('activo', true),
+  ]);
+
+  categorias    = catsRes.data || [];
+  correlaciones = corrsRes.data || [];
+  const recetas = recsRes.data || [];
+
+  // Cargar componentes + precios Sismat solo para las recetas activas
+  let precioPorReceta = {};
+  if (recetas.length) {
+    const recetaIds = recetas.map(r => r.id);
+    const { data: comps } = await sb.from('receta_componentes')
+      .select('receta_id, sismat_id, cantidad')
+      .in('receta_id', recetaIds);
+
+    const sismatIds = [...new Set((comps || []).map(c => c.sismat_id))];
+    const { data: cat } = sismatIds.length
+      ? await sb.from('sismat_catalog').select('sismat_id, precio_sismat').in('sismat_id', sismatIds)
+      : { data: [] };
+    const precioSismat = Object.fromEntries((cat || []).map(s => [s.sismat_id, s.precio_sismat || 0]));
+
+    (comps || []).forEach(c => {
+      const sub = (precioSismat[c.sismat_id] || 0) * (c.cantidad || 0);
+      precioPorReceta[c.receta_id] = (precioPorReceta[c.receta_id] || 0) + sub;
+    });
+  }
+
+  const markupPorCat = Object.fromEntries(
+    categorias.map(c => [c.id, c.markup_porcentaje != null ? c.markup_porcentaje : 30])
+  );
+
   itemsPorCat = {};
-  (items || []).forEach(item => {
-    if (!itemsPorCat[item.categoria_id]) itemsPorCat[item.categoria_id] = [];
-    itemsPorCat[item.categoria_id].push(item);
+  recetas.forEach(r => {
+    const base   = precioPorReceta[r.id] || 0;
+    const markup = markupPorCat[r.categoria_id] != null ? markupPorCat[r.categoria_id] : 30;
+    const precio = base * (1 + markup / 100);
+    const item = {
+      id: r.id,
+      nombre: r.nombre,
+      descripcion: r.descripcion,
+      unidad: r.unidad,
+      precio,
+      ajuste_porcentaje: r.ajuste_porcentaje || 0,
+      categoria_id: r.categoria_id,
+    };
+    if (!itemsPorCat[r.categoria_id]) itemsPorCat[r.categoria_id] = [];
+    itemsPorCat[r.categoria_id].push(item);
   });
+
   if (categorias.length > 0) catActiva = categorias[0].id;
 }
 
@@ -157,23 +213,40 @@ function agregar(id) {
   const allItems = getAllItems();
   const item = allItems.find(i => i.id === id);
   const cant = parseFloat(cantidades[id]) || 1;
-  const corrs = correlaciones.filter(c => c.item_disparador_id === id);
-  const extras = corrs.map(c => allItems.find(i => i.id === c.item_sugerido_id))
+
+  const corrs = correlaciones.filter(c => c.receta_disparadora_id === id);
+  const obligatorias = corrs.filter(c => c.obligatoria);
+  const sugeridas    = corrs.filter(c => !c.obligatoria);
+
+  const extrasObl = obligatorias
+    .map(c => allItems.find(i => i.id === c.receta_sugerida_id))
     .filter(Boolean).filter(e => !carrito[e.id]);
-  if (extras.length && corrs.length) {
-    document.getElementById('corr-items').innerHTML = extras.map(e =>
-      `<div class="modal-corr-item">${e.nombre}</div>`).join('');
-    document.getElementById('corr-msg').textContent = corrs[0].mensaje || '';
+
+  const extrasSug = sugeridas
+    .map(c => ({ item: allItems.find(i => i.id === c.receta_sugerida_id), mensaje: c.mensaje }))
+    .filter(p => p.item && !carrito[p.item.id]);
+
+  if (extrasObl.length) {
+    toast('Se agregó automáticamente: ' + extrasObl.map(e => e.nombre).join(', '));
+  }
+
+  if (extrasSug.length) {
+    document.getElementById('corr-items').innerHTML = extrasSug
+      .map(p => `<div class="modal-corr-item">${p.item.nombre}</div>`).join('');
+    document.getElementById('corr-msg').textContent = extrasSug
+      .map(p => p.mensaje).filter(Boolean).join(' · ');
     document.getElementById('modal-corr').classList.add('open');
     document.getElementById('corr-ok').onclick = () => {
-      ejecutar(item, cant, extras);
+      ejecutar(item, cant, [...extrasObl, ...extrasSug.map(p => p.item)]);
       document.getElementById('modal-corr').classList.remove('open');
     };
     document.getElementById('corr-skip').onclick = () => {
-      ejecutar(item, cant, []);
+      ejecutar(item, cant, extrasObl);
       document.getElementById('modal-corr').classList.remove('open');
     };
-  } else ejecutar(item, cant, []);
+  } else {
+    ejecutar(item, cant, extrasObl);
+  }
 }
 
 function quitar(id) { delete carrito[id]; renderCot(); }

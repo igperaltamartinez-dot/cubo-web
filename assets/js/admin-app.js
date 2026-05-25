@@ -2,8 +2,9 @@ const SB_URL = 'https://swxkfibuvbazvrclzxlx.supabase.co';
 const SB_KEY = 'sb_publishable_Bma8p2yNKCQIMZTGu8fgiA_EPDGCi5y';
 const sb = supabase.createClient(SB_URL, SB_KEY);
 
-let categorias = [], todosItems = [], todosLeads = [], todasCorrs = [], todasObras = [];
-let editandoItem = null, editandoCat = null, editandoObra = null, leadActual = null;
+let categorias = [], todosLeads = [], todasCorrs = [], todasObras = [], todasRecetas = [];
+let todosItems = []; // legacy compat — algunas funciones del importador Excel todavía la referencian
+let editandoCat = null, editandoObra = null, leadActual = null;
 let filtroLeads = 'todos';
 
 const fmt = n => n > 0 ? '$' + Math.round(n).toLocaleString('es-AR') : '—';
@@ -47,31 +48,29 @@ async function iniciarApp() {
 
 // ── CARGA DATOS ──
 async function cargarTodo() {
-  const [cats, items, leads, corrs, obras] = await Promise.all([
+  const [cats, leads, corrs, obras, recetas] = await Promise.all([
     sb.from('categorias').select('*').order('orden'),
-    sb.from('items').select('*').order('orden'),
     sb.from('leads').select('*').order('created_at', { ascending: false }),
     sb.from('correlaciones').select('*'),
     sb.from('obras').select('*').order('orden'),
+    sb.from('recetas').select('id, nombre').order('nombre'),
   ]);
-  categorias = cats.data || [];
-  todosItems = items.data || [];
-  todosLeads = leads.data || [];
-  todasCorrs = corrs.data || [];
-  todasObras = obras.data || [];
+  categorias  = cats.data    || [];
+  todosLeads  = leads.data   || [];
+  todasCorrs  = corrs.data   || [];
+  todasObras  = obras.data   || [];
+  todasRecetas = recetas.data || [];
   poblarSelectsCats();
 }
 
 function poblarSelectsCats() {
-  const filtro = document.getElementById('items-cat-filter');
-  filtro.innerHTML = '<option value="">Todas las categorías</option>' +
-    categorias.map(c => `<option value="${c.id}">${c.emoji || ''} ${c.nombre}</option>`).join('');
-  const selCat = document.getElementById('item-cat');
-  selCat.innerHTML = categorias.map(c => `<option value="${c.id}">${c.emoji || ''} ${c.nombre}</option>`).join('');
   const selDis = document.getElementById('corr-disparador');
   const selSug = document.getElementById('corr-sugerido');
-  const optsItems = todosItems.map(i => `<option value="${i.id}">${i.nombre}</option>`).join('');
-  selDis.innerHTML = optsItems; selSug.innerHTML = optsItems;
+  if (selDis && selSug) {
+    const opts = todasRecetas.map(r => `<option value="${r.id}">${r.nombre}</option>`).join('');
+    selDis.innerHTML = opts;
+    selSug.innerHTML = opts;
+  }
 }
 
 // ── NAVEGACIÓN ──
@@ -80,7 +79,7 @@ function irA(page) {
   document.querySelectorAll('.sb-btn').forEach(b => b.classList.remove('act'));
   document.getElementById('page-' + page).classList.add('act');
   document.getElementById('sb-' + page).classList.add('act');
-  const renders = { dashboard: cargarDashboard, leads: renderLeads, items: renderItemsAdmin, categorias: renderCats, recetas: iniciarRecetas, correlaciones: renderCorrs, obras: renderObras, fotos: iniciarFotosLanding, catalogo: iniciarCatalogoSismat, importar: iniciarImportarSismat, motor: iniciarMotor, configuracion: cargarConfiguracion };
+  const renders = { dashboard: cargarDashboard, leads: renderLeads, categorias: renderCats, recetas: iniciarRecetas, correlaciones: renderCorrs, obras: renderObras, fotos: iniciarFotosLanding, catalogo: iniciarCatalogoSismat, importar: iniciarImportarSismat, motor: iniciarMotor, configuracion: cargarConfiguracion };
   if (renders[page]) renders[page]();
 }
 
@@ -89,7 +88,7 @@ async function cargarDashboard() {
   const nuevos = todosLeads.filter(l => l.estado === 'nuevo').length;
   document.getElementById('st-leads').textContent = todosLeads.length;
   document.getElementById('st-leads-new').textContent = nuevos > 0 ? `${nuevos} nuevos` : '';
-  document.getElementById('st-items').textContent = todosItems.filter(i => i.activo_publico).length;
+  document.getElementById('st-items').textContent = todasRecetas.length;
   document.getElementById('st-categorias').textContent = categorias.filter(c => c.activo).length;
   document.getElementById('st-obras').textContent = todasObras.filter(o => o.activo).length;
   const recientes = todosLeads.slice(0, 5);
@@ -178,144 +177,6 @@ async function cambiarEstadoLead() {
   }
 }
 
-// ── ITEMS ADMIN ──
-function renderItemsAdmin() {
-  const search = (document.getElementById('items-search').value || '').toLowerCase();
-  const catF = document.getElementById('items-cat-filter').value;
-  const lista = todosItems.filter(i =>
-    (!search || i.nombre.toLowerCase().includes(search)) &&
-    (!catF || i.categoria_id === catF)
-  );
-  document.getElementById('items-body').innerHTML = lista.length ?
-    lista.map(item => {
-      const cat = categorias.find(c => c.id === item.categoria_id);
-      const precioTotal = (item.precio_mano_obra || 0) + (item.precio_materiales || 0);
-      const precioFinal = precioTotal * (1 + (item.ajuste_porcentaje || 0) / 100);
-      return `<tr>
-        <td><strong>${item.nombre}</strong>${item.descripcion ? `<br><span style="font-size:11px;color:#aaa;font-weight:500">${item.descripcion}</span>` : ''}</td>
-        <td>${cat ? `${cat.emoji || ''} ${cat.nombre}` : '—'}</td>
-        <td>${item.unidad}</td>
-        <td>
-          <input class="precio-input" id="p-mo-${item.id}" type="number" value="${item.precio_mano_obra || 0}"
-            oninput="mostrarSaveBtn('${item.id}')">
-          <span style="font-size:10px;color:#aaa;display:block;margin-top:2px">MO</span>
-          <input class="precio-input" id="p-mat-${item.id}" type="number" value="${item.precio_materiales || 0}"
-            oninput="mostrarSaveBtn('${item.id}')" style="margin-top:4px">
-          <span style="font-size:10px;color:#aaa;display:block;margin-top:2px">Mat</span>
-        </td>
-        <td><input class="precio-input" id="p-aj-${item.id}" type="number" value="${item.ajuste_porcentaje || 0}" oninput="mostrarSaveBtn('${item.id}')" style="width:60px">%</td>
-        <td id="pf-${item.id}" style="font-weight:800;color:var(--go)">${precioFinal > 0 ? fmt(precioFinal) : '—'}</td>
-        <td>
-          <label class="toggle-switch">
-            <input type="checkbox" ${item.activo_publico ? 'checked' : ''} onchange="toggleItem('${item.id}',this.checked)">
-            <span class="toggle-slider"></span>
-          </label>
-        </td>
-        <td style="display:flex;gap:4px;flex-wrap:wrap">
-          <button class="save-precio-btn" id="save-${item.id}" onclick="guardarPrecio('${item.id}')">Guardar</button>
-          <button class="btn-sm" onclick="editarItem('${item.id}')">Editar</button>
-          <button class="btn-sm danger" onclick="eliminarItem('${item.id}')">Borrar</button>
-        </td>
-      </tr>`;
-    }).join('') :
-    '<tr><td colspan="8" class="empty-state">No hay ítems que coincidan.</td></tr>';
-}
-
-function mostrarSaveBtn(id) {
-  document.getElementById('save-' + id).classList.add('visible');
-}
-
-async function guardarPrecio(id) {
-  const mo = parseFloat(document.getElementById('p-mo-' + id).value) || 0;
-  const mat = parseFloat(document.getElementById('p-mat-' + id).value) || 0;
-  const aj = parseFloat(document.getElementById('p-aj-' + id).value) || 0;
-  const total = mo + mat;
-  const final = total * (1 + aj / 100);
-  const { error } = await sb.from('items').update({
-    precio_mano_obra: mo, precio_materiales: mat, ajuste_porcentaje: aj, precio: total
-  }).eq('id', id);
-  if (!error) {
-    const idx = todosItems.findIndex(i => i.id === id);
-    if (idx >= 0) { todosItems[idx].precio_mano_obra = mo; todosItems[idx].precio_materiales = mat; todosItems[idx].ajuste_porcentaje = aj; todosItems[idx].precio = total; }
-    document.getElementById('pf-' + id).textContent = final > 0 ? fmt(final) : '—';
-    document.getElementById('save-' + id).classList.remove('visible');
-    toast('Precio actualizado ✓');
-  } else toast('Error al guardar', 'err');
-}
-
-async function toggleItem(id, activo) {
-  const { error } = await sb.from('items').update({ activo_publico: activo }).eq('id', id);
-  if (!error) {
-    const idx = todosItems.findIndex(i => i.id === id);
-    if (idx >= 0) todosItems[idx].activo_publico = activo;
-    toast(activo ? 'Ítem activado ✓' : 'Ítem desactivado');
-  }
-}
-
-function abrirModalItem(id = null) {
-  editandoItem = id;
-  document.getElementById('modal-item-tit').textContent = id ? 'Editar ítem' : 'Nuevo ítem';
-  if (id) {
-    const item = todosItems.find(i => i.id === id);
-    document.getElementById('item-cat').value = item.categoria_id || '';
-    document.getElementById('item-nombre').value = item.nombre || '';
-    document.getElementById('item-desc').value = item.descripcion || '';
-    document.getElementById('item-unidad').value = item.unidad || 'm²';
-    document.getElementById('item-ajuste').value = item.ajuste_porcentaje || 10;
-    document.getElementById('item-precio-mo').value = item.precio_mano_obra || 0;
-    document.getElementById('item-precio-mat').value = item.precio_materiales || 0;
-    document.getElementById('item-sismat').value = item.referencia_sismat || '';
-    document.getElementById('item-excel').value = item.referencia_excel || '';
-  } else {
-    ['item-nombre','item-desc','item-sismat','item-excel'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('item-ajuste').value = 10;
-    document.getElementById('item-precio-mo').value = 0;
-    document.getElementById('item-precio-mat').value = 0;
-  }
-  document.getElementById('modal-item').classList.add('open');
-}
-
-function editarItem(id) { abrirModalItem(id); }
-
-async function guardarItem() {
-  const nombre = document.getElementById('item-nombre').value.trim();
-  const cat = document.getElementById('item-cat').value;
-  if (!nombre || !cat) { toast('Completá nombre y categoría', 'err'); return; }
-  const mo = parseFloat(document.getElementById('item-precio-mo').value) || 0;
-  const mat = parseFloat(document.getElementById('item-precio-mat').value) || 0;
-  const data = {
-    categoria_id: cat, nombre,
-    descripcion: document.getElementById('item-desc').value || null,
-    unidad: document.getElementById('item-unidad').value,
-    ajuste_porcentaje: parseFloat(document.getElementById('item-ajuste').value) || 10,
-    precio_mano_obra: mo, precio_materiales: mat, precio: mo + mat,
-    referencia_sismat: document.getElementById('item-sismat').value || null,
-    referencia_excel: document.getElementById('item-excel').value || null,
-  };
-  let error;
-  if (editandoItem) {
-    ({ error } = await sb.from('items').update(data).eq('id', editandoItem));
-  } else {
-    ({ error } = await sb.from('items').insert(data));
-  }
-  if (!error) {
-    cerrarModal('modal-item');
-    await cargarTodo();
-    renderItemsAdmin();
-    toast(editandoItem ? 'Ítem actualizado ✓' : 'Ítem creado ✓');
-  } else toast('Error al guardar', 'err');
-}
-
-async function eliminarItem(id) {
-  if (!confirm('¿Eliminás este ítem? Esta acción no se puede deshacer.')) return;
-  const { error } = await sb.from('items').delete().eq('id', id);
-  if (!error) {
-    todosItems = todosItems.filter(i => i.id !== id);
-    renderItemsAdmin();
-    toast('Ítem eliminado');
-  } else toast('Error al eliminar', 'err');
-}
-
 // ── CATEGORÍAS ──
 function renderCats() {
   document.getElementById('cats-body').innerHTML = categorias.length ?
@@ -388,31 +249,49 @@ async function toggleCat(id, activo) {
 
 // ── CORRELACIONES ──
 function renderCorrs() {
+  poblarSelectsCats();
   document.getElementById('corr-body').innerHTML = todasCorrs.length ?
     todasCorrs.map(c => {
-      const dis = todosItems.find(i => i.id === c.item_disparador_id);
-      const sug = todosItems.find(i => i.id === c.item_sugerido_id);
+      const dis = todasRecetas.find(r => r.id === c.receta_disparadora_id);
+      const sug = todasRecetas.find(r => r.id === c.receta_sugerida_id);
+      const tipo = c.obligatoria
+        ? '<span class="badge badge-nuevo">Obligatoria</span>'
+        : '<span class="badge badge-en_proceso">Sugerida</span>';
       return `<tr>
         <td>${dis ? dis.nombre : '—'}</td>
         <td>${sug ? sug.nombre : '—'}</td>
-        <td style="font-size:11px;color:var(--gm)">${c.mensaje}</td>
+        <td>${tipo}</td>
+        <td style="font-size:11px;color:var(--gm)">${c.mensaje || ''}</td>
         <td><label class="toggle-switch"><input type="checkbox" ${c.activo ? 'checked' : ''} onchange="toggleCorr('${c.id}',this.checked)"><span class="toggle-slider"></span></label></td>
         <td><button class="btn-sm danger" onclick="eliminarCorr('${c.id}')">Borrar</button></td>
       </tr>`;
     }).join('') :
-    '<tr><td colspan="5" class="empty-state">No hay correlaciones.</td></tr>';
+    '<tr><td colspan="6" class="empty-state">No hay correlaciones.</td></tr>';
 }
 
-function abrirModalCorr() { document.getElementById('modal-corr').classList.add('open'); }
+function abrirModalCorr() {
+  document.getElementById('corr-mensaje').value = '';
+  document.getElementById('corr-obligatoria').checked = false;
+  document.getElementById('modal-corr').classList.add('open');
+}
 
 async function guardarCorr() {
   const dis = document.getElementById('corr-disparador').value;
   const sug = document.getElementById('corr-sugerido').value;
   const msg = document.getElementById('corr-mensaje').value.trim();
-  if (!dis || !sug || !msg) { toast('Completá todos los campos', 'err'); return; }
-  const { error } = await sb.from('correlaciones').insert({ item_disparador_id: dis, item_sugerido_id: sug, mensaje: msg, activo: true });
+  const obligatoria = document.getElementById('corr-obligatoria').checked;
+  if (!dis || !sug) { toast('Elegí ambas recetas', 'err'); return; }
+  if (dis === sug)  { toast('No podés correlacionar una receta consigo misma', 'err'); return; }
+  if (!obligatoria && !msg) { toast('Las sugeridas necesitan un mensaje para el cliente', 'err'); return; }
+  const { error } = await sb.from('correlaciones').insert({
+    receta_disparadora_id: dis,
+    receta_sugerida_id:    sug,
+    mensaje:               msg || null,
+    obligatoria,
+    activo:                true,
+  });
   if (!error) { cerrarModal('modal-corr'); await cargarTodo(); renderCorrs(); toast('Correlación creada ✓'); }
-  else toast('Error al guardar', 'err');
+  else toast('Error al guardar: ' + error.message, 'err');
 }
 
 async function toggleCorr(id, activo) {

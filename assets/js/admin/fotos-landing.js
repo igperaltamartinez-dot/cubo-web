@@ -8,6 +8,14 @@ async function iniciarFotosLanding() {
   const cont = document.getElementById('fl-contenido');
   if (cont) cont.innerHTML = '<p class="empty-state">Cargando...</p>';
 
+  // Verificar sesión antes de cualquier operación que requiera auth
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    if (cont) cont.innerHTML = '<p class="empty-state">Sesión expirada. Recargá la página e iniciá sesión nuevamente.</p>';
+    toast('Sesión expirada, recargá la página', 'err');
+    return;
+  }
+
   const [obrasRes, mediaRes] = await Promise.all([
     sb.from('obras').select('id, titulo, zona, tipo, imagen_url, imagen_storage_path').order('id'),
     sb.from('landing_media').select('*'),
@@ -143,14 +151,35 @@ async function flComprimirImagen(file, maxW = 1600, quality = 0.85) {
   });
 }
 
+function _flEsErrorRLS(err) {
+  if (!err) return false;
+  const msg = (err.message || err.toString()).toLowerCase();
+  return msg.includes('row-level') || msg.includes('row level') ||
+         msg.includes('rls')      || err.statusCode === '403' || err.status === 403;
+}
+
+async function _flConRefresh(fn, descripcionError) {
+  let res = await fn();
+  if (res.error && _flEsErrorRLS(res.error)) {
+    await sb.auth.refreshSession();
+    res = await fn();
+  }
+  if (res.error) {
+    throw new Error(`${descripcionError}: ${res.error.message}`);
+  }
+  return res;
+}
+
 async function _flSubir(storagePath, blob) {
-  const { data, error } = await sb.storage.from('landing-fotos').upload(storagePath, blob, {
-    contentType: 'image/jpeg',
-    upsert: true,
-  });
-  if (error) throw new Error(error.message);
-  const { data: { publicUrl } } = sb.storage.from('landing-fotos').getPublicUrl(data.path);
-  return { path: data.path, url: publicUrl };
+  const res = await _flConRefresh(
+    () => sb.storage.from('landing-fotos').upload(storagePath, blob, {
+      contentType: 'image/jpeg',
+      upsert: true,
+    }),
+    'Storage'
+  );
+  const { data: { publicUrl } } = sb.storage.from('landing-fotos').getPublicUrl(res.data.path);
+  return { path: res.data.path, url: publicUrl };
 }
 
 // ── SLOTS FIJOS ──
@@ -163,11 +192,13 @@ async function flSubirSlot(slot, file) {
     const path = `slots/${slot}-${Date.now()}.jpg`;
     const { path: storagePath, url } = await _flSubir(path, blob);
 
-    const { error } = await sb.from('landing_media').upsert(
-      { slot, url, storage_path: storagePath, actualizado_en: new Date().toISOString() },
-      { onConflict: 'slot' }
+    await _flConRefresh(
+      () => sb.from('landing_media').upsert(
+        { slot, url, storage_path: storagePath, actualizado_en: new Date().toISOString() },
+        { onConflict: 'slot' }
+      ),
+      'landing_media UPSERT'
     );
-    if (error) throw new Error(error.message);
 
     _flMediaMap[slot] = { slot, url, storage_path: storagePath };
     toast('Foto guardada ✓');
@@ -180,8 +211,16 @@ async function flSubirSlot(slot, file) {
 async function flEliminarSlot(slot, storagePath) {
   if (!confirm('¿Eliminás esta foto?')) return;
   try {
-    if (storagePath) await sb.storage.from('landing-fotos').remove([storagePath]);
-    await sb.from('landing_media').delete().eq('slot', slot);
+    if (storagePath) {
+      await _flConRefresh(
+        () => sb.storage.from('landing-fotos').remove([storagePath]),
+        'Storage delete'
+      );
+    }
+    await _flConRefresh(
+      () => sb.from('landing_media').delete().eq('slot', slot),
+      'landing_media DELETE'
+    );
     delete _flMediaMap[slot];
     toast('Foto eliminada');
     _flRender();
@@ -200,11 +239,13 @@ async function flSubirFotoObra(obraId, file) {
     const path = `obras/${obraId}.jpg`;
     const { path: storagePath, url } = await _flSubir(path, blob);
 
-    const { error } = await sb.from('obras').update({
-      imagen_url: url,
-      imagen_storage_path: storagePath,
-    }).eq('id', obraId);
-    if (error) throw new Error(error.message);
+    await _flConRefresh(
+      () => sb.from('obras').update({
+        imagen_url: url,
+        imagen_storage_path: storagePath,
+      }).eq('id', obraId),
+      'obras UPDATE'
+    );
 
     const obra = _flObras.find(o => o.id === obraId);
     if (obra) { obra.imagen_url = url; obra.imagen_storage_path = storagePath; }
@@ -218,12 +259,19 @@ async function flSubirFotoObra(obraId, file) {
 async function flEliminarFotoObra(obraId, storagePath) {
   if (!confirm('¿Quitás la foto de esta obra?')) return;
   try {
-    if (storagePath) await sb.storage.from('landing-fotos').remove([storagePath]);
-    const { error } = await sb.from('obras').update({
-      imagen_url: null,
-      imagen_storage_path: null,
-    }).eq('id', obraId);
-    if (error) throw new Error(error.message);
+    if (storagePath) {
+      await _flConRefresh(
+        () => sb.storage.from('landing-fotos').remove([storagePath]),
+        'Storage delete'
+      );
+    }
+    await _flConRefresh(
+      () => sb.from('obras').update({
+        imagen_url: null,
+        imagen_storage_path: null,
+      }).eq('id', obraId),
+      'obras UPDATE'
+    );
 
     const obra = _flObras.find(o => o.id === obraId);
     if (obra) { obra.imagen_url = null; obra.imagen_storage_path = null; }
