@@ -1,0 +1,701 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CUBO · Panel Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-card">
+    <div>
+      <span class="login-logo">CUBO</span>
+      <span class="login-iso">Λ3</span>
+    </div>
+    <div class="login-sub">panel de administración</div>
+    <h2 class="login-tit">Acceso privado</h2>
+    <p class="login-desc">Solo para uso interno del equipo CUBO.</p>
+    <label class="l-label">Email</label>
+    <input class="l-input" id="l-email" type="email" placeholder="tu@email.com">
+    <label class="l-label">Contraseña</label>
+    <input class="l-input" id="l-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')login()">
+    <button class="l-btn" id="l-btn" onclick="login()">Entrar →</button>
+    <p class="l-error" id="l-error">Email o contraseña incorrectos.</p>
+  </div>
+</div>
+
+<!-- ── APP ── -->
+<div class="app" id="app">
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <span class="sb-logo-txt">CUBO</span>
+      <span class="sb-logo-iso">Λ3</span>
+      <span class="sb-logo-sub">panel admin</span>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-section">Principal</div>
+      <button class="sb-btn act" onclick="irA('dashboard')" id="sb-dashboard">Dashboard</button>
+      <button class="sb-btn" onclick="irA('leads')" id="sb-leads">Leads</button>
+      <div class="sb-section">Cotizador</div>
+      <button class="sb-btn" onclick="irA('items')" id="sb-items">Ítems y precios</button>
+      <button class="sb-btn" onclick="irA('categorias')" id="sb-categorias">Categorías</button>
+      <button class="sb-btn" onclick="irA('recetas')" id="sb-recetas">Recetas</button>
+      <button class="sb-btn" onclick="irA('correlaciones')" id="sb-correlaciones">Correlaciones</button>
+      <button class="sb-btn" onclick="irA('catalogo')" id="sb-catalogo">Catálogo Sismat</button>
+      <button class="sb-btn" onclick="irA('importar')" id="sb-importar">Importar Sismat</button>
+      <button class="sb-btn" onclick="irA('motor')" id="sb-motor">Motor de Precios</button>
+      <div class="sb-section">Contenido</div>
+      <button class="sb-btn" onclick="irA('obras')" id="sb-obras">Obras / Galería</button>
+      <button class="sb-btn" onclick="irA('fotos')" id="sb-fotos">Fotos Landing</button>
+      <button class="sb-btn" onclick="irA('configuracion')" id="sb-configuracion">Configuración</button>
+    </nav>
+    <div class="sb-bottom">
+      <div class="sb-user" id="sb-user"></div>
+      <button class="sb-logout" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div class="page act" id="page-dashboard">
+      <h1 class="page-tit">Dashboard</h1>
+      <p class="page-sub">Resumen general de la plataforma.</p>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-card-num" id="st-leads">—</div><div class="stat-card-lbl">Leads totales</div><div class="stat-card-new" id="st-leads-new"></div></div>
+        <div class="stat-card"><div class="stat-card-num" id="st-items">—</div><div class="stat-card-lbl">Ítems activos</div></div>
+        <div class="stat-card"><div class="stat-card-num" id="st-categorias">—</div><div class="stat-card-lbl">Categorías</div></div>
+        <div class="stat-card"><div class="stat-card-num" id="st-obras">—</div><div class="stat-card-lbl">Obras en galería</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div><div class="card-tit">Últimos leads</div><div class="card-sub">Los 5 más recientes</div></div><button class="btn-sm prim" onclick="irA('leads')">Ver todos</button></div>
+        <table><thead><tr><th>Nombre</th><th>Teléfono</th><th>Tipo de obra</th><th>Estado</th><th>Fecha</th></tr></thead>
+        <tbody id="dash-leads-body"><tr><td colspan="5" class="empty-state">Cargando...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- LEADS -->
+    <div class="page" id="page-leads">
+      <h1 class="page-tit">Leads</h1>
+      <p class="page-sub">Potenciales clientes que usaron el cotizador.</p>
+      <div class="filtros">
+        <button class="filtro-btn act" onclick="filtrarLeads('todos',this)">Todos</button>
+        <button class="filtro-btn" onclick="filtrarLeads('nuevo',this)">Nuevos</button>
+        <button class="filtro-btn" onclick="filtrarLeads('contactado',this)">Contactados</button>
+        <button class="filtro-btn" onclick="filtrarLeads('en_proceso',this)">En proceso</button>
+        <button class="filtro-btn" onclick="filtrarLeads('cerrado',this)">Cerrados</button>
+        <button class="filtro-btn" onclick="filtrarLeads('descartado',this)">Descartados</button>
+      </div>
+      <div class="card">
+        <table><thead><tr><th>Nombre</th><th>Contacto</th><th>Tipo de obra</th><th>Zona</th><th>Total cotizado</th><th>Estado</th><th>Fecha</th><th></th></tr></thead>
+        <tbody id="leads-body"><tr><td colspan="8" class="empty-state">Cargando...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- ÍTEMS -->
+    <div class="page" id="page-items">
+      <h1 class="page-tit">Ítems y precios</h1>
+      <p class="page-sub">Editá los trabajos que aparecen en el cotizador público.</p>
+      <div class="items-toolbar">
+        <input class="search-input" id="items-search" placeholder="🔍 Buscar ítem..." oninput="renderItems()">
+        <select class="cat-filter" id="items-cat-filter" onchange="renderItems()"><option value="">Todas las categorías</option></select>
+        <button class="btn-add" onclick="abrirModalItem()">+ Nuevo ítem</button>
+      </div>
+      <div class="card">
+        <table><thead><tr><th>Nombre</th><th>Categoría</th><th>Unidad</th><th>Precio base</th><th>Ajuste %</th><th>Precio final</th><th>Visible</th><th></th></tr></thead>
+        <tbody id="items-body"><tr><td colspan="8" class="empty-state">Cargando...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- CATEGORÍAS -->
+    <div class="page" id="page-categorias">
+      <h1 class="page-tit">Categorías</h1>
+      <p class="page-sub">Organizá los grupos del cotizador y configurá los mensajes de alerta.</p>
+      <div style="margin-bottom:16px"><button class="btn-add" onclick="abrirModalCat()">+ Nueva categoría</button></div>
+      <div class="card">
+        <table><thead><tr><th>Emoji</th><th>Nombre</th><th>Orden</th><th>Markup %</th><th>Mensaje de alerta</th><th>Activa</th><th></th></tr></thead>
+        <tbody id="cats-body"><tr><td colspan="7" class="empty-state">Cargando...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- RECETAS -->
+    <div class="page" id="page-recetas">
+      <h1 class="page-tit">Recetas</h1>
+      <p class="page-sub">Servicios compuestos del cotizador. Cada receta combina ítems de Sismat con cantidades y muestra el precio calculado al cliente.</p>
+      <div style="margin-bottom:16px">
+        <button class="btn-add" onclick="rcAbrirNueva()">+ Nueva receta</button>
+      </div>
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Unidad</th>
+              <th>Componentes</th>
+              <th>Visible</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="rc-tbody">
+            <tr><td colspan="6" class="empty-state">Abrí esta sección para cargar las recetas.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CATÁLOGO SISMAT -->
+    <div class="page" id="page-catalogo">
+      <h1 class="page-tit">Catálogo Sismat</h1>
+      <p class="page-sub">Activá ítems en el cotizador y sobrescribí los nombres para el cliente.</p>
+
+      <div class="items-toolbar" style="flex-wrap:wrap">
+        <input class="search-input" id="cs-buscar" placeholder="Buscar ítem...">
+        <select class="cat-filter" id="cs-tipo">
+          <option value="">Materiales y MO</option>
+          <option value="material">Solo materiales</option>
+          <option value="mano_de_obra">Solo mano de obra</option>
+        </select>
+        <select class="cat-filter" id="cs-cat" style="max-width:220px">
+          <option value="">Todas las categorías</option>
+        </select>
+        <select class="cat-filter" id="cs-vis">
+          <option value="">Todos</option>
+          <option value="visible">Solo visibles</option>
+          <option value="oculto">Solo ocultos</option>
+        </select>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:12px;color:var(--gm);font-weight:500" id="cs-count"></span>
+        <div style="display:flex;gap:8px">
+          <button class="btn-sm" id="cs-pag-prev" onclick="catPagAnterior()">Anterior</button>
+          <button class="btn-sm" id="cs-pag-next" onclick="catPagSiguiente()">Siguiente</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:130px">Tipo / Categoría</th>
+              <th>Nombre Sismat / Override CUBO</th>
+              <th>Und.</th>
+              <th>Precio</th>
+              <th>Visible</th>
+              <th style="width:180px">Categoría CUBO</th>
+            </tr>
+          </thead>
+          <tbody id="cs-tbody">
+            <tr><td colspan="6" class="empty-state">Abrí esta sección para cargar el catálogo.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- IMPORTAR SISMAT -->
+    <div class="page" id="page-importar">
+      <h1 class="page-tit">Importar Sismat</h1>
+      <p class="page-sub">Subí el JSON exportado por la extensión Chrome para actualizar el catálogo de precios.</p>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-tit">Seleccionar archivo JSON</div>
+            <div class="card-sub">El archivo que genera la extensión al hacer clic en "Exportar JSON"</div>
+          </div>
+        </div>
+        <div style="padding:24px">
+
+          <!-- Drop zone -->
+          <div id="is-drop-zone" style="border:2px dashed var(--gc);border-radius:8px;padding:40px;text-align:center;cursor:pointer;transition:border-color .2s">
+            <div style="font-size:13px;font-weight:700;color:var(--tx);margin-bottom:6px">Arrastrá el JSON acá o hacé clic para seleccionar</div>
+            <div style="font-size:12px;color:var(--gm);font-weight:500">sismat-precios-YYYY-MM-DD.json</div>
+            <input type="file" id="is-json-input" accept=".json" style="display:none">
+          </div>
+
+          <!-- Preview -->
+          <div id="is-preview" style="display:none;margin-top:20px">
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+              <div class="stat-card"><div class="stat-card-num" id="is-stat-nuevos">—</div><div class="stat-card-lbl">Nuevos</div></div>
+              <div class="stat-card"><div class="stat-card-num" id="is-stat-actualiz">—</div><div class="stat-card-lbl">Con cambio de precio</div></div>
+              <div class="stat-card"><div class="stat-card-num" id="is-stat-eliminados">—</div><div class="stat-card-lbl">Ya no están en Sismat</div></div>
+              <div class="stat-card" style="border-color:#FFCDD2"><div class="stat-card-num" style="color:var(--er)" id="is-stat-alertas">—</div><div class="stat-card-lbl">Subieron +20%</div></div>
+            </div>
+
+            <div id="is-alerta-precios" style="display:none;background:#FFEBEE;border:1.5px solid #FFCDD2;border-radius:8px;padding:14px 18px;margin-bottom:16px;font-size:12px;color:#C62828;font-weight:600">
+              Algunos ítems subieron más del 20% — verificá que el JSON sea correcto antes de sincronizar:
+              <div id="is-alerta-lista" style="margin-top:8px;font-weight:500;line-height:1.8"></div>
+            </div>
+
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-header"><div class="card-tit">Vista previa — primeros 10 ítems</div></div>
+              <table><thead><tr><th>Categoría</th><th>Nombre</th><th>Unidad</th><th>Precio Sismat</th><th>Cambio</th></tr></thead>
+              <tbody id="is-preview-body"></tbody></table>
+            </div>
+
+            <div style="display:flex;gap:10px">
+              <button class="btn-add" id="is-btn-sync" style="flex:1;padding:14px;font-size:13px">Sincronizar catálogo</button>
+              <button id="is-btn-cancelar" style="background:#fff;color:var(--gm);border:2px solid var(--gc);padding:14px;font-family:Nunito,sans-serif;font-weight:700;font-size:12px;cursor:pointer;border-radius:8px">Cancelar</button>
+            </div>
+          </div>
+
+          <!-- Progress -->
+          <div id="is-progress" style="display:none;margin-top:20px">
+            <div style="font-size:13px;font-weight:700;color:var(--tx);margin-bottom:8px" id="is-prog-status">Sincronizando...</div>
+            <div style="height:8px;background:var(--gc);border-radius:4px;overflow:hidden;margin-bottom:8px">
+              <div id="is-prog-bar" style="height:100%;background:var(--go);border-radius:4px;transition:width .3s;width:0%"></div>
+            </div>
+            <div style="font-size:11px;color:var(--gm);font-weight:600" id="is-prog-log"></div>
+          </div>
+
+          <!-- Success -->
+          <div id="is-success" style="display:none;margin-top:20px;text-align:center;padding:32px">
+            <div style="font-size:16px;font-weight:800;color:var(--tx);margin-bottom:8px">Catálogo sincronizado</div>
+            <div style="font-size:13px;color:var(--gm);font-weight:500" id="is-success-msg"></div>
+            <button class="btn-add" style="margin-top:16px" onclick="iniciarImportarSismat()">Importar otro JSON</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- CORRELACIONES -->
+    <div class="page" id="page-correlaciones">
+      <h1 class="page-tit">Correlaciones</h1>
+      <p class="page-sub">Cuando el cliente elige X → se sugiere agregar Y automáticamente.</p>
+      <div style="margin-bottom:16px"><button class="btn-add" onclick="abrirModalCorr()">+ Nueva correlación</button></div>
+      <div class="card">
+        <table><thead><tr><th>Si elige...</th><th>Se sugiere agregar...</th><th>Mensaje al cliente</th><th>Activa</th><th></th></tr></thead>
+        <tbody id="corr-body"><tr><td colspan="5" class="empty-state">Cargando...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- OBRAS -->
+    <div class="page" id="page-obras">
+      <h1 class="page-tit">Obras / Galería</h1>
+      <p class="page-sub">Las fotos que aparecen en la galería pública.</p>
+      <div style="margin-bottom:16px"><button class="btn-add" onclick="abrirModalObra()">+ Nueva obra</button></div>
+      <div class="card">
+        <table><thead><tr><th>Título</th><th>Tipo</th><th>Zona</th><th>Imagen URL</th><th>Visible</th><th></th></tr></thead>
+        <tbody id="obras-body"><tr><td colspan="6" class="empty-state">Cargando...</td></tr></tbody></table>
+      </div>
+    </div>
+
+    <!-- FOTOS LANDING -->
+    <div class="page" id="page-fotos">
+      <h1 class="page-tit">Fotos Landing</h1>
+      <p class="page-sub">Subí las fotos que aparecen en la landing pública. Las imágenes se comprimen automáticamente antes de subirse.</p>
+      <div id="fl-contenido">
+        <p class="empty-state">Abrí esta sección para cargar las fotos.</p>
+      </div>
+    </div>
+
+    <!-- CONFIGURACIÓN -->
+    <div class="page" id="page-configuracion">
+      <h1 class="page-tit">Configuración</h1>
+      <p class="page-sub">Datos de contacto que aparecen en el footer del sitio público.</p>
+      <div class="card" style="max-width:540px">
+        <div class="card-header"><div class="card-tit">Datos de contacto</div></div>
+        <div style="padding:24px;display:flex;flex-direction:column;gap:16px">
+          <div>
+            <label class="m-label">Email de contacto</label>
+            <input class="m-input" id="cfg-email" type="email" placeholder="info@cuboconstruccion.com.ar">
+          </div>
+          <div>
+            <label class="m-label">Teléfono / WhatsApp</label>
+            <input class="m-input" id="cfg-telefono" placeholder="+54 11 1234-5678">
+          </div>
+          <div>
+            <label class="m-label">Instagram</label>
+            <input class="m-input" id="cfg-instagram" placeholder="@cuboconstruccion">
+          </div>
+          <div>
+            <label class="m-label">Zona de trabajo</label>
+            <input class="m-input" id="cfg-zona" placeholder="Buenos Aires">
+          </div>
+          <button class="btn-add" id="cfg-guardar" onclick="guardarConfiguracion()" style="align-self:flex-start">Guardar cambios</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOTOR DE PRECIOS -->
+    <div class="page" id="page-motor">
+      <h1 class="page-tit">Motor de Precios</h1>
+      <p class="page-sub">Calculá los precios de todos tus servicios usando datos actualizados de Sismat y publicalos con un clic.</p>
+
+      <!-- Paso 1: Sismat -->
+      <div class="motor-step">
+        <div class="motor-step-head">
+          <div>
+            <div class="motor-step-num">Paso 1</div>
+            <div class="motor-step-tit">Datos de Sismat</div>
+            <div class="motor-step-sub" id="motor-sismat-sub">Cargá el Excel de Sismat para actualizar precios automáticamente. Los servicios con precio manual no lo necesitan.</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-shrink:0">
+            <span id="motor-sismat-badge" style="display:none" class="motor-badge-ok"></span>
+            <button class="btn-sm prim" onclick="document.getElementById('motor-sismat-input').click()">📊 Cargar Excel Sismat</button>
+            <input type="file" id="motor-sismat-input" accept=".xlsx,.xls" style="display:none" onchange="cargarSismatMotor(this.files[0])">
+          </div>
+        </div>
+      </div>
+
+      <!-- Paso 2: Recetas -->
+      <div class="motor-step">
+        <div class="motor-step-head">
+          <div>
+            <div class="motor-step-num">Paso 2</div>
+            <div class="motor-step-tit">Recetas de servicios</div>
+            <div class="motor-step-sub">31 servicios preconfigurados. Hacé clic en Editar para ajustar la receta de cualquiera.</div>
+          </div>
+          <button class="btn-add" onclick="calcularTodosPrecios()">⚡ Calcular precios</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:26px">#</th>
+              <th>Servicio</th>
+              <th>Und.</th>
+              <th>Mano de obra</th>
+              <th>Materiales</th>
+              <th>Colchón</th>
+              <th>Precio calculado</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="motor-recetas-body">
+            <tr><td colspan="8" class="empty-state">Cargando recetas...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paso 3: Publicar -->
+      <div class="motor-step" id="motor-publish-area" style="display:none">
+        <div class="motor-step-head">
+          <div>
+            <div class="motor-step-num">Paso 3</div>
+            <div class="motor-step-tit">Publicar en el cotizador</div>
+            <div class="motor-step-sub">Los precios se guardan en Supabase. Luego activá o desactivá ítems desde "Ítems y precios".</div>
+          </div>
+          <button class="btn-motor-pub" id="motor-pub-btn" onclick="publicarPrecios()">✅ Publicar todos los precios</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ── MODAL LEAD DETALLE ── -->
+<div class="modal-ov" id="modal-lead">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="modal-lead-tit">Detalle del lead</h3>
+      <button class="modal-close" onclick="cerrarModal('modal-lead')">×</button>
+    </div>
+    <div class="modal-body">
+      <label class="m-label">Estado</label>
+      <select class="m-select" id="lead-estado" onchange="cambiarEstadoLead()">
+        <option value="nuevo">Nuevo</option>
+        <option value="contactado">Contactado</option>
+        <option value="en_proceso">En proceso</option>
+        <option value="cerrado">Cerrado</option>
+        <option value="descartado">Descartado</option>
+      </select>
+      <div class="lead-detail" id="lead-detail-grid"></div>
+      <div class="items-cotizados" id="lead-items-cotizados"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL ITEM ── -->
+<div class="modal-ov" id="modal-item">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="modal-item-tit">Nuevo ítem</h3>
+      <button class="modal-close" onclick="cerrarModal('modal-item')">×</button>
+    </div>
+    <div class="modal-body">
+      <label class="m-label">Categoría *</label>
+      <select class="m-select" id="item-cat"></select>
+      <label class="m-label">Nombre *</label>
+      <input class="m-input" id="item-nombre" placeholder="Ej: Porcelanato en piso">
+      <label class="m-label">Descripción</label>
+      <textarea class="m-input m-ta" id="item-desc" placeholder="Descripción visible al cliente"></textarea>
+      <div class="m-row">
+        <div>
+          <label class="m-label">Unidad *</label>
+          <select class="m-select" id="item-unidad">
+            <option value="m²">m²</option>
+            <option value="ml">ml</option>
+            <option value="unidad">unidad</option>
+            <option value="hora">hora</option>
+          </select>
+        </div>
+        <div>
+          <label class="m-label">Ajuste % (colchón)</label>
+          <input class="m-input" id="item-ajuste" type="number" placeholder="10" value="10">
+        </div>
+      </div>
+      <div class="m-row">
+        <div>
+          <label class="m-label">Precio mano de obra</label>
+          <input class="m-input" id="item-precio-mo" type="number" placeholder="0">
+        </div>
+        <div>
+          <label class="m-label">Precio materiales</label>
+          <input class="m-input" id="item-precio-mat" type="number" placeholder="0">
+        </div>
+      </div>
+      <label class="m-label">Referencia Sismat</label>
+      <input class="m-input" id="item-sismat" placeholder="Referencia en Sismat (opcional)">
+      <label class="m-label">Referencia Excel</label>
+      <input class="m-input" id="item-excel" placeholder="Nombre de la tarea en tu Excel (opcional)">
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="cerrarModal('modal-item')">Cancelar</button>
+      <button class="btn-save" onclick="guardarItem()">Guardar ítem</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL CATEGORÍA ── -->
+<div class="modal-ov" id="modal-cat">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="modal-cat-tit">Nueva categoría</h3>
+      <button class="modal-close" onclick="cerrarModal('modal-cat')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="m-row">
+        <div>
+          <label class="m-label">Emoji</label>
+          <input class="m-input" id="cat-emoji" placeholder="🏗️">
+        </div>
+        <div>
+          <label class="m-label">Orden</label>
+          <input class="m-input" id="cat-orden" type="number" placeholder="1">
+        </div>
+      </div>
+      <label class="m-label">Nombre *</label>
+      <input class="m-input" id="cat-nombre" placeholder="Ej: Electricidad">
+      <label class="m-label">Markup % <span style="font-weight:400;color:#aaa">(margen sobre precio Sismat)</span></label>
+      <input class="m-input" id="cat-markup" type="number" min="0" max="200" placeholder="30">
+      <p style="font-size:11px;color:#aaa;font-weight:500;margin-top:-10px;margin-bottom:14px">Precio al cliente = precio Sismat × (1 + markup/100). Ej: 30 → un ítem de $10.000 sale a $13.000.</p>
+      <label class="m-label">Mensaje de alerta <span style="font-weight:400;color:#aaa">(opcional)</span></label>
+      <textarea class="m-input m-ta" id="cat-alerta" placeholder="Ej: Si estás renovando el baño, es el mejor momento para cambiar la grifería. Hacerlo después implica romper lo que ya está terminado." style="height:90px"></textarea>
+      <p style="font-size:11px;color:#aaa;font-weight:500;margin-top:-10px;margin-bottom:14px">Este texto aparece cuando el cliente no seleccionó nada de esta categoría antes de solicitar presupuesto.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="cerrarModal('modal-cat')">Cancelar</button>
+      <button class="btn-save" onclick="guardarCat()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL CORRELACIÓN ── -->
+<div class="modal-ov" id="modal-corr">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Nueva correlación</h3>
+      <button class="modal-close" onclick="cerrarModal('modal-corr')">×</button>
+    </div>
+    <div class="modal-body">
+      <label class="m-label">Si el cliente elige... *</label>
+      <select class="m-select" id="corr-disparador"></select>
+      <label class="m-label">...se sugiere agregar: *</label>
+      <select class="m-select" id="corr-sugerido"></select>
+      <label class="m-label">Mensaje al cliente *</label>
+      <textarea class="m-input m-ta" id="corr-mensaje" placeholder="Explicá por qué se necesita este trabajo adicional..."></textarea>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="cerrarModal('modal-corr')">Cancelar</button>
+      <button class="btn-save" onclick="guardarCorr()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL OBRA ── -->
+<div class="modal-ov" id="modal-obra">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="modal-obra-tit">Nueva obra</h3>
+      <button class="modal-close" onclick="cerrarModal('modal-obra')">×</button>
+    </div>
+    <div class="modal-body">
+      <label class="m-label">Título *</label>
+      <input class="m-input" id="obra-titulo" placeholder="Ej: Departamento · Palermo">
+      <div class="m-row">
+        <div>
+          <label class="m-label">Tipo</label>
+          <input class="m-input" id="obra-tipo" placeholder="Reforma integral, Baño...">
+        </div>
+        <div>
+          <label class="m-label">Zona</label>
+          <input class="m-input" id="obra-zona" placeholder="Palermo, Belgrano...">
+        </div>
+      </div>
+      <label class="m-label">URL de la imagen *</label>
+      <input class="m-input" id="obra-img" placeholder="https://...">
+      <label class="m-label">Descripción</label>
+      <textarea class="m-input m-ta" id="obra-desc" placeholder="Descripción de la obra (opcional)"></textarea>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="cerrarModal('modal-obra')">Cancelar</button>
+      <button class="btn-save" onclick="guardarObra()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL RECETA ── -->
+<div class="modal-ov" id="modal-receta">
+  <div class="modal-box" style="max-width:600px">
+    <div class="modal-head">
+      <h3 id="modal-receta-tit">Editar receta</h3>
+      <button class="modal-close" onclick="cerrarModal('modal-receta')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="m-row">
+        <div>
+          <label class="m-label">Categoría en el cotizador</label>
+          <select class="m-select" id="receta-categoria"></select>
+        </div>
+        <div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div>
+              <label class="m-label">Unidad</label>
+              <select class="m-select" id="receta-unidad">
+                <option value="m²">m²</option>
+                <option value="ml">ml</option>
+                <option value="unidad">unidad</option>
+                <option value="boca">boca</option>
+                <option value="global">global</option>
+              </select>
+            </div>
+            <div>
+              <label class="m-label">Colchón %</label>
+              <input class="m-input" id="receta-colchon" type="number" min="0" max="100" value="15">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:var(--gf);border-radius:10px;padding:16px;margin-bottom:14px">
+        <div style="font-size:11px;font-weight:800;color:var(--gm);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Mano de obra</div>
+        <div style="display:flex;gap:20px;margin-bottom:12px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer">
+            <input type="radio" name="mo-tipo" value="sismat" id="mo-tipo-sismat" onchange="toggleMoTipo()">
+            Buscar en Sismat
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer">
+            <input type="radio" name="mo-tipo" value="manual" id="mo-tipo-manual" onchange="toggleMoTipo()">
+            Precio manual
+          </label>
+        </div>
+        <div id="mo-sismat-section">
+          <label class="m-label">Término de búsqueda (tarea en Sismat MO)</label>
+          <input class="m-input" id="receta-mo-busqueda" placeholder="Ej: picado revoques" style="margin-bottom:4px">
+          <p style="font-size:11px;color:#aaa;font-weight:500;margin:0">Se usa el precio más económico que coincida. Si no encuentra nada, cae al precio manual.</p>
+        </div>
+        <div id="mo-manual-section" style="display:none">
+          <label class="m-label">Precio por unidad ($)</label>
+          <input class="m-input" id="receta-mo-manual" type="number" placeholder="0" style="margin-bottom:0">
+        </div>
+      </div>
+
+      <div style="background:var(--gf);border-radius:10px;padding:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div style="font-size:11px;font-weight:800;color:var(--gm);text-transform:uppercase;letter-spacing:1px">Materiales (por unidad de servicio)</div>
+          <button class="btn-sm" onclick="agregarMaterialModal()">+ Agregar</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 86px 30px;gap:6px;margin-bottom:6px;padding:0 2px" id="receta-mat-header">
+          <span style="font-size:10px;font-weight:800;color:#bbb;text-transform:uppercase;letter-spacing:.5px">Nombre del material en Sismat</span>
+          <span style="font-size:10px;font-weight:800;color:#bbb;text-transform:uppercase;letter-spacing:.5px">Cant./und.</span>
+          <span></span>
+        </div>
+        <div id="receta-materiales-list"></div>
+        <p style="font-size:11px;color:#bbb;font-weight:500;margin-top:8px;margin-bottom:0">Usá el nombre genérico del material (ej: "cemento albañilería"). El sistema busca el más económico en Sismat.</p>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="cerrarModal('modal-receta')">Cancelar</button>
+      <button class="btn-save" onclick="guardarReceta()">Guardar receta</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL RECETA EDITOR ── -->
+<div class="modal-ov" id="modal-receta-editor">
+  <div class="modal-box" style="max-width:680px">
+    <div class="modal-head">
+      <h3 id="modal-receta-editor-tit">Nueva receta</h3>
+      <button class="modal-close" onclick="cerrarModal('modal-receta-editor')">×</button>
+    </div>
+    <div class="modal-body">
+      <label class="m-label">Nombre *</label>
+      <input class="m-input" id="rc-nombre" placeholder="Ej: M² de contrapiso">
+      <label class="m-label">Descripción <span style="font-weight:400;color:#aaa">(visible al cliente)</span></label>
+      <textarea class="m-input m-ta" id="rc-desc" placeholder="Descripción opcional" style="height:56px"></textarea>
+      <div style="display:grid;grid-template-columns:1fr 1.6fr 1fr;gap:12px;margin-bottom:14px">
+        <div>
+          <label class="m-label">Unidad *</label>
+          <select class="m-select" id="rc-unidad">
+            <option value="m²">m²</option>
+            <option value="ml">ml</option>
+            <option value="m³">m³</option>
+            <option value="unidad">unidad</option>
+            <option value="boca">boca</option>
+            <option value="global">global</option>
+          </select>
+        </div>
+        <div>
+          <label class="m-label">Categoría CUBO</label>
+          <select class="m-select" id="rc-categoria" onchange="_rcPrecio()"></select>
+        </div>
+        <div>
+          <label class="m-label">Ajuste adicional %</label>
+          <input class="m-input" id="rc-ajuste" type="number" value="0" min="0" oninput="_rcPrecio()">
+        </div>
+      </div>
+
+      <div style="font-size:11px;font-weight:800;color:var(--gm);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Componentes Sismat</div>
+
+      <div id="rc-search-wrap" style="position:relative;margin-bottom:10px">
+        <input class="m-input" id="rc-search" placeholder="Buscar material o mano de obra en Sismat..." oninput="rcOnBuscar()" style="margin-bottom:0" autocomplete="off">
+        <div id="rc-dropdown" style="display:none"></div>
+      </div>
+
+      <div id="rc-comp-lista" style="background:var(--gf);border-radius:6px;padding:10px;min-height:52px;margin-bottom:12px"></div>
+
+      <div style="background:#F1F8E9;border:1.5px solid #C8E6C9;border-radius:6px;padding:12px 16px">
+        <div style="font-size:10px;font-weight:800;color:#388E3C;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Precio estimado / unidad</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline">
+          <div>
+            <div style="font-size:12px;color:var(--gm);font-weight:500">Base Sismat: <strong id="rc-precio-base" style="color:var(--tx)">—</strong></div>
+            <div style="font-size:11px;color:#aaa;font-weight:500;margin-top:2px" id="rc-markup-lbl">markup 30% + ajuste 0%</div>
+          </div>
+          <div style="font-size:26px;font-weight:900;color:#2E7D32" id="rc-precio-final">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="cerrarModal('modal-receta-editor')">Cancelar</button>
+      <button class="btn-save" onclick="rcGuardar()">Guardar receta</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="assets/js/admin-app.js"></script>
+<script src="assets/js/admin/importar-sismat.js"></script>
+<script src="assets/js/admin/recetas.js"></script>
+<script src="assets/js/admin/catalogo-sismat.js"></script>
+<script src="assets/js/admin/fotos-landing.js"></script>
+</body>
+</html>

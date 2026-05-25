@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "CUBO · Importador Sismat",
+  "version": "2.0",
+  "description": "Extrae automáticamente todos los precios de Sismat para importar a CUBO.",
+  "permissions": ["activeTab", "scripting", "storage", "tabs"],
+  "host_permissions": [
+    "https://sismat.com.ar/*",
+    "https://admin.sismat.com.ar/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": { "16": "icon.png", "48": "icon.png", "128": "icon.png" }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://sismat.com.ar/*", "https://admin.sismat.com.ar/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

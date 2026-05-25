@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;width:300px;background:#F2F2F2;color:#2A2A2A}
+.header{background:#484848;padding:16px 20px;position:relative;overflow:hidden}
+.header::after{content:'Λ3';position:absolute;right:8px;bottom:-10px;font-size:60px;font-weight:900;color:rgba(255,255,255,0.05);line-height:1}
+.logo{font-size:20px;font-weight:900;color:#fff;letter-spacing:-1px}
+.logo-iso{font-size:11px;color:#666;margin-left:4px}
+.logo-sub{font-size:8px;color:#555;letter-spacing:2px;display:block;margin-top:2px}
+.body{padding:14px}
+.status-card{background:#fff;border-radius:8px;border:1.5px solid #E8E8E8;padding:12px;margin-bottom:10px}
+.status-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.status-row:last-child{margin-bottom:0}
+.s-lbl{font-size:10px;font-weight:700;color:#6B6B6B;text-transform:uppercase;letter-spacing:.5px}
+.s-val{font-size:11px;font-weight:800;color:#2A2A2A}
+.s-val.ok{color:#2E7D32}.s-val.err{color:#C62828}.s-val.info{color:#1565C0}
+.progress-wrap{display:none;margin-bottom:10px}
+.p-top{display:flex;justify-content:space-between;font-size:10px;font-weight:700;color:#6B6B6B;margin-bottom:5px}
+.p-bar{height:5px;background:#E8E8E8;border-radius:3px;overflow:hidden}
+.p-fill{height:100%;background:#484848;border-radius:3px;transition:width .4s;width:0%}
+.p-cat{font-size:10px;color:#aaa;font-weight:600;margin-top:3px}
+.btn{width:100%;background:#484848;color:#fff;border:none;padding:11px;font-size:11px;font-weight:800;cursor:pointer;border-radius:7px;text-transform:uppercase;letter-spacing:1px;transition:all .2s;margin-bottom:7px}
+.btn:hover:not(:disabled){background:#333;transform:translateY(-1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sec{background:#fff;color:#484848;border:1.5px solid #E8E8E8}
+.btn.sec:hover:not(:disabled){border-color:#484848;transform:translateY(-1px)}
+.btn.success{background:#2E7D32}
+.btn.success:hover:not(:disabled){background:#1B5E20}
+.log{background:#fff;border:1.5px solid #E8E8E8;border-radius:7px;padding:8px 10px;max-height:110px;overflow-y:auto;font-size:10px;color:#666;font-weight:600;line-height:1.6;display:none}
+.log-line.ok{color:#2E7D32}.log-line.err{color:#C62828}.log-line.info{color:#1565C0}.log-line.warn{color:#E65100}
+.warning{background:#FFF3E0;border:1.5px solid #FFE0B2;border-radius:7px;padding:9px 11px;font-size:11px;color:#E65100;font-weight:600;margin-bottom:10px;display:none;line-height:1.5}
+.not-sismat{text-align:center;padding:20px 14px;color:#aaa;font-size:12px;font-weight:600;line-height:1.6;display:none}
+.footer{padding:8px 14px;text-align:center;font-size:9px;color:#bbb;font-weight:600;border-top:1px solid #E8E8E8}
+</style>
+</head>
+<body>
+<div class="header">
+  <span class="logo">CUBO</span><span class="logo-iso">Λ3</span>
+  <span class="logo-sub">importador sismat</span>
+</div>
+<div class="body">
+  <div id="not-sismat" class="not-sismat">
+    ⚠️ Abrí Sismat primero.<br>
+    Entrá a <strong>sismat.com.ar</strong> con tu usuario y volvé acá.
+  </div>
+  <div id="main-content">
+    <div class="status-card">
+      <div class="status-row"><span class="s-lbl">Estado</span><span class="s-val" id="st-estado">Listo</span></div>
+      <div class="status-row"><span class="s-lbl">Categorías</span><span class="s-val info" id="st-cats">—</span></div>
+      <div class="status-row"><span class="s-lbl">Materiales</span><span class="s-val ok" id="st-mats">—</span></div>
+      <div class="status-row"><span class="s-lbl">Mano de obra</span><span class="s-val ok" id="st-mo">—</span></div>
+    </div>
+    <div class="progress-wrap" id="progress-wrap">
+      <div class="p-top"><span>Progreso</span><span id="progress-pct">0%</span></div>
+      <div class="p-bar"><div class="p-fill" id="progress-fill"></div></div>
+      <div class="p-cat" id="current-cat">Iniciando...</div>
+    </div>
+    <div class="warning" id="warning-not-logged">
+      No detectamos tu sesión en Sismat. Iniciá sesión y recargá la página.
+    </div>
+    <button class="btn" id="btn-extraer">🔍 Extraer todos los precios</button>
+    <button class="btn sec" id="btn-descargar" style="display:none">⬇️ Descargar JSON</button>
+    <button class="btn success" id="btn-importar" style="display:none">✅ Importar a CUBO Admin</button>
+    <div class="log" id="log"></div>
+  </div>
+</div>
+<div class="footer">CUBO · construccion y diseño</div>
+<script src="popup.js"></script>
+</body>
+</html>

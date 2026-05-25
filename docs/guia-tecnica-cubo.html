@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CUBO — Guía técnica de la plataforma</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: #fff; color: #1a1a1a; font-size: 14px; line-height: 1.7; }
+
+  .cover {
+    background: #484848;
+    color: #fff;
+    padding: 80px 60px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    page-break-after: always;
+  }
+  .cover-logo { font-size: 48px; font-weight: 900; letter-spacing: -3px; line-height: 1; }
+  .cover-iso { font-size: 24px; color: #888; margin-left: 8px; }
+  .cover-sub { font-size: 11px; color: #777; letter-spacing: 3px; text-transform: lowercase; margin-top: 4px; }
+  .cover-tit { font-size: 36px; font-weight: 900; letter-spacing: -1.5px; line-height: 1.1; color: #fff; margin-bottom: 16px; }
+  .cover-desc { font-size: 14px; color: #aaa; max-width: 480px; line-height: 1.8; }
+  .cover-foot { font-size: 11px; color: #555; letter-spacing: 1px; text-transform: uppercase; }
+
+  .page { padding: 60px; page-break-inside: avoid; }
+  .page + .page { border-top: 1px solid #eee; }
+
+  h1 { font-size: 28px; font-weight: 900; letter-spacing: -1px; color: #1a1a1a; margin-bottom: 8px; padding-bottom: 16px; border-bottom: 3px solid #484848; }
+  h2 { font-size: 18px; font-weight: 900; letter-spacing: -0.5px; color: #1a1a1a; margin: 40px 0 12px; }
+  h3 { font-size: 14px; font-weight: 800; color: #484848; margin: 24px 0 8px; text-transform: uppercase; letter-spacing: 1px; }
+  p { margin-bottom: 12px; color: #333; }
+  p:last-child { margin-bottom: 0; }
+
+  .chapter-label { font-size: 10px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: #aaa; margin-bottom: 8px; }
+
+  .file-card {
+    border: 1.5px solid #e8e8e8;
+    border-left: 4px solid #484848;
+    border-radius: 0;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    page-break-inside: avoid;
+  }
+  .file-card.css { border-left-color: #1565C0; }
+  .file-card.js  { border-left-color: #E65100; }
+  .file-card.sql { border-left-color: #2E7D32; }
+  .file-card.html { border-left-color: #6A1B9A; }
+
+  .file-path { font-size: 12px; font-weight: 800; font-family: monospace; color: #484848; margin-bottom: 4px; }
+  .file-path.css { color: #1565C0; }
+  .file-path.js  { color: #E65100; }
+  .file-path.sql { color: #2E7D32; }
+  .file-path.html { color: #6A1B9A; }
+
+  .file-type-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 2px;
+    margin-left: 8px;
+    background: #f0f0f0;
+    color: #666;
+    vertical-align: middle;
+  }
+  .file-desc { font-size: 13px; color: #555; margin-top: 8px; line-height: 1.6; }
+
+  .concept-box {
+    background: #f8f8f8;
+    border-left: 3px solid #484848;
+    padding: 16px 20px;
+    margin: 16px 0;
+  }
+  .concept-box.highlight { background: #FFF8E1; border-left-color: #F57F17; }
+  .concept-box.info { background: #E3F2FD; border-left-color: #1565C0; }
+  .concept-box.code { background: #FAFAFA; border-left-color: #E65100; font-family: monospace; font-size: 12px; line-height: 1.8; }
+
+  .concept-tit { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #484848; margin-bottom: 8px; }
+
+  .flow-step {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  .flow-num {
+    background: #484848;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 900;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 0;
+  }
+  .flow-content { flex: 1; }
+  .flow-tit { font-weight: 800; font-size: 13px; color: #1a1a1a; margin-bottom: 4px; }
+  .flow-sub { font-size: 12px; color: #777; line-height: 1.6; }
+
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 12px; }
+  th { background: #484848; color: #fff; font-weight: 700; padding: 10px 14px; text-align: left; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; }
+  td { padding: 10px 14px; border-bottom: 1px solid #eee; vertical-align: top; color: #333; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #fafafa; }
+
+  code { background: #f0f0f0; padding: 1px 6px; font-family: monospace; font-size: 12px; border-radius: 2px; color: #484848; }
+
+  .arrow { color: #aaa; font-size: 20px; margin: 0 8px; }
+
+  @media print {
+    .cover { min-height: 100vh; }
+    .page { padding: 40px 60px; }
+    h1 { page-break-after: avoid; }
+    h2 { page-break-after: avoid; }
+    .file-card { page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── PORTADA ── -->
+<div class="cover">
+  <div>
+    <div class="cover-logo">CUBO <span class="cover-iso">Λ3</span></div>
+    <div class="cover-sub">construccion y diseño</div>
+  </div>
+  <div>
+    <div class="chapter-label" style="color:#555">Documentación técnica</div>
+    <h1 class="cover-tit" style="border:none;padding:0;font-size:40px;margin-bottom:20px">Guía técnica<br>de la plataforma</h1>
+    <p class="cover-desc">Qué hace cada archivo, cómo se conectan entre sí, y los conceptos clave para entender cómo funciona todo el sistema. Escrito para Nacho, sin asumir conocimientos previos de programación.</p>
+  </div>
+  <div class="cover-foot">Versión 2.0 — Mayo 2026</div>
+</div>
+
+
+<!-- ── CAP 1: LA IDEA GENERAL ── -->
+<div class="page">
+  <div class="chapter-label">Capítulo 1</div>
+  <h1>La idea general del sistema</h1>
+
+  <p>La plataforma CUBO es un sitio web de dos "caras": una <strong>pública</strong> que ven los clientes, y una <strong>privada</strong> que usás vos para administrar todo. Ambas viven en el mismo repositorio de código.</p>
+
+  <div class="concept-box highlight">
+    <div class="concept-tit">El dato clave para entender todo</div>
+    <p>La web NO guarda datos en el servidor propio. Todo lo que el sistema "recuerda" (leads, ítems, precios, fotos, configuración) vive en <strong>Supabase</strong>, que es una base de datos en la nube. Los archivos de código (.html, .css, .js) solo dicen <em>cómo mostrar</em> esa información, no la guardan.</p>
+  </div>
+
+  <h2>¿Qué es cada tecnología?</h2>
+
+  <table>
+    <tr><th>Tecnología</th><th>Para qué sirve</th><th>Analogía</th></tr>
+    <tr><td><strong>HTML</strong></td><td>Define la estructura: títulos, botones, formularios, tablas. Es el "esqueleto".</td><td>Como los planos de una casa: define qué va dónde.</td></tr>
+    <tr><td><strong>CSS</strong></td><td>Define el aspecto visual: colores, tipografía, tamaños, espaciado. Es la "pintura y terminaciones".</td><td>Como el acabado de obra: cómo se ve cada cosa.</td></tr>
+    <tr><td><strong>JavaScript</strong></td><td>Define el comportamiento: qué pasa cuando hacés clic, cómo se cargan datos, cómo se calculan precios. Es la "instalación eléctrica".</td><td>Como los sistemas que hacen funcionar la casa: luz, agua, gas.</td></tr>
+    <tr><td><strong>Supabase</strong></td><td>Base de datos en la nube + storage de archivos. Es donde viven todos los datos.</td><td>Como el depósito de materiales: guarda todo lo que el sistema necesita.</td></tr>
+    <tr><td><strong>Vercel</strong></td><td>Servidor que publica los archivos en internet. Cuando subís código a GitHub, Vercel lo detecta y lo pone online automáticamente.</td><td>Como el camión que lleva la casa al terreno y la instala.</td></tr>
+  </table>
+
+  <h2>El flujo completo en una línea</h2>
+  <div class="concept-box code">
+    GitHub (código fuente) → Vercel (publicación) → Internet (los clientes)
+    <br>
+    Supabase (base de datos) ← el código lo consulta cuando hace falta
+  </div>
+</div>
+
+
+<!-- ── CAP 2: ESTRUCTURA DE ARCHIVOS ── -->
+<div class="page">
+  <div class="chapter-label">Capítulo 2</div>
+  <h1>Estructura de archivos</h1>
+
+  <p>El proyecto tiene esta organización en carpetas:</p>
+
+  <div class="concept-box code">
+Plataforma CUBO/<br>
+├── index.html              ← La landing pública (lo que ve el cliente)<br>
+├── admin.html              ← El panel de administración (solo vos)<br>
+├── assets/<br>
+│   ├── css/<br>
+│   │   ├── base.css        ← Estilos base (variables, nav, cotizador)<br>
+│   │   ├── landing.css     ← Estilos específicos de la landing<br>
+│   │   └── admin.css       ← Estilos del panel admin<br>
+│   └── js/<br>
+│       ├── index-app.js    ← Toda la lógica del sitio público<br>
+│       ├── admin-app.js    ← Lógica central del admin<br>
+│       └── admin/<br>
+│           ├── importar-sismat.js   ← Tab de importación de precios<br>
+│           ├── recetas.js           ← Tab de gestión de recetas<br>
+│           ├── catalogo-sismat.js   ← Tab del catálogo de materiales<br>
+│           └── fotos-landing.js     ← Tab de fotos de la landing<br>
+├── migrations/<br>
+│   ├── 001_sismat_catalog.sql<br>
+│   └── 002_landing_media.sql<br>
+└── cubo-sismat-extension/  ← Extensión de Chrome (scraping de Sismat)<br>
+  </div>
+
+  <div class="concept-box info">
+    <div class="concept-tit">¿Por qué esta estructura?</div>
+    <p>Antes, todo el CSS y JavaScript estaba mezclado dentro de los archivos HTML (miles de líneas). Lo separamos en archivos propios para que sea más fácil encontrar y modificar cosas. Cada archivo tiene una responsabilidad clara.</p>
+  </div>
+</div>
+
+
+<!-- ── CAP 3: ARCHIVOS HTML ── -->
+<div class="page">
+  <div class="chapter-label">Capítulo 3</div>
+  <h1>Los archivos HTML — la estructura</h1>
+
+  <p>HTML (HyperText Markup Language) define la estructura del contenido. Pensalo como los planos: dice qué elementos existen y cómo se organizan, pero no dice de qué color son ni qué hacen.</p>
+
+  <div class="file-card html">
+    <div class="file-path html">index.html <span class="file-type-badge">HTML · Público</span></div>
+    <div class="file-desc">
+      <strong>Es el sitio que ven tus clientes.</strong> Contiene todas las secciones de la landing: el hero, los servicios llave en mano, quiénes somos, la galería de obras, cómo funciona, el CTA, y el footer. También tiene el cotizador completo (con sus tres vistas: selección de ítems, formulario de datos, y pantalla de confirmación). Al final del archivo carga <code>index-app.js</code> que le da vida.
+    </div>
+  </div>
+
+  <div class="file-card html">
+    <div class="file-path html">admin.html <span class="file-type-badge">HTML · Privado</span></div>
+    <div class="file-desc">
+      <strong>Es el panel de administración.</strong> Solo accesible con usuario y contraseña de Supabase. Tiene una barra lateral con botones de navegación y un área principal donde se carga el contenido de cada sección: Dashboard, Leads, Ítems, Categorías, Recetas, Catálogo Sismat, Importar Sismat, Fotos Landing, Obras y Configuración. Cada sección es un <code>&lt;div class="page"&gt;</code> que se muestra u oculta según la navegación.
+    </div>
+  </div>
+
+  <h2>¿Cómo funciona la navegación de una sola página?</h2>
+  <p>Tanto <code>index.html</code> como <code>admin.html</code> son lo que se llama <strong>Single Page Applications (SPA)</strong>: toda la aplicación vive en UN solo archivo HTML. En lugar de cargar páginas nuevas, el JavaScript muestra y oculta secciones según lo que el usuario hace.</p>
+
+  <div class="concept-box">
+    <div class="concept-tit">Ejemplo en index.html</div>
+    <p>Todas las secciones empiezan ocultas (<code>section { display: none }</code>). La sección activa tiene la clase <code>act</code> que la hace visible (<code>section.act { display: block }</code>). Cuando el usuario hace clic en "Galería", la función <code>ir('galeria')</code> quita la clase <code>act</code> de la sección actual y se la pone a la de galería.</p>
+  </div>
+</div>
+
+
+<!-- ── CAP 4: ARCHIVOS CSS ── -->
+<div class="page">
+  <div class="chapter-label">Capítulo 4</div>
+  <h1>Los archivos CSS — el diseño</h1>
+
+  <p>CSS (Cascading Style Sheets) controla todo lo visual: colores, tamaños, espaciado, tipografía, animaciones. La "C" de Cascading (en cascada) es importante: cuando hay dos reglas que afectan al mismo elemento, <strong>gana la que viene después</strong> en el orden de carga.</p>
+
+  <div class="file-card css">
+    <div class="file-path css">assets/css/base.css <span class="file-type-badge">CSS · Base global</span></div>
+    <div class="file-desc">
+      <strong>Los estilos que se usan en toda la aplicación.</strong> Contiene:
+      <ul style="margin-top:8px;margin-left:20px;line-height:2">
+        <li>Las <strong>variables de color y tipografía</strong> de CUBO (charcoal <code>#484848</code>, blanco, grises)</li>
+        <li>El estilo del <strong>nav</strong> (barra de navegación superior)</li>
+        <li>Los estilos del <strong>cotizador</strong> (cards de ítems, sidebar de categorías, resumen)</li>
+        <li>Los <strong>modales</strong> (captura de leads, alertas, correlaciones)</li>
+        <li>Los formularios y la pantalla de confirmación</li>
+        <li>El <strong>footer</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="file-card css">
+    <div class="file-path css">assets/css/landing.css <span class="file-type-badge">CSS · Landing</span></div>
+    <div class="file-desc">
+      <strong>Sobreescribe y mejora los estilos de la landing</strong> con la estética "Vizionare": tipografía Inter 900 con letter-spacing muy negativo, números grandes como elementos decorativos, sin border-radius, sin hover-transforms, grillas de 1px (mosaico). Se carga después de base.css, entonces cualquier clase redefinida acá prevalece. Controla: Hero, Servicios llave en mano, Quiénes somos, Compromiso, Cómo funciona, CTA strip, Galería, y todos sus versiones responsive.
+    </div>
+  </div>
+
+  <div class="file-card css">
+    <div class="file-path css">assets/css/admin.css <span class="file-type-badge">CSS · Admin</span></div>
+    <div class="file-desc">
+      <strong>Todos los estilos del panel de administración.</strong> Un sistema visual completamente separado del sitio público: sidebar oscuro, cards con bordes, tablas, inputs, toggles, modales del admin, badges de estado de leads, y los estilos específicos de cada módulo (Recetas, Catálogo Sismat, Importar Sismat, Fotos Landing).
+    </div>
+  </div>
+
+  <h2>¿Por qué tres archivos CSS en lugar de uno?</h2>
+
+  <table>
+    <tr><th>Un solo archivo</th><th>Archivos separados (lo que tenemos)</th></tr>
+    <tr><td>Fácil de olvidar qué es de dónde</td><td>Cada archivo tiene una responsabilidad clara</td></tr>
+    <tr><td>Si rompo algo en admin, puede afectar la landing</td><td>Los estilos de admin no afectan la landing (se carga en admin.html solamente)</td></tr>
+    <tr><td>1000+ líneas en un solo lugar</td><td>Cada archivo tiene 100-300 líneas manejables</td></tr>
+  </table>
+
+  <h2>Las variables CSS — el "sistema de diseño" de CUBO</h2>
+  <p>Al principio de <code>base.css</code> están definidas las variables. Son como constantes de color que se usan en todo el código. Si mañana querés cambiar el charcoal de <code>#484848</code> a <code>#333333</code>, lo cambiás en UN solo lugar y afecta a toda la app:</p>
+
+  <div class="concept-box code">
+:root {<br>
+&nbsp;&nbsp;--gris-oscuro: #484848;  /* El charcoal principal de CUBO */<br>
+&nbsp;&nbsp;--gris-fondo:  #F2F2F2;  /* Fondo gris claro */<br>
+&nbsp;&nbsp;--blanco:      #FFFFFF;<br>
+&nbsp;&nbsp;--tx:          #2A2A2A;  /* Color del texto principal */<br>
+}
+  </div>
+</div>
+
+
+<!-- ── CAP 5: ARCHIVOS JS ── -->
+<div class="page">
+  <div class="chapter-label">Capítulo 5</div>
+  <h1>Los archivos JavaScript — la lógica</h1>
+
+  <p>JavaScript es el lenguaje que hace que la app sea interactiva: responde a clicks, consulta la base de datos, calcula precios, muestra y oculta elementos. Sin JavaScript la página sería solo texto estático.</p>
+
+  <div class="concept-box info">
+    <div class="concept-tit">Concepto clave: async / await</div>
+    <p>Consultar la base de datos tarda un tiempo (aunque sea milisegundos). JavaScript tiene que esperar esa respuesta antes de mostrar los datos. Las funciones marcadas con <code>async</code> pueden "pausarse" con <code>await</code> mientras esperan, sin bloquear el resto de la página. Es como decirle al mozo que traiga la comida mientras seguís hablando con los comensales.</p>
+  </div>
+
+  <div class="file-card js">
+    <div class="file-path js">assets/js/index-app.js <span class="file-type-badge">JS · Landing</span></div>
+    <div class="file-desc">
+      <strong>Toda la lógica del sitio público.</strong> Lo primero que hace es conectarse a Supabase. Después contiene:
+      <ul style="margin-top:8px;margin-left:20px;line-height:2">
+        <li><code>ir(seccion)</code> — navegación entre secciones (inicio, servicios, galería, cotizador)</li>
+        <li><code>abrirModalLead()</code> / <code>guardarLead()</code> — captura y guardado del formulario de lead</li>
+        <li><code>cargarDatos()</code> — trae categorías e ítems de Supabase al arrancar la página</li>
+        <li><code>renderCot()</code> / <code>renderItems()</code> / <code>renderResumen()</code> — dibuja el cotizador</li>
+        <li><code>agregar()</code> / <code>quitar()</code> — agrega/quita ítems del carrito</li>
+        <li><code>enviar()</code> — envía el presupuesto final a Supabase</li>
+        <li><code>cargarGaleria()</code> — trae las obras con fotos y las muestra en la galería</li>
+        <li><code>cargarCtaNum()</code> — muestra el contador de servicios en el CTA</li>
+        <li><code>cargarFotosLanding()</code> — carga la foto de Quiénes somos si existe</li>
+        <li><code>cargarConfiguracion()</code> — trae email, Instagram y teléfono del footer</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="file-card js">
+    <div class="file-path js">assets/js/admin-app.js <span class="file-type-badge">JS · Admin</span></div>
+    <div class="file-desc">
+      <strong>El núcleo del panel de administración.</strong> Maneja login/logout, carga todos los datos al iniciar, y coordina la navegación entre las secciones. Contiene el CRUD (Crear, Leer, Actualizar, Borrar) de: Leads, Ítems y precios, Categorías, Correlaciones, Obras, y Configuración. También tiene el "router": un objeto que mapea cada nombre de sección con la función que la inicializa.
+    </div>
+  </div>
+</div>
+
+
+<!-- ── CAP 5B: MÓDULOS ADMIN ── -->
+<div class="page">
+  <div class="chapter-label">Capítulo 5 (continuación)</div>
+  <h1>Los módulos del admin</h1>
+
+  <p>El panel admin tiene funcionalidades tan complejas que se dividieron en archivos separados dentro de <code>assets/js/admin/</code>. Cada uno maneja una tab específica.</p>
+
+  <div class="file-card js">
+    <div class="file-path js">assets/js/admin/importar-sismat.js <span class="file-type-badge">JS · Admin</span></div>
+    <div class="file-desc">
+      <strong>Importación de precios desde Sismat.</strong> La extensión de Chrome exporta un JSON con todos los materiales y mano de obra de Sismat. Este módulo lee ese JSON, lo compara con lo que ya hay en la base de datos, muestra un preview del diferencial (cuántos son nuevos, cuántos cambiaron de precio), y cuando confirmás hace el UPSERT masivo en la tabla <code>sismat_catalog</code>. También guarda historial de cambios de precio en <code>precio_historico</code>.
+    </div>
+  </div>
+
+  <div class="file-card js">
+    <div class="file-path js">assets/js/admin/catalogo-sismat.js <span class="file-type-badge">JS · Admin</span></div>
+    <div class="file-desc">
+      <strong>Gestión del catálogo de 1856 ítems de Sismat.</strong> Como son miles de filas, usa paginación del lado del servidor (50 por página) para no cargar todo de golpe. Te permite filtrar por tipo, categoría, o visibilidad, y para cada ítem podés: activarlo/desactivarlo en el cotizador, sobrescribir el nombre con uno más consumer-friendly, y asignarlo a una categoría CUBO. Los cambios se guardan en la tabla <code>sismat_catalog_overrides</code> (sin tocar la fuente de verdad).
+    </div>
+  </div>
+
+  <div class="file-card js">
+    <div class="file-path js">assets/js/admin/recetas.js <span class="file-type-badge">JS · Admin</span></div>
+    <div class="file-desc">
+      <strong>Gestión de recetas del cotizador.</strong> Una receta es un servicio compuesto (ej: "M² de contrapiso") que combina múltiples materiales y mano de obra de Sismat con sus cantidades por unidad. Este módulo te permite crear/editar recetas, agregar componentes buscando en el catálogo Sismat, y ver el precio calculado en tiempo real (suma de costos × markup de categoría × ajuste adicional). Las recetas son lo que eventualmente verán los clientes en el cotizador.
+    </div>
+  </div>
+
+  <div class="file-card js">
+    <div class="file-path js">assets/js/admin/fotos-landing.js <span class="file-type-badge">JS · Admin</span></div>
+    <div class="file-desc">
+      <strong>Gestión de fotos de la landing.</strong> Tiene dos partes: los "slots fijos" (la foto de Quiénes somos) y la galería de obras. Para cada uno, permite arrastrar una imagen o seleccionarla desde el explorador de archivos. Antes de subirla, la <strong>comprime automáticamente</strong> usando Canvas (máximo 1600px de ancho, calidad 85%) para no desperdiciar espacio ni velocidad. Guarda la foto en el bucket <code>landing-fotos</code> de Supabase Storage y la URL pública en la base de datos.
+    </div>
+  </div>
+</div>
+
+
+<!-- ── CAP 6: SUPABASE ── -->
+<div class="page">
+  <div class="chapter-label">Capítulo 6</div>
+  <h1>Supabase — la base de datos</h1>
+
+  <p>Supabase es una plataforma que te da una base de datos PostgreSQL en la nube más herramientas adicionales, todo accesible desde el browser sin necesitar un servidor propio.</p>
+
+  <h2>Las tablas de la base de datos</h2>
+
+  <table>
+    <tr><th>Tabla</th><th>Qué guarda</th></tr>
+    <tr><td><code>leads</code></td><td>Cada persona que usó el cotizador: nombre, email, teléfono, zona, ítems cotizados, estado (nuevo/contactado/cerrado).</td></tr>
+    <tr><td><code>categorias</code></td><td>Los grupos del cotizador (Albañilería, Pintura, Electricidad...) con su markup de precio.</td></tr>
+    <tr><td><code>items</code></td><td>Los servicios individuales del cotizador actual (sistema legado, convive con recetas).</td></tr>
+    <tr><td><code>correlaciones</code></td><td>Reglas "si el cliente elige X, sugerir Y". Ej: si elige pisos, sugerir preparación del sustrato.</td></tr>
+    <tr><td><code>obras</code></td><td>Las obras de la galería: título, zona, tipo, URL de imagen.</td></tr>
+    <tr><td><code>configuracion</code></td><td>Datos de contacto del footer: email, Instagram, teléfono, zona de trabajo.</td></tr>
+    <tr><td><code>sismat_catalog</code></td><td>Los ~1856 materiales y mano de obra de Sismat con sus precios (fuente de verdad de costos).</td></tr>
+    <tr><td><code>sismat_catalog_overrides</code></td><td>Las personalizaciones de CUBO sobre el catálogo: nombre consumer, visibilidad, categoría asignada.</td></tr>
+    <tr><td><code>recetas</code></td><td>Los servicios compuestos del cotizador nuevo (ej: "M² de contrapiso").</td></tr>
+    <tr><td><code>receta_componentes</code></td><td>Los ingredientes de cada receta: qué material/MO usa y en qué cantidad por unidad.</td></tr>
+    <tr><td><code>precio_historico</code></td><td>Log de cambios de precio en Sismat: qué ítem subió/bajó cuánto y cuándo.</td></tr>
+    <tr><td><code>landing_media</code></td><td>Fotos de slots fijos de la landing (Quiénes somos, etc.).</td></tr>
+  </table>
+
+  <h2>¿Cómo se conecta el código con Supabase?</h2>
+  <p>Al principio de cada archivo JS que necesita datos hay estas dos líneas:</p>
+
+  <div class="concept-box code">
+const SUPABASE_URL = 'https://swxkfibuvbazvrclzxlx.supabase.co';<br>
+const SUPABASE_KEY = 'sb_publishable_...';<br>
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  </div>
+
+  <p><code>sb</code> es el "cliente" de Supabase. Una vez creado, todas las consultas se hacen a través de él. Ejemplos reales del código:</p>
+
+  <div class="concept-box code">
+<span style="color:#888">// Traer todas las categorías activas:</span><br>
+const { data } = await sb.from('categorias').select('*').eq('activo', true);<br><br>
+
+<span style="color:#888">// Guardar un lead nuevo:</span><br>
+await sb.from('leads').insert({ nombre, email, telefono });<br><br>
+
+<span style="color:#888">// Actualizar el estado de un lead:</span><br>
+await sb.from('leads').update({ estado: 'contactado' }).eq('id', leadId);
+  </div>
+
+  <h2>RLS — Row Level Security</h2>
+  <p>Cada tabla en Supabase tiene políticas de seguridad que controlan quién puede hacer qué. La configuración de CUBO es:</p>
+  <ul style="margin-left:20px;line-height:2">
+    <li><strong>Anónimo (cualquier visitante)</strong>: puede LEER categorías, ítems, recetas, configuración. No puede modificar nada.</li>
+    <li><strong>Autenticado (vos en el admin)</strong>: puede leer, crear, modificar y borrar todo.</li>
+  </ul>
+  <p>Esto es lo que hace que el cotizador funcione sin login, pero el admin requiera contraseña.</p>
+</div>
+
+
+<!-- ── CAP 7: SUPABASE STORAGE ── -->
+<div class="page">
+  <div class="chapter-label">Capítulo 7</div>
+  <h1>Supabase Storage — las fotos</h1>
+
+  <p>Además de la base de datos, Supabase tiene un servicio de almacenamiento de archivos (Storage). Es como un Google Drive, pero accesible desde código.</p>
+
+  <h2>El bucket "landing-fotos"</h2>
+  <p>Un bucket es como una carpeta principal. Creamos el bucket <code>landing-fotos</code> con acceso público: cualquier visitante puede VER las imágenes, pero solo el admin puede subir o borrar.</p>
+
+  <div class="concept-box">
+    <div class="concept-tit">Organización de archivos dentro del bucket</div>
+    <div style="font-family:monospace;font-size:12px;line-height:2;margin-top:8px">
+      landing-fotos/<br>
+      ├── slots/<br>
+      │   └── quienes-1748123456789.jpg  ← Foto de Quiénes somos<br>
+      └── obras/<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;├── a1b2c3d4.jpg   ← Foto de la obra con ese ID<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;└── e5f6g7h8.jpg
+    </div>
+  </div>
+
+  <h2>El flujo de subida de una foto</h2>
+
+  <div class="flow-step">
+    <div class="flow-num">1</div>
+    <div class="flow-content">
+      <div class="flow-tit">El usuario selecciona o arrastra un archivo</div>
+      <div class="flow-sub">El browser captura el archivo como un objeto <code>File</code>.</div>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">2</div>
+    <div class="flow-content">
+      <div class="flow-tit">flComprimirImagen() — compresión automática</div>
+      <div class="flow-sub">La función dibuja la imagen en un Canvas HTML invisible, la redimensiona a máximo 1600px de ancho, y la convierte a JPG al 85% de calidad. Esto reduce una foto de 8MB a ~300KB sin pérdida visible de calidad.</div>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">3</div>
+    <div class="flow-content">
+      <div class="flow-tit">_flSubir() — upload a Supabase Storage</div>
+      <div class="flow-sub">La imagen comprimida se sube al bucket. Supabase devuelve la URL pública permanente (algo como <code>https://swx...supabase.co/storage/v1/object/public/landing-fotos/obras/id.jpg</code>).</div>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">4</div>
+    <div class="flow-content">
+      <div class="flow-tit">Guardar la URL en la base de datos</div>
+      <div class="flow-sub">La URL pública se guarda en <code>obras.imagen_url</code> (o <code>landing_media.url</code> para slots fijos). También se guarda el path del archivo en <code>imagen_storage_path</code> para poder borrarlo después.</div>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">5</div>
+    <div class="flow-content">
+      <div class="flow-tit">La landing la carga automáticamente</div>
+      <div class="flow-sub">La función <code>cargarGaleria()</code> consulta las obras con imagen_url, las muestra en la grilla. No hay que hacer nada más.</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── CAP 8: LAS MIGRACIONES SQL ── -->
+<div class="page">
+  <div class="chapter-label">Capítulo 8</div>
+  <h1>Las migraciones SQL</h1>
+
+  <p>Una "migración" es un archivo con instrucciones SQL para modificar la estructura de la base de datos. Son como los planos de remodelación: dicen qué tablas crear, qué columnas agregar, qué permisos dar.</p>
+
+  <div class="file-card sql">
+    <div class="file-path sql">migrations/001_sismat_catalog.sql <span class="file-type-badge">SQL · Ejecutado</span></div>
+    <div class="file-desc">
+      Crea toda la estructura del sistema de precios nuevo: tablas <code>sismat_catalog</code>, <code>sismat_catalog_overrides</code>, <code>recetas</code>, <code>receta_componentes</code> y <code>precio_historico</code>. También agrega la columna <code>markup_porcentaje</code> a la tabla <code>categorias</code> existente.
+    </div>
+  </div>
+
+  <div class="file-card sql">
+    <div class="file-path sql">migrations/002_landing_media.sql <span class="file-type-badge">SQL · Pendiente</span></div>
+    <div class="file-desc">
+      Crea el bucket de Storage <code>landing-fotos</code> con sus políticas de acceso, agrega la columna <code>imagen_storage_path</code> a la tabla <code>obras</code>, y crea la tabla <code>landing_media</code> para los slots fijos de fotos de la landing.
+    </div>
+  </div>
+
+  <div class="concept-box highlight">
+    <div class="concept-tit">¿Por qué guardar las migraciones como archivos?</div>
+    <p>Si la base de datos se borra o migrás a otro proyecto de Supabase, tenés los pasos exactos para recrearla. Es como tener los planos de la obra guardados.</p>
+  </div>
+
+  <h2>¿Qué es SQL?</h2>
+  <p>SQL (Structured Query Language) es el lenguaje para hablar con bases de datos. Las instrucciones más comunes:</p>
+
+  <table>
+    <tr><th>Instrucción</th><th>Qué hace</th><th>Ejemplo del proyecto</th></tr>
+    <tr><td><code>CREATE TABLE</code></td><td>Crea una tabla nueva</td><td>Crear la tabla <code>recetas</code></td></tr>
+    <tr><td><code>ALTER TABLE</code></td><td>Modifica una tabla existente</td><td>Agregar columna <code>markup_porcentaje</code> a categorias</td></tr>
+    <tr><td><code>CREATE POLICY</code></td><td>Define quién puede hacer qué en la tabla</td><td>Permitir que usuarios anónimos lean los ítems</td></tr>
+    <tr><td><code>INSERT</code></td><td>Agrega un registro</td><td>El código JS inserta leads nuevos</td></tr>
+    <tr><td><code>SELECT</code></td><td>Lee registros</td><td>El cotizador carga las categorías activas</td></tr>
+    <tr><td><code>UPDATE</code></td><td>Modifica registros existentes</td><td>Cambiar el estado de un lead a "contactado"</td></tr>
+    <tr><td><code>DELETE</code></td><td>Elimina registros</td><td>Borrar una receta</td></tr>
+  </table>
+</div>
+
+
+<!-- ── CAP 9: EL FLUJO DE PRECIOS ── -->
+<div class="page">
+  <div class="chapter-label">Capítulo 9</div>
+  <h1>El flujo completo de precios</h1>
+
+  <p>Este es el corazón del sistema: cómo el precio de Sismat se convierte en el precio que ve el cliente final.</p>
+
+  <div class="flow-step">
+    <div class="flow-num">1</div>
+    <div class="flow-content">
+      <div class="flow-tit">Sismat publica precios de mayorista</div>
+      <div class="flow-sub">Sismat es el proveedor. Sus precios son precios de costo para CUBO.</div>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">2</div>
+    <div class="flow-content">
+      <div class="flow-tit">La extensión de Chrome extrae los precios</div>
+      <div class="flow-sub">La extensión (<code>cubo-sismat-extension/</code>) scrapea el sitio de Sismat con tu sesión activa y exporta un JSON con todos los materiales y MO.</div>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">3</div>
+    <div class="flow-content">
+      <div class="flow-tit">Admin: Importar Sismat</div>
+      <div class="flow-sub">Subís el JSON al admin. El sistema compara con los precios anteriores, muestra diferencias, y al confirmar hace UPSERT en <code>sismat_catalog</code>.</div>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">4</div>
+    <div class="flow-content">
+      <div class="flow-tit">Admin: Catálogo Sismat — personalizás</div>
+      <div class="flow-sub">Marcás qué ítems son visibles, les ponés nombres consumer-friendly, y los asignás a categorías CUBO con su markup correspondiente.</div>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">5</div>
+    <div class="flow-content">
+      <div class="flow-tit">Admin: Recetas — armás los servicios</div>
+      <div class="flow-sub">Creás una receta "M² de contrapiso" y le agregás: 0.18 bolsas de cemento + 0.022 m³ de arena + mano de obra de colocación. El precio se calcula solo.</div>
+    </div>
+  </div>
+
+  <div class="concept-box">
+    <div class="concept-tit">La fórmula del precio final</div>
+    <p style="font-family:monospace;font-size:13px;line-height:2">
+      Base = Σ (precio_sismat_de_cada_componente × cantidad)<br>
+      Con markup = Base × (1 + markup_categoría / 100)<br>
+      Final = Con markup × (1 + ajuste_receta / 100)
+    </p>
+    <p style="margin-top:8px"><strong>Ejemplo:</strong> cemento $8.500 × 0.18 bolsas = $1.530. Si la categoría albañilería tiene 35% de markup: $1.530 × 1.35 = $2.066. Si hay un ajuste adicional del 10%: $2.066 × 1.10 = $2.273 / m².</p>
+  </div>
+
+  <div class="flow-step">
+    <div class="flow-num">6</div>
+    <div class="flow-content">
+      <div class="flow-tit">El cotizador muestra el precio al cliente</div>
+      <div class="flow-sub">El cliente entra al sitio, selecciona "M² de contrapiso", ingresa 25 m², ve el precio orientativo, completa sus datos y envía el lead.</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── CAP 10: LA EXTENSIÓN DE CHROME ── -->
+<div class="page">
+  <div class="chapter-label">Capítulo 10</div>
+  <h1>La extensión de Chrome</h1>
+
+  <p>La carpeta <code>cubo-sismat-extension/</code> contiene una extensión de Chrome que automatiza la extracción de precios de Sismat. Sin ella, tendrías que copiar cada precio a mano.</p>
+
+  <h2>¿Cómo funciona una extensión de Chrome?</h2>
+  <p>Una extensión tiene acceso al contenido de las páginas que visitás. Cuando instalás la extensión y abrís el sitio de Sismat, el código JavaScript de la extensión puede leer los datos de esa página (materiales, precios, categorías) y exportarlos.</p>
+
+  <div class="concept-box highlight">
+    <div class="concept-tit">Seguridad importante</div>
+    <p>La extensión usa TU sesión activa en Sismat (las cookies de tu navegador). Nunca guarda tu usuario ni contraseña. Es como si la extensión "viera la pantalla" mientras estás logueado.</p>
+  </div>
+
+  <table>
+    <tr><th>Archivo de la extensión</th><th>Qué hace</th></tr>
+    <tr><td><code>manifest.json</code></td><td>Define la extensión: nombre, versión, permisos, y qué scripts ejecutar en qué páginas.</td></tr>
+    <tr><td><code>content.js</code></td><td>El script principal. Se ejecuta dentro del sitio de Sismat, llama a la API interna de Sismat, procesa los datos, y genera el JSON para exportar.</td></tr>
+    <tr><td><code>popup.html</code></td><td>La pequeña ventana que aparece cuando hacés clic en el ícono de la extensión. Tiene el botón "Exportar JSON".</td></tr>
+  </table>
+</div>
+
+
+<!-- ── CAP 11: CONCEPTOS DE DESARROLLO WEB ── -->
+<div class="page">
+  <div class="chapter-label">Capítulo 11</div>
+  <h1>Conceptos de desarrollo web explicados</h1>
+
+  <h2>¿Qué es un "UPSERT"?</h2>
+  <p>Un UPSERT es una operación de base de datos que combina INSERT y UPDATE: si el registro no existe, lo crea; si ya existe, lo actualiza. En el proyecto se usa para actualizar precios sin borrar los anteriores, y para guardar overrides del catálogo.</p>
+
+  <div class="concept-box code">
+<span style="color:#888">// Si ya existe un override para ese sismat_id, lo actualiza.</span><br>
+<span style="color:#888">// Si no existe, lo crea.</span><br>
+await sb.from('sismat_catalog_overrides')<br>
+&nbsp;&nbsp;.upsert({ sismat_id: 123, nombre_cubo: 'Cemento Loma Negra' }, { onConflict: 'sismat_id' });
+  </div>
+
+  <h2>¿Qué es una "función asíncrona"?</h2>
+  <p>En JavaScript, cuando pedís datos a una base de datos o servidor, el programa no se puede "congelar" esperando la respuesta (eso bloquearía toda la página). Las funciones <code>async/await</code> permiten esperar sin bloquear:</p>
+
+  <div class="concept-box code">
+<span style="color:#888">// Versión "congelada" (MAL — el navegador se traba):</span><br>
+const datos = obtenerDatos(); <span style="color:#888">// espera bloqueando todo</span><br><br>
+
+<span style="color:#888">// Versión async/await (BIEN — el navegador sigue respondiendo):</span><br>
+const datos = await obtenerDatos(); <span style="color:#888">// espera sin bloquear</span>
+  </div>
+
+  <h2>¿Qué significa "paginación del lado del servidor"?</h2>
+  <p>El catálogo de Sismat tiene 1856 ítems. Si intentás cargar todos de una vez, el browser recibe 1856 filas de datos, crea 1856 elementos HTML, y se pone lento. La paginación del servidor le dice a Supabase "dame solo los ítems del 50 al 100" usando <code>.range(50, 99)</code>. El browser solo maneja 50 filas por vez.</p>
+
+  <h2>¿Qué es el "DOM"?</h2>
+  <p>El DOM (Document Object Model) es la representación en memoria del HTML de la página. Cuando el JavaScript hace <code>document.getElementById('items-area').innerHTML = '...'</code>, está reescribiendo una sección del HTML en vivo, sin recargar la página. Así funciona todo el cotizador y el admin.</p>
+
+  <h2>¿Qué es una API?</h2>
+  <p>Una API (Application Programming Interface) es como una "ventanilla" de datos. Supabase expone una API automáticamente para cada tabla: podés pedirle datos, mandarle datos nuevos, actualizarlos o borrarlos con llamadas HTTP. La librería de Supabase que usamos (<code>supabase-js</code>) traduce el código JavaScript en esas llamadas HTTP automáticamente.</p>
+</div>
+
+
+<!-- ── CAP 12: DIAGRAMA GENERAL ── -->
+<div class="page">
+  <div class="chapter-label">Capítulo 12</div>
+  <h1>Diagrama general del sistema</h1>
+
+  <div class="concept-box code" style="font-size:11px;line-height:2.2">
+<strong>NACHO (admin)</strong><br>
+&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;&nbsp;├─── Extensión Chrome ──► scraping de Sismat<br>
+&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼<br>
+&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;JSON de precios (materiales + MO)<br>
+&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;&nbsp;▼&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+<strong>admin.html</strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;├── [Importar Sismat] ◄──────────┘<br>
+&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└──► UPSERT en sismat_catalog (Supabase)<br>
+&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;├── [Catálogo Sismat] ──► lee sismat_catalog, escribe sismat_catalog_overrides<br>
+&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;├── [Categorías] ──► configura markup % en tabla categorias<br>
+&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;├── [Recetas] ──► crea recetas + receta_componentes<br>
+&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;├── [Fotos Landing] ──► sube a Storage, guarda URL en obras / landing_media<br>
+&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;└── [Leads] ──► lee leads, cambia estados<br>
+<br>
+<strong>CLIENTE (landing)</strong><br>
+&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;&nbsp;▼<br>
+<strong>index.html</strong><br>
+&nbsp;&nbsp;├── cargarDatos() ──► lee categorias + items de Supabase<br>
+&nbsp;&nbsp;├── cargarGaleria() ──► lee obras con imagen_url de Supabase<br>
+&nbsp;&nbsp;├── cargarFotosLanding() ──► lee landing_media de Supabase<br>
+&nbsp;&nbsp;├── cargarConfiguracion() ──► lee configuracion de Supabase<br>
+&nbsp;&nbsp;└── guardarLead() / enviar() ──► escribe en leads de Supabase
+  </div>
+
+  <h2>El ciclo de vida de un lead</h2>
+
+  <div class="flow-step">
+    <div class="flow-num">1</div>
+    <div class="flow-content">
+      <div class="flow-tit">Cliente completa el modal de captura</div>
+      <div class="flow-sub">Nombre, teléfono, email, tipo de obra, zona. Se guarda en Supabase con estado "nuevo".</div>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">2</div>
+    <div class="flow-content">
+      <div class="flow-tit">Cliente usa el cotizador</div>
+      <div class="flow-sub">Selecciona ítems, ingresa cantidades, ve el precio orientativo.</div>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">3</div>
+    <div class="flow-content">
+      <div class="flow-tit">Cliente envía el presupuesto</div>
+      <div class="flow-sub">Se actualiza el lead en Supabase con los ítems cotizados y el total.</div>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">4</div>
+    <div class="flow-content">
+      <div class="flow-tit">Nacho ve el lead en el admin</div>
+      <div class="flow-sub">En el Dashboard o en la sección Leads, aparece el nuevo lead con todo el detalle.</div>
+    </div>
+  </div>
+  <div class="flow-step">
+    <div class="flow-num">5</div>
+    <div class="flow-content">
+      <div class="flow-tit">Nacho gestiona el estado</div>
+      <div class="flow-sub">Cambia el estado a "Contactado", luego "En proceso", luego "Cerrado" o "Descartado". El historial queda guardado.</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── CIERRE ── -->
+<div class="cover" style="page-break-before:always;min-height:auto;padding:60px">
+  <div>
+    <div class="chapter-label" style="color:#555">Para seguir aprendiendo</div>
+    <h2 style="font-size:28px;font-weight:900;letter-spacing:-1px;color:#fff;margin:12px 0 20px;border:none;padding:0">Preguntas que podés hacerle a Claude</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px">
+      <div style="background:rgba(255,255,255,0.06);padding:16px 20px">
+        <div style="font-size:10px;font-weight:800;letter-spacing:2px;color:#555;margin-bottom:8px">CÓDIGO</div>
+        <p style="color:#aaa;font-size:12px;line-height:1.8;margin:0">"¿Por qué esta función usa async/await?"<br>"¿Qué hace exactamente este .map()?"<br>"¿Por qué se llama UPSERT y no INSERT?"</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.06);padding:16px 20px">
+        <div style="font-size:10px;font-weight:800;letter-spacing:2px;color:#555;margin-bottom:8px">DISEÑO</div>
+        <p style="color:#aaa;font-size:12px;line-height:1.8;margin:0">"¿Por qué usamos CSS variables?"<br>"¿Qué significa letter-spacing negativo?"<br>"¿Cómo funciona CSS Grid?"</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.06);padding:16px 20px">
+        <div style="font-size:10px;font-weight:800;letter-spacing:2px;color:#555;margin-bottom:8px">BASE DE DATOS</div>
+        <p style="color:#aaa;font-size:12px;line-height:1.8;margin:0">"¿Qué es una clave primaria (PRIMARY KEY)?"<br>"¿Por qué hay una tabla de overrides separada?"<br>"¿Qué significa hacer un JOIN?"</p>
+      </div>
+      <div style="background:rgba(255,255,255,0.06);padding:16px 20px">
+        <div style="font-size:10px;font-weight:800;letter-spacing:2px;color:#555;margin-bottom:8px">ARQUITECTURA</div>
+        <p style="color:#aaa;font-size:12px;line-height:1.8;margin:0">"¿Por qué separamos el CSS en tres archivos?"<br>"¿Qué es RLS y por qué lo usamos?"<br>"¿Qué es un Single Page Application?"</p>
+      </div>
+    </div>
+  </div>
+  <div class="cover-foot" style="margin-top:48px">CUBO construcción y diseño · Plataforma v2.0</div>
+</div>
+
+</body>
+</html>
