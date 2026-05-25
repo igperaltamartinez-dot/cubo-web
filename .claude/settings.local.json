@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(& \"C:\\\\Users\\\\Nacho\\\\AppData\\\\Local\\\\GitHubDesktop\\\\bin\\\\git.exe\" --version)"
+    ]
+  }
+}
