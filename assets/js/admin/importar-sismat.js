@@ -55,10 +55,15 @@ async function _procesarJson(file) {
     toast('El archivo no es JSON válido', 'err'); return;
   }
 
-  const items = [
+  const itemsRaw = [
     ...(datos.materiales || []),
     ...(datos.mano_de_obra || []),
   ].filter(i => i.precio > 0);
+
+  // Deduplicar por sismat_id (el JSON a veces repite entradas)
+  const itemsMap = new Map();
+  itemsRaw.forEach(i => itemsMap.set(i.sismat_id, i));
+  const items = Array.from(itemsMap.values());
 
   if (!items.length) {
     toast('No se encontraron ítems con precio en el JSON', 'err'); return;
