@@ -7,11 +7,12 @@ Usás Instagram como canal principal de captación → la plataforma convierte e
 
 ## Qué es este proyecto
 
-Plataforma web de dos archivos:
-- `index.html` — sitio público: landing, cotizador online, formulario de leads
-- `admin.html` — panel interno: CRM de leads, gestión de ítems/categorías, importación de Excel, motor de precios
+Plataforma web de tres páginas:
+- `index.html` (`/`) — landing pública: para tráfico orgánico/SEO. Sin cotizador embebido.
+- `presupuestador.html` (`/presupuestador`) — destino del tráfico de Instagram. Captación de lead + cotizador online + solicitud final.
+- `admin.html` (`/admin`) — panel interno: CRM de leads, gestión de ítems/categorías, importación de Excel, motor de precios.
 
-Backend: Supabase (Postgres). Sin frameworks, todo HTML/CSS/JS inline.
+Backend: Supabase (Postgres). Sin frameworks, todo HTML/CSS/JS vanilla.
 
 ## Cómo actuás en este proyecto
 
@@ -21,35 +22,49 @@ tiene que responder a: ¿esto genera confianza? ¿facilita que el usuario llegue
 
 ## Identidad de marca CUBO
 
+Estilo: **arquitectónico, sobrio, mobile-first**. Foto arquitectónica como protagonista del hero, secciones alternadas cream/charcoal, tipografía bold geométrica, paleta charcoal sobre cream. Sin dorado, sin acentos de color.
+
 | Elemento | Valor |
 |---|---|
-| Tipografía | Inter (400/500/600/700/800/900) |
-| Color principal | Charcoal `#484848` |
-| Fondo | Blanco `#FFFFFF` / Gris fondo `#F2F2F2` |
-| Texto | `#2A2A2A` |
-| Símbolo marca | Λ3 — siempre presente como watermark o acento |
-| Esquinas | Máximo 4px de border-radius. Preferir 2–3px o 0 |
-| Sombras | Muy sutiles. Nunca decorativas |
+| Titulares | `Space Grotesk` (700/800) — sans bold geométrica |
+| Cuerpo y labels | `Inter` (400/500/600) |
+| Texto / charcoal | `#1B1C1C` (cuasi-negro arquitectónico) |
+| Fondo principal | `#FBF9F9` (cream sutil, no blanco puro) |
+| Fondo alterno | `#1B1C1C` (charcoal — hero, CTAs grandes, footer) |
+| Surface gris | `#EFEDED`, `#E3E2E2` (containers sutiles) |
+| Borde/outline | `#C4C7C7` (variant), `#747878` (full) |
+| Símbolo marca | Λ3 — watermark sutil o acento |
+| Border-radius | 4px default, 8px en cards/inputs grandes, 0 en botones rectangulares |
+| Sombras | Ninguna decorativa. Profundidad por contraste tonal (cream vs charcoal) |
+| Íconos | Material Symbols Outlined (thin-stroke, wght 400) o números grandes |
 
 ## Principios de diseño que siempre aplicás
 
-1. **Sin emoji en la UI** — quedan artificiales. Usar números, líneas o tipografía como íconos.
-2. **Ángulos rectos** — la marca es geométrica y arquitectónica. Nada redondeado.
-3. **Copy directo** — frases cortas, activas, sin relleno. El usuario lee en diagonal.
-4. **Jerarquía tipográfica clara** — peso 900 para títulos grandes (con letter-spacing negativo), 500–600 para cuerpo.
-5. **Mobile-first** — el cotizador se usa desde el teléfono, siempre verificar en 360px.
-6. **Espacio en blanco generoso** — más aire es más profesional.
-7. **Conversión como norte** — cada sección tiene que llevar al usuario al siguiente paso.
+1. **Mobile-first SIEMPRE** — diseñar primero para 360–390px, después escalar a desktop con media queries. Margin mobile 16px, desktop 64px.
+2. **Sin emoji en la UI** — quedan artificiales. Material Symbols Outlined o números como íconos.
+3. **Tipografía editorial** — titulares 32–64px en Space Grotesk con `letter-spacing: -0.02em`. Labels en `label-caps` (uppercase + letter-spacing 0.1em + 12px).
+4. **Aire generoso** — section gaps grandes (80px mobile, 120px+ desktop). El espacio en blanco transmite profesionalismo.
+5. **Fotografía arquitectónica como driver** — hero full-bleed, bento grid de proyectos. Imágenes con overlay charcoal al hacer hover para texto sobre la foto.
+6. **Secciones alternadas** — cream (contenido) → charcoal (CTA/hero) → cream (proyectos). El contraste tonal crea ritmo.
+7. **Copy directo** — frases cortas, activas, en mayúsculas para titulares. Lectura en diagonal.
+8. **Conversión como norte** — la landing pública lleva a `/presupuestador`. Tráfico de Instagram va directo a `/presupuestador`.
 
-## Orden de secciones en la landing (index.html #inicio)
+## Estructura de la landing (index.html, mobile-first)
 
-1. Hero — propuesta de valor + CTA principal
-2. Servicios — Obra llave en mano (qué hacemos)
-3. Quiénes somos — historia de Nacho y Gonzalo (por qué confiar)
-4. Nuestro compromiso — 3 diferenciadores clave (sin emoji)
-5. Cómo funciona — 3 pasos para usar el cotizador
-6. CTA strip — empuje final hacia el cotizador
-7. Footer — contacto + marca
+1. **Top app bar** — logo CUBO + hamburger (mobile) / nav links (desktop) + botón "PRESUPUESTAR" charcoal
+2. **Hero full-bleed** — foto arquitectónica con overlay charcoal 60%. Título "CONSTRUIMOS / TU VISIÓN" en blanco 32–64px, línea decorativa, subtítulo, botón "VER OBRAS"
+3. **Por qué CUBO** — 3 valores con icono + título uppercase + descripción (verticales en mobile, horizontales en desktop)
+4. **Proyectos destacados** — bento grid de fotos con overlay al hover
+5. **Quiénes somos** — Nacho y Gonzalo (texto + foto en desktop, stack en mobile)
+6. **CTA charcoal full-width** — "PRESUPUESTÁ TU REFORMA" → link a `/presupuestador`
+7. **Footer** — CUBO grande + links sociales + legal
+
+## Estructura del presupuestador (presupuestador.html, mobile-first)
+
+1. **Vista 1 — Captación de lead:** logo CUBO + título "Antes de empezar" + form (nombre, tel, email, tipo de obra, zona) + botón "Ver cotizador →"
+2. **Vista 2 — Cotizador:** sidebar de categorías + cards de ítems con cantidad + resumen sticky con total → botón "Solicitar presupuesto →"
+3. **Vista 3 — Confirmación final:** review del presupuesto + campos extra (mensaje) + botón "Enviar solicitud"
+4. **Vista 4 — Gracias:** confirmación + resumen + botón "Hacer otro presupuesto"
 
 ## Historia de los fundadores (para copys y secciones)
 

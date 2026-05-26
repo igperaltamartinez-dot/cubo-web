@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Cotizador online de reformas — CUBO construcción y diseño. Armá tu presupuesto orientativo en minutos.">
+<title>Presupuestá tu obra · CUBO</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/presupuestador.css">
+</head>
+<body class="body-presu">
+
+<!-- ─── NAV LIVIANO ─── -->
+<header class="nav nav-presu">
+  <div class="nav-inner">
+    <div class="nav-left">
+      <a href="index.html" class="nav-back" aria-label="Volver al inicio">
+        <span class="material-symbols-outlined">arrow_back</span>
+      </a>
+      <a href="index.html" class="nav-logo">CUBO<span class="iso">Λ3</span></a>
+    </div>
+    <div class="nav-step label-caps" id="nav-step">Paso 1 de 3 · Tus datos</div>
+  </div>
+  <div class="step-bar"><div class="step-bar-fill" id="step-bar-fill" style="width:33%"></div></div>
+</header>
+
+<main>
+
+<!-- ════════════════════════════════════════════════════
+     VISTA 1 — CAPTACIÓN DE LEAD
+     ════════════════════════════════════════════════════ -->
+<section id="view-lead" class="view active">
+  <div class="container view-inner">
+    <div class="lead-card">
+      <p class="label-caps">Presupuestador online</p>
+      <h1 class="display-lg">Antes de empezar, contanos un poco.</h1>
+      <p class="body-md lead-desc">En segundos accedés al cotizador y armás un presupuesto orientativo para tu obra. Te contactamos para ajustar los detalles.</p>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="ml-nombre">Nombre *</label>
+          <input class="input" id="ml-nombre" placeholder="Tu nombre" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="ml-tel">Teléfono / WhatsApp *</label>
+          <input class="input" id="ml-tel" placeholder="+54 11 ..." autocomplete="tel" inputmode="tel">
+        </div>
+      </div>
+      <div class="field">
+        <label for="ml-email">Email *</label>
+        <input class="input" id="ml-email" type="email" placeholder="tu@email.com" autocomplete="email" inputmode="email">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="ml-tipo">Tipo de obra</label>
+          <select class="select" id="ml-tipo">
+            <option value="">Seleccioná una opción</option>
+            <option value="baño">Baño</option>
+            <option value="cocina">Cocina</option>
+            <option value="reforma_integral">Reforma integral</option>
+            <option value="ampliacion">Ampliación / construcción nueva</option>
+            <option value="pintura">Pintura</option>
+            <option value="pisos">Pisos y revestimientos</option>
+            <option value="instalaciones">Instalaciones (elec/sanit/gas)</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="ml-zona">Zona / Barrio *</label>
+          <input class="input" id="ml-zona" placeholder="Ej: Palermo, Belgrano…" autocomplete="address-level3">
+        </div>
+      </div>
+      <button class="btn btn-primary btn-lg lead-btn" id="ml-btn" onclick="guardarLead()">
+        Ir al cotizador
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </button>
+      <p class="body-sm lead-legal">Tus datos son confidenciales y solo se usan para contactarte sobre tu obra.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     VISTA 2 — COTIZADOR
+     ════════════════════════════════════════════════════ -->
+<section id="view-cot" class="view">
+  <div class="cot-aviso">
+    <span class="material-symbols-outlined">info</span>
+    <span><strong>Precios orientativos.</strong> El valor final se confirma con una visita técnica.</span>
+  </div>
+
+  <div class="container cot-layout">
+    <!-- Sidebar de categorías -->
+    <aside class="cot-sidebar" id="cot-sidebar"></aside>
+
+    <!-- Área de ítems -->
+    <div class="cot-items" id="cot-items">
+      <p class="body-sm">Cargando trabajos…</p>
+    </div>
+
+    <!-- Resumen sticky -->
+    <aside class="cot-resumen">
+      <div class="cot-resumen-card">
+        <p class="label-caps">Tu presupuesto</p>
+        <div id="cot-resumen-body">
+          <p class="body-sm cot-vacio">Empezá seleccionando trabajos en cada categoría.</p>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Bottom bar mobile con CTA al resumen -->
+  <div class="cot-bottombar" id="cot-bottombar">
+    <div class="cot-bottombar-info">
+      <span class="cot-bottombar-label label-caps">Total orientativo</span>
+      <span class="cot-bottombar-total" id="cot-bb-total">$0</span>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="abrirResumenMobile()">
+      Ver detalle
+      <span class="material-symbols-outlined">arrow_forward</span>
+    </button>
+  </div>
+</section>
+
+<!-- Modal mobile resumen -->
+<div class="modal-ov" id="modal-resumen-mobile">
+  <div class="modal-card modal-resumen-mobile">
+    <div class="modal-head">
+      <h3 class="headline-md">Tu presupuesto</h3>
+      <button class="modal-close" onclick="cerrarResumenMobile()" aria-label="Cerrar">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal-body" id="modal-resumen-body"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════
+     VISTA 3 — FORMULARIO FINAL
+     ════════════════════════════════════════════════════ -->
+<section id="view-form" class="view">
+  <div class="container view-inner">
+    <div class="lead-card">
+      <button class="form-back" onclick="volverACotizador()">
+        <span class="material-symbols-outlined">arrow_back</span>
+        Volver al cotizador
+      </button>
+      <p class="label-caps">Casi listo</p>
+      <h2 class="display-md">Confirmá tu solicitud.</h2>
+      <p class="body-md lead-desc">Revisá los detalles. Te contactamos para ajustar todo y enviarte el presupuesto definitivo.</p>
+
+      <div class="form-resumen-box">
+        <p class="label-caps">Tu selección</p>
+        <div id="form-resumen"></div>
+      </div>
+
+      <div class="field">
+        <label for="f-msg">¿Algo más que quieras contarnos?</label>
+        <textarea class="textarea" id="f-msg" placeholder="Detalles del estado actual, fechas tentativas, dudas…"></textarea>
+      </div>
+      <button class="btn btn-primary btn-lg lead-btn" id="env-btn" onclick="enviar()">
+        Enviar solicitud
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </button>
+      <p class="body-sm lead-legal">Cada obra es única. El precio final puede variar según las condiciones reales del trabajo.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     VISTA 4 — GRACIAS
+     ════════════════════════════════════════════════════ -->
+<section id="view-gracias" class="view view-gracias">
+  <div class="container view-inner">
+    <div class="grac-card">
+      <div class="grac-check">
+        <span class="material-symbols-outlined">check</span>
+      </div>
+      <p class="label-caps">Solicitud recibida</p>
+      <h2 class="display-md" id="grac-nombre">¡Gracias!</h2>
+      <p class="body-md">Recibimos tu consulta. Te contactamos a la brevedad para ajustar los detalles y enviarte el presupuesto definitivo.</p>
+      <div class="form-resumen-box" id="grac-resumen"></div>
+      <button class="btn btn-ghost" onclick="reiniciar()">Hacer otro presupuesto</button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ─── MODAL CORRELACIONES (sugerencias) ─── -->
+<div class="modal-ov" id="modal-corr">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3 class="headline-md">Trabajos relacionados</h3>
+      <button class="modal-close" onclick="cerrarCorr()" aria-label="Cerrar">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="body-md modal-intro">Para un mejor resultado, este trabajo se combina bien con:</p>
+      <div class="corr-items" id="corr-items"></div>
+      <p class="body-sm modal-msg" id="corr-msg"></p>
+      <div class="modal-btns">
+        <button class="btn btn-primary" id="corr-ok">Agregar todo</button>
+        <button class="btn btn-ghost" id="corr-skip">Solo lo seleccionado</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── MODAL ALERTA CATEGORÍA ─── -->
+<div class="modal-ov" id="modal-alerta">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3 class="headline-md">¿Consideraste también…?</h3>
+      <button class="modal-close" onclick="alertaContinuar()" aria-label="Cerrar">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p class="label-caps" id="alerta-nombre"></p>
+      <p class="body-md modal-msg" id="alerta-mensaje"></p>
+      <p class="body-sm" id="alerta-contador" style="color:var(--secondary);margin-top:8px"></p>
+      <div class="modal-btns">
+        <button class="btn btn-primary" id="btn-alerta-ir">Ver opciones</button>
+        <button class="btn btn-ghost" id="btn-alerta-skip">Continuar igual</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/presupuestador-app.js"></script>
+</body>
+</html>

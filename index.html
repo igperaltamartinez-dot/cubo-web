@@ -1,374 +1,207 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CUBO · construccion y diseño</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<meta name="description" content="CUBO — Construcción y diseño en Buenos Aires. Obra llave en mano con presupuesto detallado, plazos cumplidos y garantía de obra.">
+<title>CUBO · Construcción y diseño · Buenos Aires</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/landing.css">
 </head>
 <body>
 
-<nav>
-  <div class="logo">
-    <div style="display:flex;align-items:baseline;gap:6px">
-      <span class="logo-cubo">CUBO</span>
-      <span class="logo-iso" style="color:#777">Λ3</span>
+<!-- ─── NAV ─── -->
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-left">
+      <button class="nav-burger" aria-label="Abrir menú" onclick="abrirMenu()">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <a href="#inicio" class="nav-logo">CUBO<span class="iso">Λ3</span></a>
     </div>
-    <span class="logo-sub">construccion y diseño</span>
+    <nav class="nav-links">
+      <a href="#inicio" class="active">Inicio</a>
+      <a href="#valores">Por qué CUBO</a>
+      <a href="#proyectos">Proyectos</a>
+      <a href="#nosotros">Nosotros</a>
+    </nav>
+    <a href="presupuestador.html" class="btn btn-primary nav-cta">Presupuestar</a>
   </div>
-  <div class="nav-links">
-    <a onclick="ir('inicio')" id="nl-inicio" class="act">Inicio</a>
-    <a onclick="ir('servicios')" id="nl-servicios">Servicios</a>
-    <a onclick="ir('galeria')" id="nl-galeria">Galería</a>
-    <button class="nav-cta" onclick="abrirModalLead()">Presupuesto online</button>
-  </div>
-</nav>
+</header>
 
-<!-- ── INICIO ── -->
-<section id="inicio" class="act">
-  <div class="hero">
-    <div class="hero-inner">
-      <p class="hero-tag">Construcción y diseño · Buenos Aires</p>
-      <h1>Sabé cuánto cuesta<br><em>tu reforma.</em></h1>
-      <p class="hero-sub">Presupuesto orientativo en minutos, sin compromiso. Seleccionás los trabajos, ingresás tu zona, y te contactamos con el detalle.</p>
-      <div class="hero-btns">
-        <button class="btn-prim" onclick="abrirModalLead()">Armar presupuesto online</button>
-        <button class="btn-sec" onclick="ir('galeria')">Ver obras realizadas</button>
-      </div>
-      <div class="hero-stats">
-        <div><div class="stat-num">14</div><div class="stat-label">Años de experiencia combinada</div></div>
-        <div><div class="stat-num">5</div><div class="stat-label">Proyectos activos y entregados</div></div>
-        <div><div class="stat-num">100%</div><div class="stat-label">Presupuesto respetado</div></div>
-      </div>
-    </div>
+<!-- Drawer mobile -->
+<div class="nav-drawer" id="nav-drawer">
+  <div class="nav-drawer-head">
+    <span class="nav-logo">CUBO<span class="iso">Λ3</span></span>
+    <button class="nav-drawer-close" aria-label="Cerrar menú" onclick="cerrarMenu()">
+      <span class="material-symbols-outlined">close</span>
+    </button>
   </div>
+  <div class="nav-drawer-links">
+    <a href="#inicio" onclick="cerrarMenu()">Inicio</a>
+    <a href="#valores" onclick="cerrarMenu()">Por qué CUBO</a>
+    <a href="#proyectos" onclick="cerrarMenu()">Proyectos</a>
+    <a href="#nosotros" onclick="cerrarMenu()">Nosotros</a>
+    <a href="presupuestador.html" onclick="cerrarMenu()">Presupuestar online →</a>
+  </div>
+  <div class="nav-drawer-foot">
+    <a class="footer-instagram" href="#" target="_blank" style="display:none"></a>
+    <a class="footer-email" href="#" style="display:none"></a>
+    <a class="footer-tel" href="#" style="display:none"></a>
+  </div>
+</div>
 
-  <!-- SERVICIOS — LLAVE EN MANO -->
-  <div class="servicios-llem">
-    <div class="servicios-llem-inner">
-      <p class="sec-tag">Lo que hacemos</p>
-      <h2 class="servicios-llem-tit">Obra llave en mano.</h2>
-      <p class="servicios-llem-sub">Nos ocupamos de todo el proceso. Vos definis qué querés, nosotros lo hacemos realidad de principio a fin, sin que tengas que coordinar nada.</p>
-      <div class="llem-grid">
-        <div class="llem-item">
-          <div class="llem-num">01</div>
-          <div class="llem-tit">Proyecto y diseño</div>
-          <div class="llem-desc">Planos, renders 3D y memoria descriptiva para que sepas exactamente cómo va a quedar.</div>
-        </div>
-        <div class="llem-item">
-          <div class="llem-num">02</div>
-          <div class="llem-tit">Gestiones municipales</div>
-          <div class="llem-desc">Habilitaciones, planos aprobados e inspecciones. Conocemos los tiempos y los requisitos.</div>
-        </div>
-        <div class="llem-item">
-          <div class="llem-num">03</div>
-          <div class="llem-tit">Dirección de obra</div>
-          <div class="llem-desc">Control de calidad, materiales y cuadrillas. Garantizamos que cada etapa se ejecute bien.</div>
-        </div>
-        <div class="llem-item">
-          <div class="llem-num">04</div>
-          <div class="llem-tit">Administración</div>
-          <div class="llem-desc">Presupuesto detallado, plan de compras y seguimiento de costos. Sin sorpresas al final.</div>
-        </div>
-        <div class="llem-item">
-          <div class="llem-num">05</div>
-          <div class="llem-tit">Construcción</div>
-          <div class="llem-desc">Ejecución completa con equipo propio y subcontratistas especializados de confianza.</div>
-        </div>
-      </div>
-    </div>
-  </div>
+<main>
 
-  <!-- QUIÉNES SOMOS -->
-  <div class="quienes">
-    <div class="quienes-inner">
-      <div class="quienes-txt">
-        <p class="sec-tag">Quiénes somos</p>
-        <h2 class="quienes-tit">Nacho y Gonzalo.</h2>
-        <p class="quienes-bio">Somos dos profesionales formados en obra que decidieron hacer las cosas a su manera.</p>
-        <p class="quienes-bio">Nacho pasó por todas las etapas de la construcción: empezó como sobrestante en edificios de 8 pisos, fue jefe de obra en proyectos de duplex, y hoy combina ese conocimiento de campo con la planificación técnica — presupuestos, planes de trabajo, optimización de procesos.</p>
-        <p class="quienes-bio">Gonzalo lleva 8 años en la industria, con experiencia en proyecto, gestiones municipales y dirección de postventa de desarrollos inmobiliarios. Conoce el proceso constructivo de principio a fin.</p>
-        <p class="quienes-bio">CUBO nació de esa experiencia acumulada y de un compromiso compartido: hacer las cosas bien, con transparencia y sin sorpresas.</p>
-      </div>
-      <div class="quienes-right">
-        <div class="quienes-foto-wrap" id="quienes-foto-wrap">
-          <img id="quienes-foto" class="quienes-foto" alt="Nacho y Gonzalo — CUBO" loading="lazy">
-        </div>
-        <div class="quienes-stats">
-          <div class="qs"><div class="qs-num">14</div><div class="qs-label">Años de experiencia combinada</div></div>
-          <div class="qs"><div class="qs-num">5</div><div class="qs-label">Proyectos activos y entregados</div></div>
-          <div class="qs"><div class="qs-num">100%</div><div class="qs-label">Presupuesto respetado</div></div>
-        </div>
+  <!-- ─── HERO ─── -->
+  <section id="inicio" class="hero">
+    <div class="hero-bg">
+      <img id="hero-img" alt="" loading="eager"
+           src="https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=1600&q=80">
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-inner container">
+      <p class="label-caps hero-tag reveal">Construcción y diseño · Buenos Aires</p>
+      <h1 class="display-xl hero-title reveal">Construimos<br>tu visión.</h1>
+      <div class="hero-line reveal"></div>
+      <p class="body-lg hero-sub reveal">Obra llave en mano con presupuesto detallado, plazos cumplidos y garantía sobre todo lo que hacemos.</p>
+      <div class="hero-btns reveal">
+        <a href="presupuestador.html" class="btn btn-primary btn-lg">
+          Armar presupuesto
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </a>
+        <a href="#proyectos" class="btn btn-ghost btn-lg">Ver obras</a>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- NUESTRO COMPROMISO -->
-  <div class="por-que" style="background:var(--gris-fondo)">
-    <div class="por-que-inner">
-      <p class="sec-tag">Por qué CUBO</p>
-      <h2 class="sec-titulo">Nuestro compromiso.</h2>
-      <div class="razones">
-        <div class="razon">
-          <h3>Presupuesto detallado</h3>
-          <p>Todo por escrito y con el desglose completo. El precio que acordamos es el que pagás.</p>
-        </div>
-        <div class="razon">
-          <h3>Cumplimos los plazos</h3>
-          <p>Organizamos el trabajo con un plan de obra real. Tu reforma termina cuando lo prometimos.</p>
-        </div>
-        <div class="razon">
-          <h3>Garantía de obra</h3>
-          <p>Respondemos por lo que hacemos. Si algo no queda bien, lo resolvemos sin vueltas.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- CÓMO FUNCIONA EL COTIZADOR -->
-  <div class="como-funciona">
-    <div class="como-funciona-inner">
-      <p class="sec-tag" style="margin-bottom:40px">Cómo funciona</p>
-      <div class="pasos">
-        <div class="paso">
-          <div class="paso-num">01</div>
-          <h3>Seleccioná los trabajos</h3>
-          <p>Elegí los rubros que necesitás: albañilería, electricidad, pintura, sanitaria y más.</p>
-        </div>
-        <div class="paso">
-          <div class="paso-num">02</div>
-          <h3>Ingresá tus datos</h3>
-          <p>Nombre, teléfono y zona. En menos de un minuto tenemos todo lo que necesitamos.</p>
-        </div>
-        <div class="paso">
-          <div class="paso-num">03</div>
-          <h3>Te enviamos el presupuesto</h3>
-          <p>Te contactamos para confirmar los detalles y enviarte el presupuesto definitivo.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="cta-strip">
-    <span class="cta-num-display" id="cta-num"></span>
-    <p class="sec-tag">¿Tenés una reforma en mente?</p>
-    <h2>Armá tu presupuesto<br>en minutos.</h2>
-    <button class="btn-prim" onclick="abrirModalLead()">Armar presupuesto →</button>
-  </div>
-  <footer>
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <div class="footer-iso">CUBO <span style="color:#444;font-size:18px">Λ3</span></div>
-        <div class="footer-sub">construccion y diseño</div>
-      </div>
-      <div class="footer-contact">
-        <a class="footer-email" href="#" style="display:none"></a>
-        <a class="footer-instagram" href="#" target="_blank" style="display:none"></a>
-        <a class="footer-tel" href="#" style="display:none"></a>
-        <span class="footer-zona" style="display:none"></span>
-      </div>
-    </div>
-    <div class="footer-legal"><p>© 2025 CUBO construcción y diseño · Todos los precios son orientativos.</p></div>
-  </footer>
-</section>
-
-<!-- ── SERVICIOS ── -->
-<section id="servicios">
-  <div class="page-hero">
-    <div class="page-hero-inner">
-      <p class="sec-tag">Lo que hacemos</p>
-      <h1>Nuestros servicios</h1>
-      <p>Trabajos de construcción, reforma y terminaciones con materiales de primera calidad.</p>
-    </div>
-  </div>
-  <div class="servicios-grid">
-    <div class="servicios-grid-inner">
-      <div class="serv-card"><h3>Demolición y Construcción</h3><p>Tabiques, aperturas, contrapisos y todo lo estructural de tu reforma.</p></div>
-      <div class="serv-card"><h3>Tabiques y Revoques</h3><p>Mampostería, durlock y terminaciones en revoques para interiores y exteriores.</p></div>
-      <div class="serv-card"><h3>Pisos y Revestimientos</h3><p>Porcelanato, cerámica y revestimientos en paredes. Terminaciones a medida.</p></div>
-      <div class="serv-card"><h3>Pintura</h3><p>Interior, exterior, cielorrasos y carpinterías. Enduído, látex y esmaltes.</p></div>
-      <div class="serv-card"><h3>Electricidad</h3><p>Instalaciones eléctricas, tableros y puntos de luz con personal matriculado.</p></div>
-      <div class="serv-card"><h3>Instalaciones Sanitarias</h3><p>Agua fría/caliente, desagüe y artefactos sanitarios completos.</p></div>
-      <div class="serv-card"><h3>Gas</h3><p>Instalaciones de gas, puntos y conexión de artefactos con gasista matriculado.</p></div>
-      <div class="serv-card"><h3>Aislaciones y Membranas</h3><p>Impermeabilización de terrazas y losas con membranas de primera calidad.</p></div>
-    </div>
-  </div>
-  <div class="serv-cta">
-    <p>¿Necesitás un trabajo que no está en la lista? Consultanos sin compromiso.</p>
-    <button class="btn-prim" onclick="abrirModalLead()">Ver precios orientativos →</button>
-  </div>
-  <footer>
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <div class="footer-iso">CUBO <span style="color:#444;font-size:18px">Λ3</span></div>
-        <div class="footer-sub">construccion y diseño</div>
-      </div>
-      <div class="footer-contact">
-        <a class="footer-email" href="#" style="display:none"></a>
-        <a class="footer-instagram" href="#" target="_blank" style="display:none"></a>
-        <a class="footer-tel" href="#" style="display:none"></a>
-        <span class="footer-zona" style="display:none"></span>
-      </div>
-    </div>
-    <div class="footer-legal"><p>© 2025 CUBO construcción y diseño · Todos los precios son orientativos.</p></div>
-  </footer>
-</section>
-
-<!-- ── GALERÍA ── -->
-<section id="galeria">
-  <div class="page-hero">
-    <div class="page-hero-inner">
-      <p class="sec-tag">Trabajos realizados</p>
-      <h1>Nuestras obras</h1>
-      <p>Algunas de las reformas que realizamos. Cada obra es única.</p>
-    </div>
-  </div>
-  <div class="galeria-body">
-    <div class="galeria-inner">
-      <div class="galeria-grid" id="galeria-grid">
-        <div class="galeria-empty">Cargando obras...</div>
-      </div>
-    </div>
-  </div>
-  <footer>
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <div class="footer-iso">CUBO <span style="color:#444;font-size:18px">Λ3</span></div>
-        <div class="footer-sub">construccion y diseño</div>
-      </div>
-      <div class="footer-contact">
-        <a class="footer-email" href="#" style="display:none"></a>
-        <a class="footer-instagram" href="#" target="_blank" style="display:none"></a>
-        <a class="footer-tel" href="#" style="display:none"></a>
-        <span class="footer-zona" style="display:none"></span>
-      </div>
-    </div>
-    <div class="footer-legal"><p>© 2025 CUBO construcción y diseño · Todos los precios son orientativos.</p></div>
-  </footer>
-</section>
-
-<!-- ── COTIZADOR ── -->
-<section id="cotizador">
-  <div id="cot-main-view">
-    <div class="cot-aviso">⚠ <strong>Precios orientativos.</strong> Cada obra tiene sus particularidades — el valor final se confirma tras una visita técnica.</div>
-    <div class="cot-strip"><h1>Cotizador de reformas</h1><p>Seleccioná los trabajos e indicá las medidas para obtener un precio de referencia.</p></div>
-    <div class="cot-main">
-      <nav class="cot-sidebar" id="cot-sidebar"></nav>
-      <div class="items-area" id="items-area"><div class="items-loading">Cargando trabajos...</div></div>
-      <aside class="resumen">
-        <p class="res-tit">Tu presupuesto</p>
-        <div id="res-body"><p class="res-vacio">Todavía no agregaste ningún trabajo.<br>¡Empezá seleccionando ítems!</p></div>
-      </aside>
-    </div>
-  </div>
-  <div id="cot-form-view" style="display:none">
-    <div class="form-wrap"><div class="form-card">
-      <button class="form-back" onclick="mostrarCot()">← Volver al cotizador</button>
-      <h2 class="form-tit">Confirmá tu presupuesto</h2>
-      <p class="form-sub">Revisá los detalles y te contactamos para confirmar.</p>
-      <div class="res-mini"><p class="res-mini-tit">Tu selección</p><div id="form-resumen"></div></div>
-      <label class="f-label">Nombre completo *</label><input class="f-input" id="f-nombre" placeholder="Tu nombre">
-      <label class="f-label">Teléfono / WhatsApp *</label><input class="f-input" id="f-tel" placeholder="+54 11 ...">
-      <label class="f-label">Email *</label><input class="f-input" id="f-email" placeholder="tu@email.com">
-      <label class="f-label">¿Algo más que quieras contarnos?</label>
-      <textarea class="f-input f-ta" id="f-msg" placeholder="Zona, tipo de propiedad, fechas tentativas..."></textarea>
-      <button class="env-btn" id="env-btn" onclick="enviar()">Solicitar presupuesto →</button>
-      <p class="f-legal">Los precios son orientativos. Cada obra es única y el valor final puede variar según las condiciones reales del trabajo.</p>
-    </div></div>
-  </div>
-  <div id="cot-gracias-view" style="display:none">
-    <div class="grac-wrap"><div class="grac-card">
-      <div class="grac-iso">CUBO</div>
-      <div class="grac-check">✓</div>
-      <h2 class="grac-tit" id="grac-nombre">¡Gracias!</h2>
-      <p class="grac-sub">Recibimos tu consulta. Nos ponemos en contacto a la brevedad para ajustar los detalles y darte un presupuesto definitivo.</p>
-      <div class="grac-res" id="grac-res"></div>
-      <button class="reiniciar" onclick="reiniciar()">Hacer otro presupuesto</button>
-    </div></div>
-  </div>
-</section>
-
-<!-- ── MODAL CAPTURA LEAD ── -->
-<div class="modal-ov" id="modal-lead">
-  <div class="modal-lead">
-    <div class="modal-lead-header">
-      <div class="modal-lead-iso">CUBO <span style="font-size:16px;color:#777">Λ3</span></div>
-      <div class="modal-lead-sub">construccion y diseño</div>
-      <h2>Antes de empezar,<br>contanos un poco</h2>
-      <p>En segundos accedés al cotizador online y podés armar tu presupuesto de referencia.</p>
-    </div>
-    <div class="modal-lead-body">
-      <div class="ml-row">
+  <!-- ─── VALORES (POR QUÉ CUBO) ─── -->
+  <section id="valores" class="section section-valores">
+    <div class="container">
+      <div class="section-head">
         <div>
-          <label class="ml-label">Nombre *</label>
-          <input class="ml-input" id="ml-nombre" placeholder="Tu nombre">
+          <p class="label-caps">Identidad</p>
+          <h2 class="display-lg">Por qué CUBO.</h2>
         </div>
+        <div class="section-head-line"></div>
+      </div>
+
+      <div class="valores-grid">
+        <div class="valor reveal">
+          <span class="material-symbols-outlined valor-ico">architecture</span>
+          <h3 class="headline-md">Precisión técnica</h3>
+          <p class="body-md">Cada línea de los planos es un compromiso. Ejecutamos en obra exactamente lo presupuestado, sin sorpresas ni ajustes a último momento.</p>
+        </div>
+        <div class="valor reveal">
+          <span class="material-symbols-outlined valor-ico">schedule</span>
+          <h3 class="headline-md">Plazos cumplidos</h3>
+          <p class="body-md">Organizamos cada etapa con un plan de obra real. Cuando decimos que termina en agosto, termina en agosto.</p>
+        </div>
+        <div class="valor reveal">
+          <span class="material-symbols-outlined valor-ico">handshake</span>
+          <h3 class="headline-md">Confianza total</h3>
+          <p class="body-md">Transparencia absoluta en presupuesto, materiales y tiempos. Respondemos por cada cosa que hacemos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── PROYECTOS DESTACADOS (BENTO GRID) ─── -->
+  <section id="proyectos" class="section section-proyectos">
+    <div class="container">
+      <div class="section-head">
         <div>
-          <label class="ml-label">Teléfono *</label>
-          <input class="ml-input" id="ml-tel" placeholder="+54 11 ...">
+          <p class="label-caps">Trabajos realizados</p>
+          <h2 class="display-lg">Proyectos destacados.</h2>
+        </div>
+        <a href="presupuestador.html" class="proyectos-link">
+          Cotizar el mío
+          <span class="material-symbols-outlined">arrow_forward</span>
+        </a>
+      </div>
+      <div class="bento-grid" id="bento-grid">
+        <div class="bento-empty body-sm">Cargando obras...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── NOSOTROS ─── -->
+  <section id="nosotros" class="section section-nosotros section--dark">
+    <div class="container nosotros-inner">
+      <div class="nosotros-txt">
+        <p class="label-caps reveal">Quiénes somos</p>
+        <h2 class="display-lg reveal">Nacho y Gonzalo.</h2>
+        <p class="body-lg reveal">Dos profesionales formados en obra que decidieron hacer las cosas a su manera.</p>
+        <p class="body-md reveal"><strong>Nacho</strong> pasó por todas las etapas de la construcción: empezó como sobrestante en edificios de 8 pisos, fue jefe de obra en duplex y hoy combina ese campo con la planificación técnica — presupuestos, planes de trabajo, optimización de procesos.</p>
+        <p class="body-md reveal"><strong>Gonzalo</strong> lleva 8 años en la industria: proyecto, gestiones municipales y dirección de postventa de desarrollos inmobiliarios. Conoce el proceso de obra de principio a fin.</p>
+        <p class="body-md reveal">CUBO nació de esa experiencia y de un compromiso compartido: hacer las cosas bien, con transparencia y sin sorpresas.</p>
+      </div>
+      <div class="nosotros-stats reveal">
+        <div class="stat">
+          <div class="stat-num display-md">14</div>
+          <div class="label-caps">Años de experiencia combinada</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num display-md">5</div>
+          <div class="label-caps">Proyectos activos y entregados</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num display-md">100%</div>
+          <div class="label-caps">Presupuesto respetado</div>
         </div>
       </div>
-      <label class="ml-label">Email *</label>
-      <input class="ml-input" id="ml-email" placeholder="tu@email.com">
-      <label class="ml-label">Tipo de obra</label>
-      <select class="ml-select" id="ml-tipo">
-        <option value="">Seleccioná una opción</option>
-        <option value="baño">Baño</option>
-        <option value="cocina">Cocina</option>
-        <option value="reforma_integral">Reforma integral</option>
-        <option value="ampliacion">Ampliación / construcción nueva</option>
-        <option value="pintura">Pintura</option>
-        <option value="pisos">Pisos y revestimientos</option>
-        <option value="instalaciones">Instalaciones (elec/sanitaria/gas)</option>
-        <option value="otro">Otro</option>
-      </select>
-      <label class="ml-label">Zona / Barrio *</label>
-      <input class="ml-input" id="ml-zona" placeholder="Ej: Palermo, Belgrano...">
-      <button class="ml-btn" id="ml-btn" onclick="guardarLead()">Ver cotizador →</button>
-      <p class="ml-legal">Tus datos son confidenciales y solo se usan para contactarte.</p>
     </div>
-  </div>
-</div>
+  </section>
 
-<!-- ── MODAL ALERTA CATEGORÍAS ── -->
-<div class="modal-alerta-ov" id="modal-alerta">
-  <div class="modal-alerta">
-    <div class="modal-alerta-head">
-      <span class="modal-alerta-emoji" id="alerta-emoji">💡</span>
-      <div class="modal-alerta-tit">¿Consideraste también...</div>
-      <div class="modal-alerta-cat" id="alerta-nombre"></div>
-    </div>
-    <div class="modal-alerta-body">
-      <p class="modal-alerta-msg" id="alerta-mensaje"></p>
-      <div class="modal-alerta-contador" id="alerta-contador"></div>
-      <div class="modal-alerta-btns">
-        <button class="btn-alerta-ir" id="btn-alerta-ir">Ver opciones de esta categoría →</button>
-        <button class="btn-alerta-skip" id="btn-alerta-skip">No, continuar con mi selección actual</button>
+  <!-- ─── CTA FINAL ─── -->
+  <section class="section section-cta section--dark">
+    <div class="container cta-inner">
+      <div class="cta-txt">
+        <p class="label-caps reveal">¿Tenés una reforma en mente?</p>
+        <h2 class="display-xl reveal">Presupuestá tu obra<br>en minutos.</h2>
+        <p class="body-lg reveal">Sin compromiso. Seleccionás los trabajos, ingresás tu zona y te enviamos un presupuesto orientativo al instante.</p>
+        <div class="reveal">
+          <a href="presupuestador.html" class="btn btn-primary btn-lg">
+            Empezar ahora
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </a>
+        </div>
+      </div>
+      <div class="cta-deco reveal" aria-hidden="true">
+        <div class="cta-square cta-square-1">
+          <div class="cta-square cta-square-2">
+            <span class="material-symbols-outlined cta-icon">square_foot</span>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
+  </section>
 
-<!-- ── MODAL CORRELACIONES ── -->
-<div class="modal-corr-ov" id="modal-corr">
-  <div class="modal-corr">
-    <div class="modal-corr-head">
-      <h3>Hay trabajos previos necesarios</h3>
-      <p>Para un resultado óptimo, este trabajo requiere:</p>
+</main>
+
+<!-- ─── FOOTER ─── -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="nav-logo">CUBO<span class="iso">Λ3</span></span>
+      <p class="footer-tag">Construcción y diseño · Buenos Aires</p>
     </div>
-    <div class="modal-corr-body">
-      <div class="modal-corr-items" id="corr-items"></div>
-      <p class="modal-msg" id="corr-msg"></p>
-      <div class="modal-btns">
-        <button class="modal-ok" id="corr-ok">Agregar todo ✓</button>
-        <button class="modal-skip" id="corr-skip">Solo lo seleccionado</button>
-      </div>
+    <div class="footer-links">
+      <a href="presupuestador.html">Presupuestador</a>
+      <a class="footer-instagram" href="#" target="_blank" style="display:none">Instagram</a>
+      <a class="footer-email" href="#" style="display:none"></a>
+      <a class="footer-tel" href="#" style="display:none"></a>
     </div>
   </div>
-</div>
+  <p class="footer-legal">© 2025 CUBO construcción y diseño · Todos los precios son orientativos.</p>
+</footer>
 
 <script src="assets/js/index-app.js"></script>
 </body>
