@@ -7,7 +7,9 @@ const _CS_PER_PAGE = 50;
 let _csPage    = 0;
 let _csTotal   = 0;
 let _csFiltro  = { texto: '', tipo: '', cat_sismat: '', visibilidad: '' };
-let _csOvMap   = {};   // sismat_id → override row (cargado al init)
+let _csOvMap   = {};   // "tipo:sismat_id" → override row (cargado al init)
+
+const _csKey = (tipo, sismat_id) => `${tipo}:${sismat_id}`;
 
 async function iniciarCatalogoSismat() {
   _csPage   = 0;
@@ -31,7 +33,7 @@ async function iniciarCatalogoSismat() {
 async function _csRecargarOverrides() {
   const { data } = await sb.from('sismat_catalog_overrides').select('*');
   _csOvMap = {};
-  (data || []).forEach(r => { _csOvMap[r.sismat_id] = r; });
+  (data || []).forEach(r => { _csOvMap[_csKey(r.tipo, r.sismat_id)] = r; });
 }
 
 async function _csPoblarCats() {
@@ -70,13 +72,29 @@ async function _csCargarPagina() {
   if (tipo)      q = q.eq('tipo', tipo);
   if (catSismat) q = q.eq('categoria_sismat_id', parseInt(catSismat));
 
-  if (visibilidad === 'visible') {
-    const ids = Object.values(_csOvMap).filter(o => o.visible_en_cotizador).map(o => o.sismat_id);
-    if (!ids.length) { _csRenderTabla([]); return; }
-    q = q.in('sismat_id', ids);
-  } else if (visibilidad === 'oculto') {
-    const ids = Object.values(_csOvMap).filter(o => o.visible_en_cotizador).map(o => o.sismat_id);
-    if (ids.length) q = q.not('sismat_id', 'in', `(${ids.join(',')})`);
+  if (visibilidad === 'visible' || visibilidad === 'oculto') {
+    // Agrupamos visibles por tipo (la PK es compuesta, no podemos hacer un .in plano).
+    const visibles = Object.values(_csOvMap).filter(o => o.visible_en_cotizador);
+    const porTipo  = { material: [], mano_de_obra: [] };
+    visibles.forEach(o => { porTipo[o.tipo] = porTipo[o.tipo] || []; porTipo[o.tipo].push(o.sismat_id); });
+
+    if (visibilidad === 'visible') {
+      const partes = [];
+      ['material', 'mano_de_obra'].forEach(t => {
+        if (porTipo[t]?.length) partes.push(`and(tipo.eq.${t},sismat_id.in.(${porTipo[t].join(',')}))`);
+      });
+      if (!partes.length) { _csRenderTabla([]); return; }
+      q = q.or(partes.join(','));
+    } else {
+      // Oculto = (tipo=material AND id NOT IN visiblesMat) OR (tipo=mano_de_obra AND id NOT IN visiblesMO)
+      const partes = ['material', 'mano_de_obra'].map(t => {
+        const ids = porTipo[t] || [];
+        return ids.length
+          ? `and(tipo.eq.${t},sismat_id.not.in.(${ids.join(',')}))`
+          : `tipo.eq.${t}`;
+      });
+      q = q.or(partes.join(','));
+    }
   }
 
   q = q.order('categoria_sismat').order('nombre_original').range(from, to);
@@ -107,7 +125,7 @@ function _csRenderTabla(items) {
     categorias.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
 
   document.getElementById('cs-tbody').innerHTML = items.map(item => {
-    const ov      = _csOvMap[item.sismat_id] || {};
+    const ov      = _csOvMap[_csKey(item.tipo, item.sismat_id)] || {};
     const visible  = ov.visible_en_cotizador || false;
     const catCuboId = ov.categoria_cubo_id || '';
 
@@ -128,7 +146,7 @@ function _csRenderTabla(items) {
         <div style="font-size:12px;font-weight:600;color:var(--tx);margin-bottom:3px">${_csEsc(item.nombre_original)}</div>
         <input class="cs-inp" placeholder="Sobrescribir nombre para el cliente..."
           value="${_csEsc(ov.nombre_cubo || '')}"
-          onblur="csGuardarCampo(${item.sismat_id},'nombre_cubo',this.value)"
+          onblur="csGuardarCampo('${item.tipo}',${item.sismat_id},'nombre_cubo',this.value)"
           onkeydown="if(event.key==='Enter')this.blur()">
       </td>
       <td style="font-size:12px;color:var(--gm)">${item.unidad}</td>
@@ -136,12 +154,12 @@ function _csRenderTabla(items) {
       <td>
         <label class="toggle-switch">
           <input type="checkbox" ${visible ? 'checked' : ''}
-            onchange="csToggleVisible(${item.sismat_id},this.checked)">
+            onchange="csToggleVisible('${item.tipo}',${item.sismat_id},this.checked)">
           <span class="toggle-slider"></span>
         </label>
       </td>
       <td>
-        <select class="cs-sel" onchange="csGuardarCampo(${item.sismat_id},'categoria_cubo_id',this.value||null)">
+        <select class="cs-sel" onchange="csGuardarCampo('${item.tipo}',${item.sismat_id},'categoria_cubo_id',this.value||null)">
           ${catOpts}
         </select>
       </td>
@@ -151,29 +169,32 @@ function _csRenderTabla(items) {
 
 // ── ACCIONES ──
 
-async function csToggleVisible(sismat_id, visible) {
+async function csToggleVisible(tipo, sismat_id, visible) {
   const { error } = await sb.from('sismat_catalog_overrides')
-    .upsert({ sismat_id, visible_en_cotizador: visible }, { onConflict: 'sismat_id' });
+    .upsert({ tipo, sismat_id, visible_en_cotizador: visible }, { onConflict: 'tipo,sismat_id' });
   if (!error) {
-    if (!_csOvMap[sismat_id]) _csOvMap[sismat_id] = { sismat_id };
-    _csOvMap[sismat_id].visible_en_cotizador = visible;
+    const k = _csKey(tipo, sismat_id);
+    if (!_csOvMap[k]) _csOvMap[k] = { tipo, sismat_id };
+    _csOvMap[k].visible_en_cotizador = visible;
     toast(visible ? 'Visible en cotizador ✓' : 'Oculto del cotizador');
   } else {
     toast('Error al guardar', 'err');
   }
 }
 
-async function csGuardarCampo(sismat_id, campo, valor) {
+async function csGuardarCampo(tipo, sismat_id, campo, valor) {
   const payload = {
+    tipo,
     sismat_id,
     [campo]: valor || null,
     actualizado_en: new Date().toISOString(),
   };
   const { error } = await sb.from('sismat_catalog_overrides')
-    .upsert(payload, { onConflict: 'sismat_id' });
+    .upsert(payload, { onConflict: 'tipo,sismat_id' });
   if (!error) {
-    if (!_csOvMap[sismat_id]) _csOvMap[sismat_id] = { sismat_id };
-    _csOvMap[sismat_id][campo] = valor || null;
+    const k = _csKey(tipo, sismat_id);
+    if (!_csOvMap[k]) _csOvMap[k] = { tipo, sismat_id };
+    _csOvMap[k][campo] = valor || null;
   } else {
     toast('Error al guardar', 'err');
   }

@@ -102,15 +102,28 @@ async function cargarDatos() {
   if (recetas.length) {
     const recetaIds = recetas.map(r => r.id);
     const { data: comps } = await sb.from('receta_componentes')
-      .select('receta_id, sismat_id, cantidad')
+      .select('receta_id, tipo, sismat_id, cantidad')
       .in('receta_id', recetaIds);
-    const sismatIds = [...new Set((comps || []).map(c => c.sismat_id))];
-    const { data: cat } = sismatIds.length
-      ? await sb.from('sismat_catalog').select('sismat_id, precio_sismat').in('sismat_id', sismatIds)
-      : { data: [] };
-    const precioSismat = Object.fromEntries((cat || []).map(s => [s.sismat_id, s.precio_sismat || 0]));
+
+    // Agrupamos por tipo (PK compuesta en sismat_catalog)
+    const idsPorTipo = { material: new Set(), mano_de_obra: new Set() };
+    (comps || []).forEach(c => { idsPorTipo[c.tipo]?.add(c.sismat_id); });
+
+    const partes = [];
+    Object.entries(idsPorTipo).forEach(([t, set]) => {
+      if (set.size) partes.push(`and(tipo.eq.${t},sismat_id.in.(${[...set].join(',')}))`);
+    });
+
+    let cat = [];
+    if (partes.length) {
+      const { data } = await sb.from('sismat_catalog')
+        .select('tipo, sismat_id, precio_sismat')
+        .or(partes.join(','));
+      cat = data || [];
+    }
+    const precioSismat = Object.fromEntries(cat.map(s => [`${s.tipo}:${s.sismat_id}`, s.precio_sismat || 0]));
     (comps || []).forEach(c => {
-      const sub = (precioSismat[c.sismat_id] || 0) * (c.cantidad || 0);
+      const sub = (precioSismat[`${c.tipo}:${c.sismat_id}`] || 0) * (c.cantidad || 0);
       precioPorReceta[c.receta_id] = (precioPorReceta[c.receta_id] || 0) + sub;
     });
   }

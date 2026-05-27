@@ -55,14 +55,18 @@ async function _procesarJson(file) {
     toast('El archivo no es JSON válido', 'err'); return;
   }
 
+  // Sismat usa namespaces separados para materiales y MO (ambos arrancan en id=1),
+  // por eso la clave compuesta es (tipo, sismat_id).
   const itemsRaw = [
-    ...(datos.materiales || []),
-    ...(datos.mano_de_obra || []),
+    ...(datos.materiales || []).map(i => ({ ...i, tipo: i.tipo || 'material' })),
+    ...(datos.mano_de_obra || []).map(i => ({ ...i, tipo: i.tipo || 'mano_de_obra' })),
   ].filter(i => i.precio > 0);
 
-  // Deduplicar por sismat_id (el JSON a veces repite entradas)
+  const keyOf = i => `${i.tipo}:${i.sismat_id}`;
+
+  // Deduplicar por (tipo, sismat_id) — el JSON a veces repite entradas
   const itemsMap = new Map();
-  itemsRaw.forEach(i => itemsMap.set(i.sismat_id, i));
+  itemsRaw.forEach(i => itemsMap.set(keyOf(i), i));
   const items = Array.from(itemsMap.values());
 
   if (!items.length) {
@@ -70,23 +74,23 @@ async function _procesarJson(file) {
   }
 
   // Traer el catálogo existente para calcular el diff
-  const { data: existentes, error } = await sb.from('sismat_catalog').select('sismat_id, precio_sismat, nombre_original');
+  const { data: existentes, error } = await sb.from('sismat_catalog').select('tipo, sismat_id, precio_sismat, nombre_original');
   if (error) { toast('Error al leer catálogo actual: ' + error.message, 'err'); return; }
   _catalogoExistente = existentes || [];
 
-  const mapaExistente = Object.fromEntries(_catalogoExistente.map(r => [r.sismat_id, r]));
-  const idsNuevoJson  = new Set(items.map(i => i.sismat_id));
+  const mapaExistente = Object.fromEntries(_catalogoExistente.map(r => [keyOf(r), r]));
+  const idsNuevoJson  = new Set(items.map(keyOf));
 
-  const nuevos      = items.filter(i => !mapaExistente[i.sismat_id]);
+  const nuevos      = items.filter(i => !mapaExistente[keyOf(i)]);
   const actualizados = items.filter(i => {
-    const ex = mapaExistente[i.sismat_id];
+    const ex = mapaExistente[keyOf(i)];
     return ex && ex.precio_sismat !== i.precio;
   });
   const alertas = actualizados.filter(i => {
-    const ex = mapaExistente[i.sismat_id];
+    const ex = mapaExistente[keyOf(i)];
     return ex && ex.precio_sismat > 0 && Math.abs((i.precio - ex.precio_sismat) / ex.precio_sismat) > 0.20;
   });
-  const eliminados = _catalogoExistente.filter(r => !idsNuevoJson.has(r.sismat_id));
+  const eliminados = _catalogoExistente.filter(r => !idsNuevoJson.has(keyOf(r)));
 
   _datosPendientes = items;
 
@@ -111,7 +115,7 @@ async function _procesarJson(file) {
 
   // Preview primeros 10
   document.getElementById('is-preview-body').innerHTML = items.slice(0, 10).map(i => {
-    const ex = mapaExistente[i.sismat_id];
+    const ex = mapaExistente[keyOf(i)];
     let estado = '<span class="badge badge-ok">Nuevo</span>';
     if (ex) {
       const delta = ex.precio_sismat > 0
@@ -147,47 +151,69 @@ async function _confirmarSincronizacion() {
   const setBar    = pct => document.getElementById('is-prog-bar').style.width = pct + '%';
   const setLog    = msg => document.getElementById('is-prog-log').textContent = msg;
 
-  const mapaExistente = Object.fromEntries(_catalogoExistente.map(r => [r.sismat_id, r]));
+  const keyOf = i => `${i.tipo}:${i.sismat_id}`;
+  const mapaExistente = Object.fromEntries(_catalogoExistente.map(r => [keyOf(r), r]));
   const historial = [];
+
+  const rowOf = item => ({
+    tipo:               item.tipo,
+    sismat_id:          item.sismat_id,
+    nombre_original:    item.nombre,
+    unidad:             item.unidad,
+    unidad_nombre:      item.unidad_nombre || '',
+    categoria_sismat:   item.categoria,
+    categoria_sismat_id: item.categoria_id,
+    precio_sismat:      item.precio,
+    detalle:            item.detalle || null,
+    raw_json:           item,
+    actualizado_en:     new Date().toISOString(),
+  });
+
+  // Split: nuevos (insert) vs existentes (update). Evitamos upsert porque
+  // PostgREST a veces no detecta el constraint compuesto en su cache.
+  const nuevos      = _datosPendientes.filter(i => !mapaExistente[keyOf(i)]);
+  const aActualizar = _datosPendientes.filter(i => mapaExistente[keyOf(i)]);
   const total = _datosPendientes.length;
-  const LOTE  = 100;
   let procesados = 0;
 
-  setStatus('Sincronizando con Supabase...');
+  // ── INSERT en lotes de 100 ──
+  setStatus(`Insertando ${nuevos.length} ítems nuevos...`);
+  const LOTE_INS = 100;
+  for (let i = 0; i < nuevos.length; i += LOTE_INS) {
+    const lote = nuevos.slice(i, i + LOTE_INS);
+    setBar(Math.round(((procesados + i) / total) * 90));
+    setLog(`Nuevos: ${i + 1} – ${Math.min(i + LOTE_INS, nuevos.length)} de ${nuevos.length}`);
+    const { error } = await sb.from('sismat_catalog').insert(lote.map(rowOf));
+    if (error) { toast('Error al insertar: ' + error.message, 'err'); return; }
+  }
+  procesados += nuevos.length;
 
-  for (let i = 0; i < total; i += LOTE) {
-    const lote = _datosPendientes.slice(i, i + LOTE);
-    setBar(Math.round((i / total) * 90));
-    setLog(`${i + 1} – ${Math.min(i + LOTE, total)} de ${total}...`);
+  // ── UPDATE en paralelo, lotes de 20 (cada uno es un request a la API) ──
+  setStatus(`Actualizando ${aActualizar.length} ítems existentes...`);
+  const LOTE_UPD = 20;
+  for (let i = 0; i < aActualizar.length; i += LOTE_UPD) {
+    const lote = aActualizar.slice(i, i + LOTE_UPD);
+    setBar(Math.round(((procesados + i) / total) * 90));
+    setLog(`Actualizados: ${i + 1} – ${Math.min(i + LOTE_UPD, aActualizar.length)} de ${aActualizar.length}`);
 
-    // Armar filas para UPSERT
-    const rows = lote.map(item => ({
-      sismat_id:          item.sismat_id,
-      tipo:               item.tipo,
-      nombre_original:    item.nombre,
-      unidad:             item.unidad,
-      unidad_nombre:      item.unidad_nombre || '',
-      categoria_sismat:   item.categoria,
-      categoria_sismat_id: item.categoria_id,
-      precio_sismat:      item.precio,
-      detalle:            item.detalle || null,
-      raw_json:           item,
-      actualizado_en:     new Date().toISOString(),
+    const results = await Promise.all(lote.map(item => {
+      const row = rowOf(item);
+      delete row.tipo; delete row.sismat_id; // no se actualizan, son la PK
+      return sb.from('sismat_catalog').update(row)
+        .eq('tipo', item.tipo).eq('sismat_id', item.sismat_id);
     }));
+    const err = results.find(r => r.error);
+    if (err) { toast('Error al actualizar: ' + err.error.message, 'err'); return; }
 
-    const { error } = await sb.from('sismat_catalog')
-      .upsert(rows, { onConflict: 'sismat_id' });
-
-    if (error) { toast('Error en sincronización: ' + error.message, 'err'); return; }
-
-    // Registrar cambios de precio en historial
+    // Historial sólo de cambios de precio reales
     lote.forEach(item => {
-      const ex = mapaExistente[item.sismat_id];
+      const ex = mapaExistente[keyOf(item)];
       if (ex && ex.precio_sismat !== item.precio) {
         const delta = ex.precio_sismat > 0
           ? ((item.precio - ex.precio_sismat) / ex.precio_sismat * 100)
           : null;
         historial.push({
+          tipo:            item.tipo,
           sismat_id:       item.sismat_id,
           precio_anterior: ex.precio_sismat,
           precio_nuevo:    item.precio,
@@ -195,9 +221,8 @@ async function _confirmarSincronizacion() {
         });
       }
     });
-
-    procesados += lote.length;
   }
+  procesados += aActualizar.length;
 
   setBar(95);
   setStatus('Guardando historial de precios...');

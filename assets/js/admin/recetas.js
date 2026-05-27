@@ -89,12 +89,12 @@ function rcAbrirEditar(id) {
   if (!r) return;
   _recEditId     = id;
   _compActuales  = (r.receta_componentes || []).map(c => ({
+    tipo:         c.tipo,
     sismat_id:    c.sismat_id,
     nombre:       c.sismat_catalog?.nombre_original || '—',
     unidad:       c.sismat_catalog?.unidad || '',
     precio_sismat: c.sismat_catalog?.precio_sismat || 0,
     cantidad:     c.cantidad,
-    tipo:         c.tipo,
   }));
   _rcPoblarCatSelect(r.categoria_id || '');
   document.getElementById('rc-nombre').value = r.nombre || '';
@@ -193,7 +193,7 @@ async function _rcBuscar() {
   if (texto.length < 2) { dropdown.style.display = 'none'; return; }
 
   const { data } = await sb.from('sismat_catalog')
-    .select('sismat_id, nombre_original, unidad, precio_sismat, tipo')
+    .select('tipo, sismat_id, nombre_original, unidad, precio_sismat')
     .ilike('nombre_original', `%${texto}%`)
     .gt('precio_sismat', 0)
     .limit(8);
@@ -216,16 +216,16 @@ async function _rcBuscar() {
 function rcSeleccionar(i) {
   const item = _searchResults[i];
   if (!item) return;
-  if (_compActuales.find(c => c.sismat_id === item.sismat_id)) {
+  if (_compActuales.find(c => c.sismat_id === item.sismat_id && c.tipo === item.tipo)) {
     toast('Ese ítem ya está en la receta', 'err'); return;
   }
   _compActuales.push({
+    tipo:         item.tipo,
     sismat_id:    item.sismat_id,
     nombre:       item.nombre_original,
     unidad:       item.unidad,
     precio_sismat: item.precio_sismat,
     cantidad:     1,
-    tipo:         item.tipo,
   });
   document.getElementById('rc-search').value      = '';
   document.getElementById('rc-dropdown').style.display = 'none';
@@ -267,9 +267,9 @@ async function rcGuardar() {
     const { error } = await sb.from('receta_componentes').insert(
       _compActuales.map(c => ({
         receta_id: recetaId,
+        tipo:      c.tipo,
         sismat_id: c.sismat_id,
         cantidad:  c.cantidad,
-        tipo:      c.tipo,
       }))
     );
     if (error) { toast('Error al guardar componentes: ' + error.message, 'err'); return; }
