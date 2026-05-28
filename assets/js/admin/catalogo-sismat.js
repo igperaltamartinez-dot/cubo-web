@@ -44,19 +44,23 @@ async function _csPoblarCats() {
     .select('categoria_sismat, categoria_sismat_id')
     .order('sismat_id'));
 
+  // Filtramos por nombre, no por categoria_sismat_id: ese id se reusa entre
+  // material y mano_de_obra (cada tipo numera desde 1), así que un mismo número
+  // apunta a dos categorías distintas. El nombre sí identifica unívocamente.
   const seen = new Set();
   const cats = [];
   filas.forEach(r => {
-    if (r.categoria_sismat_id != null && !seen.has(r.categoria_sismat_id)) {
-      seen.add(r.categoria_sismat_id);
-      cats.push({ id: r.categoria_sismat_id, nombre: r.categoria_sismat });
+    const nombre = r.categoria_sismat;
+    if (nombre && !seen.has(nombre)) {
+      seen.add(nombre);
+      cats.push(nombre);
     }
   });
-  cats.sort((a, b) => a.nombre.localeCompare(b.nombre));
+  cats.sort((a, b) => a.localeCompare(b));
 
   document.getElementById('cs-cat').innerHTML =
     '<option value="">Todas las categorías</option>' +
-    cats.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+    cats.map(n => `<option value="${_csEsc(n)}">${_csEsc(n)}</option>`).join('');
 }
 
 async function _csCargarPagina() {
@@ -73,7 +77,7 @@ async function _csCargarPagina() {
 
   if (texto)     q = q.ilike('nombre_original', `%${texto}%`);
   if (tipo)      q = q.eq('tipo', tipo);
-  if (catSismat) q = q.eq('categoria_sismat_id', parseInt(catSismat));
+  if (catSismat) q = q.eq('categoria_sismat', catSismat);
 
   if (visibilidad === 'visible' || visibilidad === 'oculto') {
     // Agrupamos visibles por tipo (la PK es compuesta, no podemos hacer un .in plano).
