@@ -608,8 +608,9 @@ async function confirmarImportacion(reemplazarTodo = false) {
   const catNombres = [...new Set(datosImportar.map(i => i.categoria_nombre))];
   const catMap = {};
 
+  const normCat = s => (s || '').trim().toLowerCase();
   for (const nombre of catNombres) {
-    let cat = categorias.find(c => c.nombre === nombre);
+    let cat = categorias.find(c => normCat(c.nombre) === normCat(nombre));
     if (!cat) {
       const { data } = await sb.from('categorias').insert({ nombre, activo: true, orden: 99 }).select().single();
       if (data) { categorias.push(data); cat = data; }
