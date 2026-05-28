@@ -73,10 +73,15 @@ async function _procesarJson(file) {
     toast('No se encontraron ítems con precio en el JSON', 'err'); return;
   }
 
-  // Traer el catálogo existente para calcular el diff
-  const { data: existentes, error } = await sb.from('sismat_catalog').select('tipo, sismat_id, precio_sismat, nombre_original');
-  if (error) { toast('Error al leer catálogo actual: ' + error.message, 'err'); return; }
-  _catalogoExistente = existentes || [];
+  // Traer el catálogo existente para calcular el diff.
+  // Paginado: el catálogo supera las ~1000 filas y truncarlo haría que los
+  // ítems de filas tardías se cuenten como "nuevos" y no se registre su histórico.
+  try {
+    _catalogoExistente = await sbSelectAll(() => sb.from('sismat_catalog')
+      .select('tipo, sismat_id, precio_sismat, nombre_original').order('sismat_id'));
+  } catch (error) {
+    toast('Error al leer catálogo actual: ' + error.message, 'err'); return;
+  }
 
   const mapaExistente = Object.fromEntries(_catalogoExistente.map(r => [keyOf(r), r]));
   const idsNuevoJson  = new Set(items.map(keyOf));
@@ -104,7 +109,7 @@ async function _procesarJson(file) {
   if (alertas.length) {
     alertaBox.style.display = 'block';
     document.getElementById('is-alerta-lista').innerHTML = alertas.slice(0, 5).map(i => {
-      const ex   = mapaExistente[i.sismat_id];
+      const ex   = mapaExistente[keyOf(i)];
       const delta = ((i.precio - ex.precio_sismat) / ex.precio_sismat * 100).toFixed(1);
       const signo = delta > 0 ? '+' : '';
       return `<div>${i.nombre}: $${Math.round(ex.precio_sismat).toLocaleString('es-AR')} → $${Math.round(i.precio).toLocaleString('es-AR')} (${signo}${delta}%)</div>`;

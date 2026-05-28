@@ -16,6 +16,23 @@ function toast(msg, tipo = 'ok') {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 
+// Supabase corta cada request en ~1000 filas. Para tablas que superan ese tope
+// (catálogo Sismat, overrides) hay que paginar o se pierden filas silenciosamente.
+// buildQuery debe incluir un .order() estable para que el range sea consistente.
+async function sbSelectAll(buildQuery, batch = 1000) {
+  const out = [];
+  let desde = 0;
+  while (true) {
+    const { data, error } = await buildQuery().range(desde, desde + batch - 1);
+    if (error) throw error;
+    if (!data || !data.length) break;
+    out.push(...data);
+    if (data.length < batch) break;
+    desde += batch;
+  }
+  return out;
+}
+
 // ── AUTH ──
 async function login() {
   const email = document.getElementById('l-email').value.trim();

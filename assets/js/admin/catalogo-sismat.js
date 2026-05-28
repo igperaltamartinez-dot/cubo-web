@@ -31,20 +31,23 @@ async function iniciarCatalogoSismat() {
 }
 
 async function _csRecargarOverrides() {
-  const { data } = await sb.from('sismat_catalog_overrides').select('*');
+  const data = await sbSelectAll(() => sb.from('sismat_catalog_overrides')
+    .select('*').order('sismat_id'));
   _csOvMap = {};
-  (data || []).forEach(r => { _csOvMap[_csKey(r.tipo, r.sismat_id)] = r; });
+  data.forEach(r => { _csOvMap[_csKey(r.tipo, r.sismat_id)] = r; });
 }
 
 async function _csPoblarCats() {
-  const { data } = await sb.from('sismat_catalog')
+  // Paginamos todo el catálogo: una categoría puede aparecer solo en filas
+  // tardías y se perdería si confiáramos en un único request (tope ~1000).
+  const filas = await sbSelectAll(() => sb.from('sismat_catalog')
     .select('categoria_sismat, categoria_sismat_id')
-    .limit(2000);
+    .order('sismat_id'));
 
   const seen = new Set();
   const cats = [];
-  (data || []).forEach(r => {
-    if (!seen.has(r.categoria_sismat_id)) {
+  filas.forEach(r => {
+    if (r.categoria_sismat_id != null && !seen.has(r.categoria_sismat_id)) {
       seen.add(r.categoria_sismat_id);
       cats.push({ id: r.categoria_sismat_id, nombre: r.categoria_sismat });
     }
