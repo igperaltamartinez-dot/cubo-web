@@ -212,7 +212,10 @@ function renderCats() {
             : `<span style="font-size:11px;color:#ccc;font-style:italic">Sin mensaje</span>`}
         </td>
         <td><label class="toggle-switch"><input type="checkbox" ${c.activo ? 'checked' : ''} onchange="toggleCat('${c.id}',this.checked)"><span class="toggle-slider"></span></label></td>
-        <td><button class="btn-sm" onclick="editarCat('${c.id}')">Editar</button></td>
+        <td>
+          <button class="btn-sm" onclick="editarCat('${c.id}')">Editar</button>
+          <button class="btn-sm danger" onclick="eliminarCat('${c.id}')">Borrar</button>
+        </td>
       </tr>`;
     }).join('') :
     '<tr><td colspan="7" class="empty-state">No hay categorías.</td></tr>';
@@ -262,6 +265,15 @@ async function toggleCat(id, activo) {
   const idx = categorias.findIndex(c => c.id === id);
   if (idx >= 0) categorias[idx].activo = activo;
   toast(activo ? 'Categoría activada ✓' : 'Categoría desactivada');
+}
+
+async function eliminarCat(id) {
+  const c = categorias.find(c => c.id === id);
+  if (!c) return;
+  if (!confirm(`¿Eliminar la categoría "${c.nombre}"?\n\nLas recetas y los ítems del catálogo que la tengan asignada quedarán sin categoría. No se puede deshacer.`)) return;
+  const { error } = await sb.from('categorias').delete().eq('id', id);
+  if (!error) { await cargarTodo(); renderCats(); toast('Categoría eliminada'); }
+  else toast('Error al eliminar: ' + error.message, 'err');
 }
 
 // ── CORRELACIONES ──
