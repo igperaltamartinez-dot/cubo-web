@@ -185,6 +185,12 @@ function selCat(id) {
 }
 window.selCat = selCat;
 
+const ABREV_UNIDAD = { 'm²': 'm²', 'm2': 'm²', 'm³': 'm³', 'm3': 'm³', 'ml': 'ml', 'global': 'gl', 'unidad': 'un', 'un': 'un' };
+function abrevUnidad(u) {
+  const k = (u || '').trim().toLowerCase();
+  return ABREV_UNIDAD[k] || (u || '').trim() || 'cant.';
+}
+
 function renderItems() {
   const cat   = categorias.find(c => c.id === catActiva);
   const items = itemsPorCat[catActiva] || [];
@@ -220,7 +226,7 @@ function renderItems() {
         <input class="cant-inp" type="number" id="c-${item.id}" min="0.1"
           step="${item.unidad === 'unidad' ? '1' : '0.5'}"
           value="${cantidades[item.id] || ''}"
-          placeholder="${item.unidad === 'unidad' ? '1' : 'm²'}"
+          placeholder="${abrevUnidad(item.unidad)}"
           oninput="cantidades['${item.id}']=this.value"
           inputmode="decimal">
         <button class="agr-btn" onclick="agregar('${item.id}')">${enc ? 'Sumar' : 'Agregar'}</button>
