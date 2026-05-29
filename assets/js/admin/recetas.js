@@ -60,6 +60,7 @@ function _rcRenderLista() {
       </td>
       <td style="display:flex;gap:4px">
         <button class="btn-sm" onclick="rcAbrirEditar('${r.id}')">Editar</button>
+        <button class="btn-sm" onclick="rcDuplicar('${r.id}')">Duplicar</button>
         <button class="btn-sm danger" onclick="rcEliminar('${r.id}')">Borrar</button>
       </td>
     </tr>`;
@@ -287,6 +288,33 @@ async function rcToggleActivo(id, activo) {
     if (r) r.activo_publico = activo;
     toast(activo ? 'Visible en cotizador ✓' : 'Oculta del cotizador');
   } else toast('Error al guardar', 'err');
+}
+
+async function rcDuplicar(id) {
+  const src = _recetas.find(r => r.id === id);
+  if (!src) return;
+
+  const { data: nueva, error } = await sb.from('recetas').insert({
+    nombre: `${src.nombre} (copia)`,
+    descripcion: src.descripcion,
+    unidad: src.unidad,
+    categoria_id: src.categoria_id,
+    ajuste_porcentaje: src.ajuste_porcentaje || 0,
+    orden: src.orden || 99,
+    activo_publico: false,
+  }).select().single();
+  if (error) { toast('Error al duplicar: ' + error.message, 'err'); return; }
+
+  const comps = src.receta_componentes || [];
+  if (comps.length) {
+    const { error: errComp } = await sb.from('receta_componentes').insert(
+      comps.map(c => ({ receta_id: nueva.id, tipo: c.tipo, sismat_id: c.sismat_id, cantidad: c.cantidad }))
+    );
+    if (errComp) { toast('Receta copiada, pero falló copiar componentes: ' + errComp.message, 'err'); }
+  }
+
+  await _rcCargar();
+  toast('Receta duplicada ✓');
 }
 
 async function rcEliminar(id) {
