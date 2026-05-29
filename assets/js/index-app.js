@@ -48,31 +48,73 @@ async function cargarHero() {
 
 /* ── BENTO PROYECTOS ── */
 const BENTO_LAYOUTS = ['big', 'med', 'small', 'wide'];
+let _obrasCache = {};
 
 async function cargarBento() {
-  const grid = document.getElementById('bento-grid');
+  const gridReal = document.getElementById('bento-grid-realizadas');
+  const gridProx = document.getElementById('bento-grid-proximas');
+  const headProx = document.getElementById('proximas-head');
+
   const { data: obras } = await sb.from('obras')
-    .select('id, titulo, zona, tipo, imagen_url')
+    .select('id, titulo, zona, tipo, imagen_url, descripcion, fase, fecha')
+    .eq('activo', true)
     .not('imagen_url', 'is', null)
-    .order('id', { ascending: false })
-    .limit(4);
+    .order('orden')
+    .order('id', { ascending: false });
 
-  if (!obras || !obras.length) {
-    grid.innerHTML = '<div class="bento-empty body-sm">Las fotos de obras realizadas van a aparecer acá pronto.</div>';
-    return;
+  const realizadas = (obras || []).filter(o => o.fase !== 'proxima');
+  const proximas   = (obras || []).filter(o => o.fase === 'proxima');
+
+  _obrasCache = Object.fromEntries((obras || []).map(o => [o.id, o]));
+
+  gridReal.innerHTML = realizadas.length
+    ? realizadas.map((o, i) => _bentoCard(o, i)).join('')
+    : '<div class="bento-empty body-sm">Las fotos de obras realizadas van a aparecer acá pronto.</div>';
+
+  if (proximas.length) {
+    headProx.style.display = '';
+    gridProx.innerHTML = proximas.map((o, i) => _bentoCard(o, i)).join('');
   }
-
-  grid.innerHTML = obras.map((o, i) => `
-    <a class="bento-card ${BENTO_LAYOUTS[i % BENTO_LAYOUTS.length]}" href="presupuestador.html">
-      <img src="${o.imagen_url}" alt="${o.titulo || 'Obra CUBO'}" loading="lazy">
-      <div class="bento-info">
-        ${o.tipo ? `<span class="bento-tipo">${o.tipo}</span>` : ''}
-        <h4 class="bento-title">${o.titulo || 'Obra CUBO'}</h4>
-        ${o.zona ? `<p class="bento-zona">${o.zona}</p>` : ''}
-      </div>
-    </a>
-  `).join('');
 }
+
+function _bentoCard(o, i) {
+  return `<button type="button" class="bento-card ${BENTO_LAYOUTS[i % BENTO_LAYOUTS.length]}" onclick="abrirProyModal('${o.id}')">
+    <img src="${o.imagen_url}" alt="${o.titulo || 'Obra CUBO'}" loading="lazy">
+    <div class="bento-info">
+      ${o.tipo ? `<span class="bento-tipo">${o.tipo}</span>` : ''}
+      <h4 class="bento-title">${o.titulo || 'Obra CUBO'}</h4>
+      ${o.zona ? `<p class="bento-zona">${o.zona}</p>` : ''}
+    </div>
+  </button>`;
+}
+
+function abrirProyModal(id) {
+  const o = _obrasCache[id];
+  if (!o) return;
+  const modal = document.getElementById('proy-modal');
+  document.getElementById('proy-modal-img').src = o.imagen_url;
+  document.getElementById('proy-modal-img').alt = o.titulo || '';
+  document.getElementById('proy-modal-titulo').textContent = o.titulo || '';
+  document.getElementById('proy-modal-desc').textContent = o.descripcion || 'Pronto vamos a contar más sobre este proyecto.';
+
+  const fase = document.getElementById('proy-modal-fase');
+  if (o.fase === 'proxima') { fase.textContent = 'Próxima obra'; fase.style.display = ''; }
+  else { fase.style.display = 'none'; }
+
+  const meta = [o.tipo, o.zona, o.fecha].filter(Boolean).join(' · ');
+  document.getElementById('proy-modal-meta').textContent = meta;
+
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function cerrarProyModal(e) {
+  if (e && e.target.closest('.proy-modal-box') && !e.target.closest('.proy-modal-close')) return;
+  document.getElementById('proy-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+window.abrirProyModal = abrirProyModal;
+window.cerrarProyModal = cerrarProyModal;
 
 /* ── CONFIGURACIÓN (footer + drawer) ── */
 async function cargarConfiguracion() {

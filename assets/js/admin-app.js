@@ -343,14 +343,15 @@ function renderObras() {
       <td><strong>${o.titulo}</strong></td>
       <td>${o.tipo || '—'}</td>
       <td>${o.zona || '—'}</td>
-      <td style="font-size:11px;color:#aaa;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${o.imagen_url || '—'}</td>
+      <td><span class="badge ${o.fase === 'proxima' ? 'badge-nuevo' : 'badge-contactado'}">${o.fase === 'proxima' ? 'Próxima' : 'Realizada'}</span></td>
+      <td style="font-size:12px;color:var(--gm)">${o.fecha || '—'}</td>
       <td><label class="toggle-switch"><input type="checkbox" ${o.activo ? 'checked' : ''} onchange="toggleObra('${o.id}',this.checked)"><span class="toggle-slider"></span></label></td>
       <td style="display:flex;gap:4px">
         <button class="btn-sm" onclick="editarObra('${o.id}')">Editar</button>
         <button class="btn-sm danger" onclick="eliminarObra('${o.id}')">Borrar</button>
       </td>
     </tr>`).join('') :
-    '<tr><td colspan="6" class="empty-state">No hay obras cargadas.</td></tr>';
+    '<tr><td colspan="7" class="empty-state">No hay obras cargadas.</td></tr>';
 }
 
 function abrirModalObra(id = null) {
@@ -363,8 +364,11 @@ function abrirModalObra(id = null) {
     document.getElementById('obra-zona').value = o.zona || '';
     document.getElementById('obra-img').value = o.imagen_url || '';
     document.getElementById('obra-desc').value = o.descripcion || '';
+    document.getElementById('obra-fase').value = o.fase || 'realizada';
+    document.getElementById('obra-fecha').value = o.fecha || '';
   } else {
-    ['obra-titulo','obra-tipo','obra-zona','obra-img','obra-desc'].forEach(i => document.getElementById(i).value = '');
+    ['obra-titulo','obra-tipo','obra-zona','obra-img','obra-desc','obra-fecha'].forEach(i => document.getElementById(i).value = '');
+    document.getElementById('obra-fase').value = 'realizada';
   }
   document.getElementById('modal-obra').classList.add('open');
 }
@@ -375,7 +379,15 @@ async function guardarObra() {
   const titulo = document.getElementById('obra-titulo').value.trim();
   const img = document.getElementById('obra-img').value.trim();
   if (!titulo || !img) { toast('Completá título e imagen', 'err'); return; }
-  const data = { titulo, tipo: document.getElementById('obra-tipo').value || null, zona: document.getElementById('obra-zona').value || null, imagen_url: img, descripcion: document.getElementById('obra-desc').value || null };
+  const data = {
+    titulo,
+    tipo: document.getElementById('obra-tipo').value || null,
+    zona: document.getElementById('obra-zona').value || null,
+    imagen_url: img,
+    descripcion: document.getElementById('obra-desc').value || null,
+    fase: document.getElementById('obra-fase').value || 'realizada',
+    fecha: document.getElementById('obra-fecha').value.trim() || null,
+  };
   let error;
   if (editandoObra) {
     ({ error } = await sb.from('obras').update(data).eq('id', editandoObra));

@@ -313,4 +313,112 @@
   transform: rotate(-45deg);
   transition: transform 1s ease;
 }
+
+/* ============================================================
+   BENTO CARD COMO <button> + SUBHEAD + MODAL DE PROYECTO
+   ============================================================ */
+button.bento-card {
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  width: 100%;
+}
+
+.section-head--sub {
+  margin-top: 56px;
+}
+.section-head--sub .display-md {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--charcoal);
+}
+@media (min-width: 768px) {
+  .section-head--sub { margin-top: 80px; }
+  .section-head--sub .display-md { font-size: 40px; }
+}
+
+.proy-modal {
+  position: fixed; inset: 0;
+  background: rgba(27,28,28,0.78);
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 16px;
+  z-index: 1000;
+  overflow-y: auto;
+}
+.proy-modal.open { display: flex; }
+.proy-modal-box {
+  background: var(--cream);
+  max-width: 720px;
+  width: 100%;
+  border-radius: var(--r);
+  overflow: hidden;
+  position: relative;
+  max-height: 92vh;
+  display: flex; flex-direction: column;
+}
+.proy-modal-close {
+  position: absolute; top: 12px; right: 12px;
+  width: 40px; height: 40px;
+  background: rgba(251,249,249,0.92);
+  border: 0; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  color: var(--charcoal);
+}
+.proy-modal-close:hover { background: var(--cream); }
+.proy-modal-img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  display: block;
+  flex-shrink: 0;
+}
+.proy-modal-body {
+  padding: 28px 24px 32px;
+  overflow-y: auto;
+}
+@media (min-width: 768px) {
+  .proy-modal-body { padding: 32px 40px 40px; }
+}
+.proy-modal-fase {
+  display: inline-block;
+  background: var(--charcoal);
+  color: var(--cream);
+  padding: 6px 12px;
+  font-size: 10px;
+  margin-bottom: 12px;
+}
+.proy-modal-titulo {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--charcoal);
+  margin-bottom: 8px;
+  line-height: 1.15;
+}
+@media (min-width: 768px) {
+  .proy-modal-titulo { font-size: 36px; }
+}
+.proy-modal-meta {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--on-surface-variant);
+  margin-bottom: 20px;
+  letter-spacing: 0.02em;
+}
+.proy-modal-desc {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--on-surface);
+  white-space: pre-line;
+}
 .cta-deco:hover .cta-icon { transform: rotate(-90deg); }

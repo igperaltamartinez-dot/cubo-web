@@ -266,8 +266,8 @@
       <p class="page-sub">Las fotos que aparecen en la galería pública.</p>
       <div style="margin-bottom:16px"><button class="btn-add" onclick="abrirModalObra()">+ Nueva obra</button></div>
       <div class="card">
-        <table><thead><tr><th>Título</th><th>Tipo</th><th>Zona</th><th>Imagen URL</th><th>Visible</th><th></th></tr></thead>
-        <tbody id="obras-body"><tr><td colspan="6" class="empty-state">Cargando...</td></tr></tbody></table>
+        <table><thead><tr><th>Título</th><th>Tipo</th><th>Zona</th><th>Fase</th><th>Fecha</th><th>Visible</th><th></th></tr></thead>
+        <tbody id="obras-body"><tr><td colspan="7" class="empty-state">Cargando...</td></tr></tbody></table>
       </div>
     </div>
 
@@ -479,10 +479,23 @@
           <input class="m-input" id="obra-zona" placeholder="Palermo, Belgrano...">
         </div>
       </div>
+      <div class="m-row">
+        <div>
+          <label class="m-label">Fase</label>
+          <select class="m-input" id="obra-fase">
+            <option value="realizada">Obra realizada</option>
+            <option value="proxima">Próxima obra (en proyecto)</option>
+          </select>
+        </div>
+        <div>
+          <label class="m-label">Fecha</label>
+          <input class="m-input" id="obra-fecha" placeholder="Marzo 2025, En proyecto...">
+        </div>
+      </div>
       <label class="m-label">URL de la imagen *</label>
       <input class="m-input" id="obra-img" placeholder="https://...">
       <label class="m-label">Descripción</label>
-      <textarea class="m-input m-ta" id="obra-desc" placeholder="Descripción de la obra (opcional)"></textarea>
+      <textarea class="m-input m-ta" id="obra-desc" placeholder="Descripción del proyecto: ubicación, intervención, m², detalles que cuenten la historia..."></textarea>
     </div>
     <div class="modal-foot">
       <button class="btn-cancel" onclick="cerrarModal('modal-obra')">Cancelar</button>

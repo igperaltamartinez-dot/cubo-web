@@ -126,21 +126,45 @@
           <span class="material-symbols-outlined">arrow_forward</span>
         </a>
       </div>
-      <div class="bento-grid" id="bento-grid">
+      <div class="bento-grid" id="bento-grid-realizadas">
         <div class="bento-empty body-sm">Cargando obras...</div>
       </div>
+
+      <div class="section-head section-head--sub" id="proximas-head" style="display:none">
+        <div>
+          <p class="label-caps">En proyecto</p>
+          <h2 class="display-md">Próximas obras.</h2>
+        </div>
+      </div>
+      <div class="bento-grid" id="bento-grid-proximas"></div>
     </div>
   </section>
+
+  <!-- ─── MODAL DETALLE PROYECTO ─── -->
+  <div class="proy-modal" id="proy-modal" onclick="cerrarProyModal(event)">
+    <div class="proy-modal-box">
+      <button class="proy-modal-close" onclick="cerrarProyModal()" aria-label="Cerrar">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+      <img class="proy-modal-img" id="proy-modal-img" alt="">
+      <div class="proy-modal-body">
+        <span class="proy-modal-fase label-caps" id="proy-modal-fase"></span>
+        <h3 class="proy-modal-titulo" id="proy-modal-titulo"></h3>
+        <div class="proy-modal-meta" id="proy-modal-meta"></div>
+        <p class="proy-modal-desc" id="proy-modal-desc"></p>
+      </div>
+    </div>
+  </div>
 
   <!-- ─── NOSOTROS ─── -->
   <section id="nosotros" class="section section-nosotros section--dark">
     <div class="container nosotros-inner">
       <div class="nosotros-txt">
         <p class="label-caps reveal">Quiénes somos</p>
-        <h2 class="display-lg reveal">Nacho y Gonzalo.</h2>
+        <h2 class="display-lg reveal">Gonzalo y Nacho.</h2>
         <p class="body-lg reveal">Dos profesionales formados en obra que decidieron hacer las cosas a su manera.</p>
-        <p class="body-md reveal"><strong>Nacho</strong> pasó por todas las etapas de la construcción: empezó como sobrestante en edificios de 8 pisos, fue jefe de obra en duplex y hoy combina ese campo con la planificación técnica — presupuestos, planes de trabajo, optimización de procesos.</p>
-        <p class="body-md reveal"><strong>Gonzalo</strong> lleva 8 años en la industria: proyecto, gestiones municipales y dirección de postventa de desarrollos inmobiliarios. Conoce el proceso de obra de principio a fin.</p>
+        <p class="body-md reveal"><strong>Gonzalo</strong> es arquitecto y lleva 8 años en la industria: proyecto, gestiones municipales y dirección de postventa de desarrollos inmobiliarios. Conoce el proceso de obra de principio a fin.</p>
+        <p class="body-md reveal"><strong>Nacho</strong> suma 6 años en obra: empezó como sobrestante en edificios de 8 pisos, fue jefe de obra en duplex y hoy se enfoca en la planificación técnica — presupuestos, planes de trabajo y optimización de procesos.</p>
         <p class="body-md reveal">CUBO nació de esa experiencia y de un compromiso compartido: hacer las cosas bien, con transparencia y sin sorpresas.</p>
       </div>
       <div class="nosotros-stats reveal">
