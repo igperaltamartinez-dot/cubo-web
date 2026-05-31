@@ -92,8 +92,9 @@ function abrirProyModal(id) {
   const o = _obrasCache[id];
   if (!o) return;
   const modal = document.getElementById('proy-modal');
-  document.getElementById('proy-modal-img').src = o.imagen_url;
-  document.getElementById('proy-modal-img').alt = o.titulo || '';
+  const img = document.getElementById('proy-modal-img');
+  img.src = o.imagen_url;
+  img.alt = o.titulo || '';
   document.getElementById('proy-modal-titulo').textContent = o.titulo || '';
   document.getElementById('proy-modal-desc').textContent = o.descripcion || 'Pronto vamos a contar más sobre este proyecto.';
 
@@ -104,13 +105,36 @@ function abrirProyModal(id) {
   const meta = [o.tipo, o.zona, o.fecha].filter(Boolean).join(' · ');
   document.getElementById('proy-modal-meta').textContent = meta;
 
+  // Reset transform/scroll antes de abrir
+  img.style.transform = '';
+  img.style.opacity = '';
+  const box = modal.querySelector('.proy-modal-box');
+  box.scrollTop = 0;
+  box.addEventListener('scroll', _proyOnScroll, { passive: true });
+
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
+function _proyOnScroll(e) {
+  const box = e.currentTarget;
+  const img = box.querySelector('.proy-modal-img');
+  if (!img) return;
+  const y = box.scrollTop;
+  const h = img.clientHeight || 1;
+  const p = Math.min(1, y / h);
+  // La foto se va hacia arriba a 1.5× la velocidad del scroll (parallax),
+  // se achica levemente y baja la opacidad para una salida elegante.
+  img.style.transform = `translateY(${-y * 0.5}px) scale(${1 - p * 0.06})`;
+  img.style.opacity = `${1 - p * 0.55}`;
+}
+
 function cerrarProyModal(e) {
   if (e && e.target.closest('.proy-modal-box') && !e.target.closest('.proy-modal-close')) return;
-  document.getElementById('proy-modal').classList.remove('open');
+  const modal = document.getElementById('proy-modal');
+  const box = modal.querySelector('.proy-modal-box');
+  box.removeEventListener('scroll', _proyOnScroll);
+  modal.classList.remove('open');
   document.body.style.overflow = '';
 }
 window.abrirProyModal = abrirProyModal;
