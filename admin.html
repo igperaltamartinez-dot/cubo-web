@@ -492,8 +492,17 @@
           <input class="m-input" id="obra-fecha" placeholder="Marzo 2025, En proyecto...">
         </div>
       </div>
-      <label class="m-label">URL de la imagen *</label>
-      <input class="m-input" id="obra-img" placeholder="https://...">
+      <label class="m-label">Foto *</label>
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:8px">
+        <div id="obra-foto-preview" style="width:96px;height:72px;background:var(--gf);border-radius:4px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#bbb;font-weight:700;text-transform:uppercase;letter-spacing:.5px;background-size:cover;background-position:center">Sin foto</div>
+        <label class="btn-sm prim" style="cursor:pointer;flex-shrink:0">
+          <span id="obra-foto-btn-label">Subir foto</span>
+          <input type="file" accept="image/*" id="obra-foto-input" style="display:none" onchange="subirFotoObraModal(this.files[0])">
+        </label>
+        <span id="obra-foto-status" style="font-size:11px;color:var(--gm)"></span>
+      </div>
+      <input type="hidden" id="obra-img">
+      <input type="hidden" id="obra-storage-path">
       <label class="m-label">Descripción</label>
       <textarea class="m-input m-ta" id="obra-desc" placeholder="Descripción del proyecto: ubicación, intervención, m², detalles que cuenten la historia..."></textarea>
     </div>

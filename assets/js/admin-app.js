@@ -363,13 +363,18 @@ function abrirModalObra(id = null) {
     document.getElementById('obra-tipo').value = o.tipo || '';
     document.getElementById('obra-zona').value = o.zona || '';
     document.getElementById('obra-img').value = o.imagen_url || '';
+    document.getElementById('obra-storage-path').value = o.imagen_storage_path || '';
     document.getElementById('obra-desc').value = o.descripcion || '';
     document.getElementById('obra-fase').value = o.fase || 'realizada';
     document.getElementById('obra-fecha').value = o.fecha || '';
+    _pintarFotoObra(o.imagen_url);
   } else {
-    ['obra-titulo','obra-tipo','obra-zona','obra-img','obra-desc','obra-fecha'].forEach(i => document.getElementById(i).value = '');
+    ['obra-titulo','obra-tipo','obra-zona','obra-img','obra-storage-path','obra-desc','obra-fecha'].forEach(i => document.getElementById(i).value = '');
     document.getElementById('obra-fase').value = 'realizada';
+    _pintarFotoObra(null);
   }
+  document.getElementById('obra-foto-input').value = '';
+  document.getElementById('obra-foto-status').textContent = '';
   document.getElementById('modal-obra').classList.add('open');
 }
 
@@ -378,12 +383,13 @@ function editarObra(id) { abrirModalObra(id); }
 async function guardarObra() {
   const titulo = document.getElementById('obra-titulo').value.trim();
   const img = document.getElementById('obra-img').value.trim();
-  if (!titulo || !img) { toast('Completá título e imagen', 'err'); return; }
+  if (!titulo || !img) { toast('Completá título y subí una foto', 'err'); return; }
   const data = {
     titulo,
     tipo: document.getElementById('obra-tipo').value || null,
     zona: document.getElementById('obra-zona').value || null,
     imagen_url: img,
+    imagen_storage_path: document.getElementById('obra-storage-path').value || null,
     descripcion: document.getElementById('obra-desc').value || null,
     fase: document.getElementById('obra-fase').value || 'realizada',
     fecha: document.getElementById('obra-fecha').value.trim() || null,
@@ -396,6 +402,41 @@ async function guardarObra() {
   }
   if (!error) { cerrarModal('modal-obra'); await cargarTodo(); renderObras(); toast('Obra guardada ✓'); }
   else toast('Error al guardar', 'err');
+}
+
+function _pintarFotoObra(url) {
+  const box = document.getElementById('obra-foto-preview');
+  const btn = document.getElementById('obra-foto-btn-label');
+  if (url) {
+    box.style.backgroundImage = `url("${url}")`;
+    box.textContent = '';
+    btn.textContent = 'Cambiar foto';
+  } else {
+    box.style.backgroundImage = '';
+    box.textContent = 'Sin foto';
+    btn.textContent = 'Subir foto';
+  }
+}
+
+async function subirFotoObraModal(file) {
+  if (!file) return;
+  const status = document.getElementById('obra-foto-status');
+  status.textContent = 'Comprimiendo y subiendo...';
+  try {
+    const blob = await flComprimirImagen(file);
+    // Siempre path con timestamp: así si el usuario cancela tras subir, la foto
+    // anterior (si la hubiera) sigue intacta. Aceptamos que pueden quedar
+    // archivos huérfanos cuando se reemplaza una foto — el costo es despreciable.
+    const path = `obras/${editandoObra || 'new'}-${Date.now()}.jpg`;
+    const { path: storagePath, url } = await _flSubir(path, blob);
+    document.getElementById('obra-img').value = url;
+    document.getElementById('obra-storage-path').value = storagePath;
+    _pintarFotoObra(url);
+    status.textContent = 'Foto lista ✓';
+  } catch (e) {
+    status.textContent = '';
+    toast('Error al subir: ' + e.message, 'err');
+  }
 }
 
 async function toggleObra(id, activo) {
