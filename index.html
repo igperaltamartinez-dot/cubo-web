@@ -146,8 +146,18 @@
       <button class="proy-modal-close" onclick="cerrarProyModal()" aria-label="Cerrar">
         <span class="material-symbols-outlined">close</span>
       </button>
-      <div class="proy-modal-img-wrap">
-        <img class="proy-modal-img" id="proy-modal-img" alt="">
+      <div class="proy-gallery" id="proy-gallery">
+        <div class="proy-gallery-viewport">
+          <div class="proy-gallery-track" id="proy-gallery-track"></div>
+        </div>
+        <button type="button" class="proy-gallery-arrow proy-gallery-prev" id="proy-prev" aria-label="Foto anterior">
+          <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        <button type="button" class="proy-gallery-arrow proy-gallery-next" id="proy-next" aria-label="Foto siguiente">
+          <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+        <div class="proy-gallery-counter" id="proy-counter">1 / 1</div>
+        <div class="proy-gallery-dots" id="proy-dots"></div>
       </div>
       <div class="proy-modal-body">
         <span class="proy-modal-fase label-caps" id="proy-modal-fase"></span>

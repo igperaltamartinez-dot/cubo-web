@@ -69,7 +69,7 @@ async function cargarTodo() {
     sb.from('categorias').select('*').order('orden'),
     sb.from('leads').select('*').order('created_at', { ascending: false }),
     sb.from('correlaciones').select('*'),
-    sb.from('obras').select('*').order('orden'),
+    sb.from('obras_portfolio').select('*').order('orden'),
     sb.from('recetas').select('id, nombre').order('nombre'),
   ]);
   categorias  = cats.data    || [];
@@ -354,6 +354,10 @@ function renderObras() {
     '<tr><td colspan="7" class="empty-state">No hay obras cargadas.</td></tr>';
 }
 
+// Estado de la galería del modal de obra. Convención: fotos[portadaIdx] es la portada.
+// imagen_url y imagen_storage_path se derivan al guardar. Las otras URLs van al array `fotos` (JSONB).
+let _obraGal = { fotos: [], storagePaths: [], portadaIdx: 0 };
+
 function abrirModalObra(id = null) {
   editandoObra = id;
   document.getElementById('modal-obra-tit').textContent = id ? 'Editar obra' : 'Nueva obra';
@@ -362,90 +366,124 @@ function abrirModalObra(id = null) {
     document.getElementById('obra-titulo').value = o.titulo || '';
     document.getElementById('obra-tipo').value = o.tipo || '';
     document.getElementById('obra-zona').value = o.zona || '';
-    document.getElementById('obra-img').value = o.imagen_url || '';
-    document.getElementById('obra-storage-path').value = o.imagen_storage_path || '';
     document.getElementById('obra-desc').value = o.descripcion || '';
     document.getElementById('obra-fase').value = o.fase || 'realizada';
     document.getElementById('obra-fecha').value = o.fecha || '';
-    _pintarFotoObra(o.imagen_url);
+
+    const extras = Array.isArray(o.fotos) ? o.fotos.filter(Boolean) : [];
+    _obraGal.fotos        = [o.imagen_url, ...extras].filter(Boolean);
+    _obraGal.storagePaths = [o.imagen_storage_path || null, ...extras.map(() => null)];
+    _obraGal.portadaIdx   = _obraGal.fotos.length ? 0 : 0;
   } else {
-    ['obra-titulo','obra-tipo','obra-zona','obra-img','obra-storage-path','obra-desc','obra-fecha'].forEach(i => document.getElementById(i).value = '');
+    ['obra-titulo','obra-tipo','obra-zona','obra-desc','obra-fecha'].forEach(i => document.getElementById(i).value = '');
     document.getElementById('obra-fase').value = 'realizada';
-    _pintarFotoObra(null);
+    _obraGal = { fotos: [], storagePaths: [], portadaIdx: 0 };
   }
   document.getElementById('obra-foto-input').value = '';
   document.getElementById('obra-foto-status').textContent = '';
+  _renderObraGaleria();
   document.getElementById('modal-obra').classList.add('open');
 }
 
 function editarObra(id) { abrirModalObra(id); }
 
+function _renderObraGaleria() {
+  const grid = document.getElementById('obra-fotos-grid');
+  if (!_obraGal.fotos.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;border:1px dashed var(--gc);border-radius:4px;padding:24px;text-align:center;font-size:12px;color:#bbb">Sin fotos. Tocá "+ Agregar foto" para empezar.</div>';
+    return;
+  }
+  grid.innerHTML = _obraGal.fotos.map((url, i) => {
+    const esPort = i === _obraGal.portadaIdx;
+    return `<div data-idx="${i}" style="position:relative;aspect-ratio:4/3;border-radius:4px;overflow:hidden;border:${esPort ? '3px solid var(--tx)' : '1px solid var(--gc)'};background:#f6f6f6">
+      <img src="${url}" loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none">
+      ${esPort ? '<div style="position:absolute;top:4px;left:4px;background:var(--tx);color:#fff;padding:3px 7px;font-size:9px;font-weight:800;letter-spacing:.5px;border-radius:2px">PORTADA</div>' : ''}
+      <button type="button" title="${esPort ? 'Ya es portada' : 'Marcar como portada'}" onclick="_obraGalPortada(${i})" style="position:absolute;top:4px;right:30px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:${esPort ? '#FFD400' : '#fff'};font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">★</button>
+      <button type="button" title="Quitar foto" onclick="_obraGalQuitar(${i})" style="position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function _obraGalPortada(i) {
+  if (i < 0 || i >= _obraGal.fotos.length) return;
+  _obraGal.portadaIdx = i;
+  _renderObraGaleria();
+}
+window._obraGalPortada = _obraGalPortada;
+
+function _obraGalQuitar(i) {
+  if (i < 0 || i >= _obraGal.fotos.length) return;
+  _obraGal.fotos.splice(i, 1);
+  _obraGal.storagePaths.splice(i, 1);
+  if (_obraGal.portadaIdx === i)      _obraGal.portadaIdx = 0;
+  else if (_obraGal.portadaIdx > i)   _obraGal.portadaIdx--;
+  _renderObraGaleria();
+}
+window._obraGalQuitar = _obraGalQuitar;
+
+async function subirFotosObraModal(files) {
+  if (!files || !files.length) return;
+  const status = document.getElementById('obra-foto-status');
+  const total = files.length;
+  let hechas = 0;
+  status.textContent = `Subiendo 0/${total}...`;
+  for (const file of files) {
+    try {
+      const blob = await flComprimirImagen(file);
+      const path = `obras/${editandoObra || 'new'}-${Date.now()}-${hechas}.jpg`;
+      const { path: storagePath, url } = await _flSubir(path, blob);
+      _obraGal.fotos.push(url);
+      _obraGal.storagePaths.push(storagePath);
+      if (_obraGal.fotos.length === 1) _obraGal.portadaIdx = 0;
+      _renderObraGaleria();
+      hechas++;
+      status.textContent = `Subiendo ${hechas}/${total}...`;
+    } catch (e) {
+      toast('Error al subir: ' + e.message, 'err');
+    }
+  }
+  status.textContent = hechas === total ? `${hechas} foto${hechas > 1 ? 's' : ''} lista${hechas > 1 ? 's' : ''} ✓` : `${hechas}/${total} subidas`;
+  document.getElementById('obra-foto-input').value = '';
+}
+window.subirFotosObraModal = subirFotosObraModal;
+
 async function guardarObra() {
   const titulo = document.getElementById('obra-titulo').value.trim();
-  const img = document.getElementById('obra-img').value.trim();
-  if (!titulo || !img) { toast('Completá título y subí una foto', 'err'); return; }
+  if (!titulo) { toast('Falta el título', 'err'); return; }
+  if (!_obraGal.fotos.length) { toast('Subí al menos una foto', 'err'); return; }
+
+  const portadaUrl  = _obraGal.fotos[_obraGal.portadaIdx];
+  const portadaPath = _obraGal.storagePaths[_obraGal.portadaIdx] || null;
+  const extras      = _obraGal.fotos.filter((_, i) => i !== _obraGal.portadaIdx);
+
   const data = {
     titulo,
     tipo: document.getElementById('obra-tipo').value || null,
     zona: document.getElementById('obra-zona').value || null,
-    imagen_url: img,
-    imagen_storage_path: document.getElementById('obra-storage-path').value || null,
+    imagen_url: portadaUrl,
+    imagen_storage_path: portadaPath,
+    fotos: extras,
     descripcion: document.getElementById('obra-desc').value || null,
     fase: document.getElementById('obra-fase').value || 'realizada',
     fecha: document.getElementById('obra-fecha').value.trim() || null,
   };
   let error;
   if (editandoObra) {
-    ({ error } = await sb.from('obras').update(data).eq('id', editandoObra));
+    ({ error } = await sb.from('obras_portfolio').update(data).eq('id', editandoObra));
   } else {
-    ({ error } = await sb.from('obras').insert({ ...data, activo: true }));
+    ({ error } = await sb.from('obras_portfolio').insert({ ...data, activo: true }));
   }
   if (!error) { cerrarModal('modal-obra'); await cargarTodo(); renderObras(); toast('Obra guardada ✓'); }
-  else toast('Error al guardar', 'err');
-}
-
-function _pintarFotoObra(url) {
-  const box = document.getElementById('obra-foto-preview');
-  const btn = document.getElementById('obra-foto-btn-label');
-  if (url) {
-    box.style.backgroundImage = `url("${url}")`;
-    box.textContent = '';
-    btn.textContent = 'Cambiar foto';
-  } else {
-    box.style.backgroundImage = '';
-    box.textContent = 'Sin foto';
-    btn.textContent = 'Subir foto';
-  }
-}
-
-async function subirFotoObraModal(file) {
-  if (!file) return;
-  const status = document.getElementById('obra-foto-status');
-  status.textContent = 'Comprimiendo y subiendo...';
-  try {
-    const blob = await flComprimirImagen(file);
-    // Siempre path con timestamp: así si el usuario cancela tras subir, la foto
-    // anterior (si la hubiera) sigue intacta. Aceptamos que pueden quedar
-    // archivos huérfanos cuando se reemplaza una foto — el costo es despreciable.
-    const path = `obras/${editandoObra || 'new'}-${Date.now()}.jpg`;
-    const { path: storagePath, url } = await _flSubir(path, blob);
-    document.getElementById('obra-img').value = url;
-    document.getElementById('obra-storage-path').value = storagePath;
-    _pintarFotoObra(url);
-    status.textContent = 'Foto lista ✓';
-  } catch (e) {
-    status.textContent = '';
-    toast('Error al subir: ' + e.message, 'err');
-  }
+  else { console.error(error); toast('Error al guardar', 'err'); }
 }
 
 async function toggleObra(id, activo) {
-  await sb.from('obras').update({ activo }).eq('id', id);
+  await sb.from('obras_portfolio').update({ activo }).eq('id', id);
 }
 
 async function eliminarObra(id) {
   if (!confirm('¿Eliminás esta obra?')) return;
-  await sb.from('obras').delete().eq('id', id);
+  await sb.from('obras_portfolio').delete().eq('id', id);
   todasObras = todasObras.filter(o => o.id !== id);
   renderObras(); toast('Obra eliminada');
 }

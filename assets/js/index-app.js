@@ -55,8 +55,8 @@ async function cargarBento() {
   const gridProx = document.getElementById('bento-grid-proximas');
   const headProx = document.getElementById('proximas-head');
 
-  const { data: obras } = await sb.from('obras')
-    .select('id, titulo, zona, tipo, imagen_url, descripcion, fase, fecha')
+  const { data: obras } = await sb.from('obras_portfolio')
+    .select('id, titulo, zona, tipo, imagen_url, descripcion, fase, fecha, fotos')
     .eq('activo', true)
     .not('imagen_url', 'is', null)
     .order('orden')
@@ -88,13 +88,84 @@ function _bentoCard(o, i) {
   </button>`;
 }
 
+/* ── GALERÍA DEL MODAL ── */
+let _gal = { fotos: [], idx: 0 };
+
+function _galRender() {
+  const track = document.getElementById('proy-gallery-track');
+  const dots  = document.getElementById('proy-dots');
+  const gallery = document.getElementById('proy-gallery');
+
+  track.innerHTML = _gal.fotos.map((url, i) => `
+    <div class="proy-gallery-slide">
+      <img src="${url}" alt="" loading="${i === 0 ? 'eager' : 'lazy'}">
+    </div>`).join('');
+  dots.innerHTML = _gal.fotos.map((_, i) =>
+    `<button type="button" class="proy-gallery-dot ${i === 0 ? 'active' : ''}" data-i="${i}" aria-label="Foto ${i+1}"></button>`
+  ).join('');
+
+  gallery.classList.toggle('multi', _gal.fotos.length > 1);
+  _galGoTo(0, false);
+}
+
+function _galGoTo(i, animate = true) {
+  if (!_gal.fotos.length) return;
+  _gal.idx = Math.max(0, Math.min(_gal.fotos.length - 1, i));
+  const track = document.getElementById('proy-gallery-track');
+  track.style.transition = animate ? '' : 'none';
+  track.style.transform = `translateX(${-_gal.idx * 100}%)`;
+  if (!animate) requestAnimationFrame(() => { track.style.transition = ''; });
+  document.getElementById('proy-counter').textContent = `${_gal.idx + 1} / ${_gal.fotos.length}`;
+  document.querySelectorAll('.proy-gallery-dot').forEach((d, j) =>
+    d.classList.toggle('active', j === _gal.idx)
+  );
+  document.getElementById('proy-prev').disabled = _gal.idx === 0;
+  document.getElementById('proy-next').disabled = _gal.idx === _gal.fotos.length - 1;
+}
+
+function _galNext() { _galGoTo(_gal.idx + 1); }
+function _galPrev() { _galGoTo(_gal.idx - 1); }
+
+/* Swipe táctil */
+(() => {
+  let startX = 0, dx = 0, dragging = false;
+  const viewport = () => document.querySelector('.proy-gallery-viewport');
+  document.addEventListener('touchstart', (e) => {
+    const vp = viewport();
+    if (!vp || !vp.contains(e.target)) return;
+    startX = e.touches[0].clientX; dx = 0; dragging = true;
+  }, { passive: true });
+  document.addEventListener('touchmove', (e) => {
+    if (!dragging) return;
+    dx = e.touches[0].clientX - startX;
+  }, { passive: true });
+  document.addEventListener('touchend', () => {
+    if (!dragging) return;
+    if (Math.abs(dx) > 50) {
+      if (dx < 0) _galNext(); else _galPrev();
+    }
+    dragging = false; dx = 0;
+  });
+})();
+
+/* Teclado */
+document.addEventListener('keydown', (e) => {
+  const open = document.getElementById('proy-modal').classList.contains('open');
+  if (!open) return;
+  if (e.key === 'ArrowRight') _galNext();
+  if (e.key === 'ArrowLeft')  _galPrev();
+  if (e.key === 'Escape')     cerrarProyModal();
+});
+
 function abrirProyModal(id) {
   const o = _obrasCache[id];
   if (!o) return;
-  const modal = document.getElementById('proy-modal');
-  const img = document.getElementById('proy-modal-img');
-  img.src = o.imagen_url;
-  img.alt = o.titulo || '';
+
+  const fotosExtra = Array.isArray(o.fotos) ? o.fotos.filter(Boolean) : [];
+  _gal.fotos = [o.imagen_url, ...fotosExtra].filter(Boolean);
+  _gal.idx = 0;
+  _galRender();
+
   document.getElementById('proy-modal-titulo').textContent = o.titulo || '';
   document.getElementById('proy-modal-desc').textContent = o.descripcion || 'Pronto vamos a contar más sobre este proyecto.';
 
@@ -105,38 +176,26 @@ function abrirProyModal(id) {
   const meta = [o.tipo, o.zona, o.fecha].filter(Boolean).join(' · ');
   document.getElementById('proy-modal-meta').textContent = meta;
 
-  // Reset transform/scroll antes de abrir
-  img.style.transform = '';
-  img.style.opacity = '';
+  const modal = document.getElementById('proy-modal');
   const box = modal.querySelector('.proy-modal-box');
   box.scrollTop = 0;
-  box.addEventListener('scroll', _proyOnScroll, { passive: true });
-
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
-function _proyOnScroll(e) {
-  const box = e.currentTarget;
-  const img = box.querySelector('.proy-modal-img');
-  if (!img) return;
-  const y = box.scrollTop;
-  const h = img.clientHeight || 1;
-  const p = Math.min(1, y / h);
-  // La foto se va hacia arriba a 1.5× la velocidad del scroll (parallax),
-  // se achica levemente y baja la opacidad para una salida elegante.
-  img.style.transform = `translateY(${-y * 0.5}px) scale(${1 - p * 0.06})`;
-  img.style.opacity = `${1 - p * 0.55}`;
-}
-
 function cerrarProyModal(e) {
   if (e && e.target.closest('.proy-modal-box') && !e.target.closest('.proy-modal-close')) return;
-  const modal = document.getElementById('proy-modal');
-  const box = modal.querySelector('.proy-modal-box');
-  box.removeEventListener('scroll', _proyOnScroll);
-  modal.classList.remove('open');
+  document.getElementById('proy-modal').classList.remove('open');
   document.body.style.overflow = '';
 }
+
+document.getElementById('proy-prev').addEventListener('click', _galPrev);
+document.getElementById('proy-next').addEventListener('click', _galNext);
+document.getElementById('proy-dots').addEventListener('click', (e) => {
+  const dot = e.target.closest('.proy-gallery-dot');
+  if (dot) _galGoTo(+dot.dataset.i);
+});
+
 window.abrirProyModal = abrirProyModal;
 window.cerrarProyModal = cerrarProyModal;
 

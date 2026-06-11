@@ -17,7 +17,7 @@ async function iniciarFotosLanding() {
   }
 
   const [obrasRes, mediaRes] = await Promise.all([
-    sb.from('obras').select('id, titulo, zona, tipo, imagen_url, imagen_storage_path').order('id'),
+    sb.from('obras_portfolio').select('id, titulo, zona, tipo, imagen_url, imagen_storage_path').order('id'),
     sb.from('landing_media').select('*'),
   ]);
 
@@ -240,7 +240,7 @@ async function flSubirFotoObra(obraId, file) {
     const { path: storagePath, url } = await _flSubir(path, blob);
 
     await _flConRefresh(
-      () => sb.from('obras').update({
+      () => sb.from('obras_portfolio').update({
         imagen_url: url,
         imagen_storage_path: storagePath,
       }).eq('id', obraId),
@@ -266,7 +266,7 @@ async function flEliminarFotoObra(obraId, storagePath) {
       );
     }
     await _flConRefresh(
-      () => sb.from('obras').update({
+      () => sb.from('obras_portfolio').update({
         imagen_url: null,
         imagen_storage_path: null,
       }).eq('id', obraId),
