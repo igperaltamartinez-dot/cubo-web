@@ -343,9 +343,9 @@ Text-Slide "$p1\02_servicios.jpg" $CREAM $CHARCOAL `
   -titleA "Nos ocupamos" `
   -titleB "de todo." `
   -titleSz 82 `
-  -body "Proyecto  /  Gestiones municipales  /  Direccion de obra  /  Administracion  /  Construccion" `
+  -body "Proyecto  /  Gestiones municipales  /  Dirección de obra  /  Administración  /  Construcción" `
   -bodySz 20 `
-  -cta "Vos solo aprobas y nos vemos en la entrega."
+  -cta "Vos solo aprobás y nos vemos en la entrega."
 
 # 3. Quienes somos
 Text-Slide "$p1\03_quienes.jpg" $CHARCOAL $CREAM `
@@ -368,12 +368,12 @@ Text-Slide "$p1\04_promesa.jpg" $CREAM $CHARCOAL `
 # 5. 05 etapas
 Number-Slide "$p1\05_etapas.jpg" $CHARCOAL $CREAM "05" `
   "etapas de una obra llave en mano" `
-  "Proyecto  Gestiones  Direccion  Administracion  Construccion" 24
+  "Proyecto  Gestiones  Dirección  Administración  Construcción" 24
 
 # 6. CTA
 Text-Slide "$p1\06_cta.jpg" $CREAM $CHARCOAL `
-  -label "Empeza ahora" `
-  -titleA "Cotiza tu reforma" `
+  -label "Empezá ahora" `
+  -titleA "Cotizá tu reforma" `
   -titleB "en 5 minutos." `
   -titleSz 72 `
   -body "Sin llamadas. Sin compromisos." `
@@ -384,31 +384,31 @@ Text-Slide "$p1\06_cta.jpg" $CREAM $CHARCOAL `
 Write-Host "`nPost 2 — Depto Gonza Antes/Despues"
 
 Photo-Slide "$p2\01_portada.jpg" "$DG\32ee8145-770a-4062-86f0-59555e2aff45.jpg" 0.52 `
-  "Depto — CABA" "Antes y despues." 76
+  "Depto — CABA" "Antes y después." 76
 
 Photo-Slide "$p2\02_antes_cocina.jpg" "$DG\243e32da-5994-4f7b-bcef-9de7bb83de34.jpg" 0.10 "ANTES" "" 0
 
-Photo-Slide "$p2\03_despues_cocina.jpg" "$DG\eeeede66-6e75-4c17-822b-8d8639799d90.jpg" 0.10 "DESPUES" "" 0
+Photo-Slide "$p2\03_despues_cocina.jpg" "$DG\eeeede66-6e75-4c17-822b-8d8639799d90.jpg" 0.10 "DESPUÉS" "" 0
 
 Photo-Slide "$p2\04_antes_bano.jpg" "$DG\52d8ceb1-b4fa-4fd6-8be4-80fda75b911e.jpg" 0.10 "ANTES" "" 0
 
-Photo-Slide "$p2\05_despues_bano.jpg" "$DG\5bd9c8e7-7413-41e8-bdf8-9d39e6038b41.jpg" 0.10 "DESPUES" "" 0
+Photo-Slide "$p2\05_despues_bano.jpg" "$DG\5bd9c8e7-7413-41e8-bdf8-9d39e6038b41.jpg" 0.10 "DESPUÉS" "" 0
 
 Text-Slide "$p2\06_cierre.jpg" $CHARCOAL $CREAM `
   -label "Reforma integral completa" `
   -titleA "Llave en mano." `
   -titleSz 88 `
-  -cta "> Cotiza tu reforma en el link de bio"
+  -cta "> Cotizá tu reforma en el link de bio"
 
 # ═══════════════════════════════════════════════════════════════════════════════
 Write-Host "`nPost 3 — Casa Benavidez El Proceso"
 
 Photo-Slide "$p3\01_portada.jpg" "$CB\IMG_8375.JPEG" 0.55 `
-  "Casa — Benavidez" "Asi se ve una obra por dentro." 62
+  "Casa — Benavidez" "Así se ve una obra por dentro." 62
 
 Photo-Slide "$p3\02_inicio.jpg"   "$CB\14e94101-a792-46e4-8791-441707c6ada1.jpg" 0.12 "ESTADO INICIAL"
 Photo-Slide "$p3\03_proceso.jpg"  "$CB\E73C5099-E52A-4B3E-9BF7-BFA5D317AB3D.jpg" 0.12 "EN PROCESO"
-Photo-Slide "$p3\04_detalle.jpg"  "$CB\22A992D1-9232-4627-A36E-21C9FE3508D0.jpg" 0.12 "DETALLE TECNICO"
+Photo-Slide "$p3\04_detalle.jpg"  "$CB\22A992D1-9232-4627-A36E-21C9FE3508D0.jpg" 0.12 "DETALLE TÉCNICO"
 Photo-Slide "$p3\05_fachada.jpg"  "$CB\IMG_8376.JPEG"  0.10 "RESULTADO FINAL"
 Photo-Slide "$p3\06_cocina.jpg"   "$CB\IMG_9583.JPEG"  0.10 "RESULTADO FINAL"
 
@@ -419,23 +419,23 @@ Text-Slide "$p3\07_cierre.jpg" $CHARCOAL $CREAM `
   -titleSz 76 `
   -body "Llave en mano significa que el problema es nuestro, no tuyo." `
   -bodySz 24 `
-  -cta "> Cotiza tu obra en el link de bio"
+  -cta "> Cotizá tu obra en el link de bio"
 
 # ═══════════════════════════════════════════════════════════════════════════════
 Write-Host "`nPost 4 — Como trabajamos"
 
 Text-Slide "$p4\01_portada.jpg" $CHARCOAL $CREAM `
-  -label "Guarda esto antes de contratar" `
+  -label "Guardá esto antes de contratar" `
   -titleA "Las 5 etapas" `
   -titleB "de una obra llave en mano." `
   -titleSz 72
 
 $etapas = @(
-  ,@("01","PROYECTO Y DISENO",   "Planos, renders y definicion de materiales antes de mover un solo ladrillo.",$CREAM,$CHARCOAL)
-  ,@("02","GESTIONES MUNICIPALES","Permisos, planos de obra, habilitaciones. Nos ocupamos nosotros. Vos no haces nada.",$CHARCOAL,$CREAM)
-  ,@("03","DIRECCION DE OBRA",   "Un director de obra en el lugar todos los dias. Reportes semanales para vos.",$CREAM,$CHARCOAL)
-  ,@("04","ADMINISTRACION",      "Presupuesto cerrado. Control de gastos en tiempo real. Sin sorpresas al final.",$CHARCOAL,$CREAM)
-  ,@("05","CONSTRUCCION",        "Equipo propio. Sin tercerizar lo critico. Calidad controlada en cada detalle.",$CREAM,$CHARCOAL)
+  ,@("01","PROYECTO Y DISEÑO",   "Planos, renders y definición de materiales antes de mover un solo ladrillo.",$CREAM,$CHARCOAL)
+  ,@("02","GESTIONES MUNICIPALES","Permisos, planos de obra, habilitaciones. Nos ocupamos nosotros. Vos no hacés nada.",$CHARCOAL,$CREAM)
+  ,@("03","DIRECCIÓN DE OBRA",   "Un director de obra en el lugar todos los días. Reportes semanales para vos.",$CREAM,$CHARCOAL)
+  ,@("04","ADMINISTRACIÓN",      "Presupuesto cerrado. Control de gastos en tiempo real. Sin sorpresas al final.",$CHARCOAL,$CREAM)
+  ,@("05","CONSTRUCCIÓN",        "Equipo propio. Sin tercerizar lo crítico. Calidad controlada en cada detalle.",$CREAM,$CHARCOAL)
 )
 $idx = 2
 foreach ($e in $etapas) {
@@ -444,20 +444,20 @@ foreach ($e in $etapas) {
 }
 
 Text-Slide "$p4\07_cta.jpg" $CREAM $CHARCOAL `
-  -label "Empeza ahora" `
-  -titleA "Cuanto cuesta" `
+  -label "Empezá ahora" `
+  -titleA "¿Cuánto cuesta" `
   -titleB "tu reforma?" `
   -titleSz 78 `
-  -body "Cotiza online en 5 minutos. Sin llamadas. Sin compromiso." `
+  -body "Cotizá online en 5 minutos. Sin llamadas. Sin compromiso." `
   -bodySz 24 `
   -cta "> Link en bio"
 
 # ═══════════════════════════════════════════════════════════════════════════════
-Write-Host "`nPost 5 — Cuanto cuesta una reforma"
+Write-Host "`nPost 5 — Cuánto cuesta una reforma"
 
 Text-Slide "$p5\01_portada.jpg" $CHARCOAL $CREAM `
   -label "La respuesta honesta" `
-  -titleA "Cuanto cuesta" `
+  -titleA "¿Cuánto cuesta" `
   -titleB "reformar un depto" `
   -titleC "en Buenos Aires?" `
   -titleSz 74
@@ -470,10 +470,10 @@ Text-Slide "$p5\02_depende.jpg" $CREAM $CHARCOAL `
   -bodySz 28
 
 Stat-Slide "$p5\03_parcial.jpg" $CREAM $CHARCOAL `
-  -label "Reforma parcial — bano o cocina" `
+  -label "Reforma parcial — baño o cocina" `
   -statBig "USD 8k" `
   -statSmall "a USD 18.000" `
-  -note "Segun terminaciones y complejidad."
+  -note "Según terminaciones y complejidad."
 
 Stat-Slide "$p5\04_integral.jpg" $CHARCOAL $CREAM `
   -label "Reforma integral — 2 o 3 ambientes" `
@@ -482,24 +482,24 @@ Stat-Slide "$p5\04_integral.jpg" $CHARCOAL $CREAM `
   -note "Incluye proyecto, materiales y mano de obra."
 
 Text-Slide "$p5\05_depende.jpg" $CREAM $CHARCOAL `
-  -label "De que depende el precio?" `
+  -label "¿De qué depende el precio?" `
   -titleA "Materiales" `
   -titleB "y proceso." `
   -titleSz 78 `
-  -body "Estado inicial  /  Complejidad de instalaciones  /  Cambios de distribucion  /  Calidad elegida  /  Plazos de entrega" `
+  -body "Estado inicial  /  Complejidad de instalaciones  /  Cambios de distribución  /  Calidad elegida  /  Plazos de entrega" `
   -bodySz 20
 
 Text-Slide "$p5\06_promesa.jpg" $CHARCOAL $CREAM `
-  -label "Lo que si podemos prometerte" `
+  -label "Lo que sí podemos prometerte" `
   -titleA "El precio que acordamos" `
   -titleB "es el precio final." `
   -titleSz 68 `
-  -body "Sin sorpresas. Sin adicionales que no sabias." `
+  -body "Sin sorpresas. Sin adicionales que no sabías." `
   -bodySz 26
 
 Text-Slide "$p5\07_cta.jpg" $CREAM $CHARCOAL `
-  -label "Queres saber el numero de tu proyecto?" `
-  -titleA "Cotiza online" `
+  -label "¿Querés saber el número de tu proyecto?" `
+  -titleA "Cotizá online" `
   -titleB "en 5 minutos." `
   -titleSz 80 `
   -body "Sin llamadas. Sin compromiso." `
@@ -513,16 +513,16 @@ Photo-Slide "$p6\01_portada.jpg" "$CB\IMG_9587.JPEG" 0.65 `
   "CUBO — Cotizador online" "Tu reforma. Tu presupuesto." 68 "En 5 minutos." 30
 
 Text-Slide "$p6\02_como.jpg" $CREAM $CHARCOAL `
-  -label "Como funciona" `
-  -titleA "Seleccionas los trabajos." `
+  -label "Cómo funciona" `
+  -titleA "Seleccionás los trabajos." `
   -titleSz 66 `
   -body "El cotizador calcula el total en tiempo real.`nSin hablar con nadie. Sin esperar respuesta." `
   -bodySz 26
 
 Text-Slide "$p6\03_cta.jpg" $CHARCOAL $CREAM `
-  -label "Empeza ahora" `
-  -titleA "Listo para ver" `
-  -titleB "el numero?" `
+  -label "Empezá ahora" `
+  -titleA "¿Listo para ver" `
+  -titleB "el número?" `
   -titleSz 84 `
   -cta "> Link en bio"
 
@@ -536,7 +536,7 @@ Get-ChildItem $out | Sort-Object Name | ForEach-Object {
   Write-Host "  $($_.Name): $n slides"
 }
 if (-not $hasSpaceGrotesk) {
-  Write-Host "`nNOTA: Space Grotesk NO esta instalada. Titulares en Arial."
+  Write-Host "`nNOTA: Space Grotesk NO está instalada. Titulares en Arial."
   Write-Host "Para instalar: doble click en Fuentes\SpaceGrotesk-Bold.ttf -> Instalar"
   Write-Host "Luego corre el script de nuevo para regenerar con la fuente correcta."
 }
