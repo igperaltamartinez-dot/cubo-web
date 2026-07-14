@@ -279,10 +279,10 @@ function ejecutar(item, cant, extras) {
   const precioFinal = item.precio * (1 + (item.ajuste_porcentaje || 0) / 100);
   carrito[item.id] = { ...item, cantidad: nC, subtotal: nC * precioFinal };
   extras.forEach(e => {
-    if (!carrito[e.id]) {
-      const pf = e.precio * (1 + (e.ajuste_porcentaje || 0) / 100);
-      carrito[e.id] = { ...e, cantidad: cant, subtotal: cant * pf };
-    }
+    const eA = carrito[e.id]?.cantidad || 0;
+    const nE = eA + cant;
+    const pf = e.precio * (1 + (e.ajuste_porcentaje || 0) / 100);
+    carrito[e.id] = { ...e, cantidad: nE, subtotal: nE * pf };
   });
   renderCot();
   actualizarBottomBar();
@@ -299,10 +299,10 @@ function agregar(id) {
 
   const extrasObl = obligatorias
     .map(c => allItems.find(i => i.id === c.receta_sugerida_id))
-    .filter(Boolean).filter(e => !carrito[e.id]);
+    .filter(Boolean);
   const extrasSug = sugeridas
     .map(c => ({ item: allItems.find(i => i.id === c.receta_sugerida_id), mensaje: c.mensaje }))
-    .filter(p => p.item && !carrito[p.item.id]);
+    .filter(p => p.item);
 
   if (extrasObl.length) {
     toast('Se agregó automáticamente: ' + extrasObl.map(e => e.nombre).join(', '));

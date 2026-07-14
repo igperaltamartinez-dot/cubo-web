@@ -252,10 +252,10 @@
     <!-- CORRELACIONES -->
     <div class="page" id="page-correlaciones">
       <h1 class="page-tit">Correlaciones</h1>
-      <p class="page-sub">Cuando el cliente elige X → se sugiere agregar Y automáticamente.</p>
+      <p class="page-sub">Elegí una receta y marcá con selección múltiple todas las que la disparan. Se cargan todas de una.</p>
       <div style="margin-bottom:16px"><button class="btn-add" onclick="abrirModalCorr()">+ Nueva correlación</button></div>
       <div class="card">
-        <table><thead><tr><th>Si elige...</th><th>...también se agrega</th><th>Tipo</th><th>Mensaje al cliente</th><th>Activa</th><th></th></tr></thead>
+        <table><thead><tr><th>Se agrega...</th><th>Cuando el cliente elige...</th><th>Tipo</th><th>Mensaje al cliente</th><th></th><th></th></tr></thead>
         <tbody id="corr-body"><tr><td colspan="6" class="empty-state">Cargando...</td></tr></tbody></table>
       </div>
     </div>
@@ -434,23 +434,32 @@
 <div class="modal-ov" id="modal-corr">
   <div class="modal-box">
     <div class="modal-head">
-      <h3>Nueva correlación</h3>
+      <h3 id="corr-titulo">Nueva correlación</h3>
       <button class="modal-close" onclick="cerrarModal('modal-corr')">×</button>
     </div>
     <div class="modal-body">
-      <label class="m-label">Si el cliente elige la receta... *</label>
-      <select class="m-select" id="corr-disparador"></select>
-      <label class="m-label">...también se necesita esta receta: *</label>
-      <select class="m-select" id="corr-sugerido"></select>
+      <label class="m-label">Esta receta se agrega... *</label>
+      <select class="m-select" id="corr-sugerido" onchange="onCambioSugerida()"></select>
+
       <label class="m-label" style="display:flex;align-items:center;gap:10px;margin-top:18px;cursor:pointer">
-        <input type="checkbox" id="corr-obligatoria" style="width:18px;height:18px">
+        <input type="checkbox" id="corr-obligatoria" onchange="onCambioTipo()" style="width:18px;height:18px">
         <span>Es obligatoria (se agrega automáticamente sin preguntar)</span>
       </label>
       <p style="font-size:11px;color:var(--gm);margin:6px 0 0 28px;font-weight:500">
         Las obligatorias suman directo al carrito. Las sugeridas le preguntan al cliente con un mensaje.
       </p>
-      <label class="m-label" style="margin-top:18px">Mensaje al cliente (obligatorio para sugeridas)</label>
+
+      <label class="m-label" id="corr-msg-label" style="margin-top:18px">Mensaje al cliente (obligatorio para sugeridas)</label>
       <textarea class="m-input m-ta" id="corr-mensaje" placeholder="Ej: Para colocar revestimiento nuevo primero hay que retirar el existente."></textarea>
+
+      <label class="m-label" style="margin-top:20px">...cuando el cliente elige alguna de estas *</label>
+      <input class="m-input" id="corr-filtro" placeholder="Buscar receta..." oninput="filtrarDisparadoras()" autocomplete="off">
+      <div style="display:flex;gap:12px;margin:8px 0 6px">
+        <button type="button" class="btn-sm" onclick="marcarDisparadoras(true)">Marcar visibles</button>
+        <button type="button" class="btn-sm" onclick="marcarDisparadoras(false)">Desmarcar todas</button>
+        <span style="margin-left:auto;font-size:11px;color:var(--gm);font-weight:700;align-self:center"><span id="corr-count">0</span> seleccionadas</span>
+      </div>
+      <div id="corr-disparadoras" style="max-height:260px;overflow-y:auto;border:1px solid var(--gc);border-radius:8px;padding:6px"></div>
     </div>
     <div class="modal-foot">
       <button class="btn-cancel" onclick="cerrarModal('modal-corr')">Cancelar</button>

@@ -114,6 +114,8 @@ input:checked+.toggle-slider::before{transform:translateX(16px)}
 .m-select{width:100%;border:2px solid var(--gc);border-radius:8px;padding:10px 12px;font-size:13px;font-family:'Nunito',sans-serif;font-weight:600;margin-bottom:14px;outline:none;background:#fafafa;color:var(--tx);cursor:pointer}
 .m-select:focus{border-color:var(--go)}
 .m-ta{resize:none;height:72px}
+.corr-disp-row:hover{background:var(--gf)}
+.corr-disp-row:has(.corr-disp-chk:checked){background:var(--gf)}
 .m-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .modal-foot{padding:16px 24px;border-top:1px solid var(--gc);display:flex;gap:10px;justify-content:flex-end}
 .btn-cancel{background:none;border:2px solid var(--gc);padding:10px 20px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;cursor:pointer;border-radius:8px;color:var(--gm);transition:all .2s}

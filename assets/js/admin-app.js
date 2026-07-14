@@ -81,12 +81,11 @@ async function cargarTodo() {
 }
 
 function poblarSelectsCats() {
-  const selDis = document.getElementById('corr-disparador');
   const selSug = document.getElementById('corr-sugerido');
-  if (selDis && selSug) {
-    const opts = todasRecetas.map(r => `<option value="${r.id}">${r.nombre}</option>`).join('');
-    selDis.innerHTML = opts;
-    selSug.innerHTML = opts;
+  if (selSug) {
+    const recetasOrd = [...todasRecetas].sort((a, b) => a.nombre.localeCompare(b.nombre));
+    selSug.innerHTML = '<option value="">— Elegí la receta —</option>' +
+      recetasOrd.map(r => `<option value="${r.id}">${r.nombre}</option>`).join('');
   }
 }
 
@@ -277,63 +276,166 @@ async function eliminarCat(id) {
 }
 
 // ── CORRELACIONES ──
+// Modelo de UI: se agrupa por receta consecuencia (sugerida). Cada grupo
+// se edita en bloque con selección múltiple de las recetas disparadoras.
 function renderCorrs() {
   poblarSelectsCats();
-  document.getElementById('corr-body').innerHTML = todasCorrs.length ?
-    todasCorrs.map(c => {
-      const dis = todasRecetas.find(r => r.id === c.receta_disparadora_id);
-      const sug = todasRecetas.find(r => r.id === c.receta_sugerida_id);
-      const tipo = c.obligatoria
+  const grupos = {};
+  todasCorrs.forEach(c => {
+    (grupos[c.receta_sugerida_id] = grupos[c.receta_sugerida_id] || []).push(c);
+  });
+  const ids = Object.keys(grupos).sort((a, b) => {
+    const na = (todasRecetas.find(r => r.id === a) || {}).nombre || '';
+    const nb = (todasRecetas.find(r => r.id === b) || {}).nombre || '';
+    return na.localeCompare(nb);
+  });
+  document.getElementById('corr-body').innerHTML = ids.length ?
+    ids.map(sugId => {
+      const items = grupos[sugId];
+      const sug = todasRecetas.find(r => r.id === sugId);
+      const obligatoria = items.some(c => c.obligatoria);
+      const msg = (items.find(c => c.mensaje) || {}).mensaje || '';
+      const tipo = obligatoria
         ? '<span class="badge badge-nuevo">Obligatoria</span>'
         : '<span class="badge badge-en_proceso">Sugerida</span>';
+      const disparadoras = items
+        .map(c => (todasRecetas.find(r => r.id === c.receta_disparadora_id) || {}).nombre)
+        .filter(Boolean)
+        .sort((a, b) => a.localeCompare(b))
+        .join(', ');
       return `<tr>
-        <td>${dis ? dis.nombre : '—'}</td>
-        <td>${sug ? sug.nombre : '—'}</td>
+        <td><strong>${sug ? sug.nombre : '—'}</strong></td>
+        <td style="font-size:12px;color:var(--gm)">${disparadoras || '—'} <span style="color:var(--go);font-weight:700">(${items.length})</span></td>
         <td>${tipo}</td>
-        <td style="font-size:11px;color:var(--gm)">${c.mensaje || ''}</td>
-        <td><label class="toggle-switch"><input type="checkbox" ${c.activo ? 'checked' : ''} onchange="toggleCorr('${c.id}',this.checked)"><span class="toggle-slider"></span></label></td>
-        <td><button class="btn-sm danger" onclick="eliminarCorr('${c.id}')">Borrar</button></td>
+        <td style="font-size:11px;color:var(--gm)">${msg}</td>
+        <td><button class="btn-sm" onclick="abrirModalCorr('${sugId}')">Editar</button></td>
+        <td><button class="btn-sm danger" onclick="eliminarGrupoCorr('${sugId}')">Borrar</button></td>
       </tr>`;
     }).join('') :
     '<tr><td colspan="6" class="empty-state">No hay correlaciones.</td></tr>';
 }
 
-function abrirModalCorr() {
-  document.getElementById('corr-mensaje').value = '';
-  document.getElementById('corr-obligatoria').checked = false;
+function abrirModalCorr(sugId) {
+  poblarSelectsCats();
+  const editando = !!sugId;
+  document.getElementById('corr-titulo').textContent = editando ? 'Editar correlación' : 'Nueva correlación';
+  const selSug = document.getElementById('corr-sugerido');
+  selSug.value = sugId || '';
+  selSug.disabled = editando;
+
+  let obligatoria = false, msg = '', seleccionadas = new Set();
+  if (editando) {
+    const items = todasCorrs.filter(c => c.receta_sugerida_id === sugId);
+    obligatoria = items.some(c => c.obligatoria);
+    msg = (items.find(c => c.mensaje) || {}).mensaje || '';
+    seleccionadas = new Set(items.map(c => c.receta_disparadora_id));
+  }
+  document.getElementById('corr-obligatoria').checked = obligatoria;
+  document.getElementById('corr-mensaje').value = msg;
+  document.getElementById('corr-filtro').value = '';
+  renderDisparadoras(sugId || '', seleccionadas);
+  onCambioTipo();
   document.getElementById('modal-corr').classList.add('open');
 }
 
+function renderDisparadoras(sugId, seleccionadas) {
+  const cont = document.getElementById('corr-disparadoras');
+  const recetasOrd = [...todasRecetas].sort((a, b) => a.nombre.localeCompare(b.nombre));
+  cont.innerHTML = recetasOrd.map(r => {
+    if (r.id === sugId) return '';
+    const chk = seleccionadas.has(r.id) ? 'checked' : '';
+    return `<label class="corr-disp-row" style="display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600">
+      <input type="checkbox" class="corr-disp-chk" value="${r.id}" ${chk} onchange="actualizarConteoCorr()" style="width:16px;height:16px">
+      <span>${r.nombre}</span>
+    </label>`;
+  }).join('');
+  actualizarConteoCorr();
+}
+
+function actualizarConteoCorr() {
+  const n = document.querySelectorAll('#corr-disparadoras .corr-disp-chk:checked').length;
+  document.getElementById('corr-count').textContent = n;
+}
+
+function onCambioSugerida() {
+  const sugId = document.getElementById('corr-sugerido').value;
+  const marcadas = new Set([...document.querySelectorAll('#corr-disparadoras .corr-disp-chk:checked')].map(c => c.value));
+  document.getElementById('corr-filtro').value = '';
+  renderDisparadoras(sugId, marcadas);
+}
+
+function onCambioTipo() {
+  const obligatoria = document.getElementById('corr-obligatoria').checked;
+  const label = document.getElementById('corr-msg-label');
+  const ta = document.getElementById('corr-mensaje');
+  ta.style.opacity = obligatoria ? '.5' : '1';
+  label.style.opacity = obligatoria ? '.5' : '1';
+}
+
+function filtrarDisparadoras() {
+  const q = document.getElementById('corr-filtro').value.toLowerCase().trim();
+  document.querySelectorAll('#corr-disparadoras .corr-disp-row').forEach(row => {
+    const txt = row.textContent.toLowerCase();
+    row.style.display = txt.includes(q) ? '' : 'none';
+  });
+}
+
+function marcarDisparadoras(marcar) {
+  document.querySelectorAll('#corr-disparadoras .corr-disp-row').forEach(row => {
+    if (row.style.display === 'none') return;
+    row.querySelector('.corr-disp-chk').checked = marcar;
+  });
+  actualizarConteoCorr();
+}
+
 async function guardarCorr() {
-  const dis = document.getElementById('corr-disparador').value;
   const sug = document.getElementById('corr-sugerido').value;
   const msg = document.getElementById('corr-mensaje').value.trim();
   const obligatoria = document.getElementById('corr-obligatoria').checked;
-  if (!dis || !sug) { toast('Elegí ambas recetas', 'err'); return; }
-  if (dis === sug)  { toast('No podés correlacionar una receta consigo misma', 'err'); return; }
+  const elegidas = [...document.querySelectorAll('#corr-disparadoras .corr-disp-chk:checked')].map(c => c.value);
+
+  if (!sug) { toast('Elegí la receta que se agrega', 'err'); return; }
+  if (!elegidas.length) { toast('Marcá al menos una receta disparadora', 'err'); return; }
   if (!obligatoria && !msg) { toast('Las sugeridas necesitan un mensaje para el cliente', 'err'); return; }
-  const { error } = await sb.from('correlaciones').insert({
-    receta_disparadora_id: dis,
-    receta_sugerida_id:    sug,
-    mensaje:               msg || null,
-    obligatoria,
-    activo:                true,
-  });
-  if (!error) { cerrarModal('modal-corr'); await cargarTodo(); renderCorrs(); toast('Correlación creada ✓'); }
-  else toast('Error al guardar: ' + error.message, 'err');
+
+  const existentes = todasCorrs.filter(c => c.receta_sugerida_id === sug);
+  const yaHay = new Set(existentes.map(c => c.receta_disparadora_id));
+  const elegidasSet = new Set(elegidas);
+
+  const aInsertar = elegidas
+    .filter(d => !yaHay.has(d))
+    .map(d => ({ receta_disparadora_id: d, receta_sugerida_id: sug, mensaje: msg || null, obligatoria, activo: true }));
+  const aBorrar = existentes.filter(c => !elegidasSet.has(c.receta_disparadora_id)).map(c => c.id);
+  const aActualizar = existentes.filter(c => elegidasSet.has(c.receta_disparadora_id) &&
+    (c.obligatoria !== obligatoria || (c.mensaje || '') !== (msg || ''))).map(c => c.id);
+
+  if (aInsertar.length) {
+    const { error } = await sb.from('correlaciones').insert(aInsertar);
+    if (error) { toast('Error al guardar: ' + error.message, 'err'); return; }
+  }
+  if (aBorrar.length) {
+    const { error } = await sb.from('correlaciones').delete().in('id', aBorrar);
+    if (error) { toast('Error al borrar: ' + error.message, 'err'); return; }
+  }
+  if (aActualizar.length) {
+    const { error } = await sb.from('correlaciones').update({ mensaje: msg || null, obligatoria }).in('id', aActualizar);
+    if (error) { toast('Error al actualizar: ' + error.message, 'err'); return; }
+  }
+
+  cerrarModal('modal-corr');
+  document.getElementById('corr-sugerido').disabled = false;
+  await cargarTodo(); renderCorrs();
+  toast(`Correlación guardada · ${elegidas.length} disparadoras ✓`);
 }
 
-async function toggleCorr(id, activo) {
-  await sb.from('correlaciones').update({ activo }).eq('id', id);
-  const idx = todasCorrs.findIndex(c => c.id === id);
-  if (idx >= 0) todasCorrs[idx].activo = activo;
-}
-
-async function eliminarCorr(id) {
-  if (!confirm('¿Eliminás esta correlación?')) return;
-  await sb.from('correlaciones').delete().eq('id', id);
-  todasCorrs = todasCorrs.filter(c => c.id !== id);
-  renderCorrs(); toast('Correlación eliminada');
+async function eliminarGrupoCorr(sugId) {
+  const sug = todasRecetas.find(r => r.id === sugId);
+  const items = todasCorrs.filter(c => c.receta_sugerida_id === sugId);
+  if (!confirm(`¿Eliminás las ${items.length} correlaciones de "${sug ? sug.nombre : ''}"?`)) return;
+  const { error } = await sb.from('correlaciones').delete().eq('receta_sugerida_id', sugId);
+  if (error) { toast('Error al eliminar: ' + error.message, 'err'); return; }
+  todasCorrs = todasCorrs.filter(c => c.receta_sugerida_id !== sugId);
+  renderCorrs(); toast('Correlaciones eliminadas');
 }
 
 // ── OBRAS ──
