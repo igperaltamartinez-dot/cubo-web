@@ -36,43 +36,76 @@
 <main>
 
 <!-- ════════════════════════════════════════════════════
-     VISTA 0 — EN CONSTRUCCIÓN
-     El tráfico de Instagram entra directo acá, así que esta pantalla no es un
-     cartel: es la landing de ese tráfico y tiene que convertir a WhatsApp.
-     Se apaga poniendo presupuestadorEnConstruccion: false en config.js.
+     VISTA 0 — CONSULTA RÁPIDA
+     El tráfico de Instagram entra directo acá, así que esto no es un cartel de
+     obra: es la landing de ese tráfico. Tres preguntas sin campos de texto y el
+     WhatsApp se abre con el mensaje ya escrito, así el lead llega calificado.
+     Se apaga poniendo presupuestadorEnConstruccion: false en config.js, y ahí
+     vuelve el cotizador completo.
      ════════════════════════════════════════════════════ -->
-<section id="view-obra" class="view active">
-  <div class="container obra-wrap">
+<section id="view-consulta" class="view active">
+  <div class="container consulta-wrap">
+    <div class="consulta-card">
 
-    <!-- Cubo isométrico dibujándose, como un plano técnico en progreso.
-         pathLength="1" deja animar el trazo sin calcular su largo real. -->
-    <svg class="obra-cubo" viewBox="0 0 200 200" role="img" aria-label="Cubo en construcción">
-      <g class="obra-cubo-g">
-        <path class="obra-face" pathLength="1" d="M100 40 L152 70 L100 100 L48 70 Z"/>
-        <path class="obra-face" pathLength="1" d="M48 70 L100 100 L100 160 L48 130 Z"/>
-        <path class="obra-face" pathLength="1" d="M152 70 L100 100 L100 160 L152 130 Z"/>
-      </g>
-    </svg>
+      <!-- Cubo isométrico dibujándose, como un plano técnico en progreso.
+           pathLength="1" deja animar el trazo sin calcular su largo real. -->
+      <svg class="obra-cubo" viewBox="0 0 200 200" role="img" aria-label="CUBO">
+        <g class="obra-cubo-g">
+          <path class="obra-face" pathLength="1" d="M100 40 L152 70 L100 100 L48 70 Z"/>
+          <path class="obra-face" pathLength="1" d="M48 70 L100 100 L100 160 L48 130 Z"/>
+          <path class="obra-face" pathLength="1" d="M152 70 L100 100 L100 160 L152 130 Z"/>
+        </g>
+      </svg>
 
-    <p class="label-caps obra-label">Presupuestador online</p>
-    <h1 class="display-lg obra-tit">EN<br>CONSTRUCCIÓN</h1>
-    <div class="obra-linea"></div>
-    <p class="body-lg obra-desc">
-      Estamos terminando el cotizador para que puedas armar tu presupuesto en minutos.
-      Mientras tanto, contanos qué querés reformar y te lo pasamos nosotros.
-    </p>
+      <p class="label-caps consulta-label">Presupuesto a medida</p>
+      <h1 class="display-md consulta-tit">Contanos tu obra.</h1>
+      <p class="body-md consulta-desc">
+        Tres preguntas rápidas y seguimos por WhatsApp. Te respondemos con un
+        presupuesto orientativo, sin compromiso.
+      </p>
 
-    <div class="obra-btns">
-      <a class="btn btn-primary btn-lg obra-cta" id="obra-wpp" href="#">
-        Escribinos por WhatsApp
+      <div class="consulta-paso">
+        <p class="label-caps">1 · ¿Qué querés reformar?</p>
+        <div class="consulta-opts" data-campo="ambiente">
+          <button class="opt-mini sel" data-valor="un baño" data-genero="m">Baño</button>
+          <button class="opt-mini" data-valor="una cocina" data-genero="f">Cocina</button>
+          <button class="opt-mini" data-valor="un living o dormitorio" data-genero="m">Living o dormitorio</button>
+          <button class="opt-mini" data-valor="una casa completa" data-genero="f">Toda la casa</button>
+        </div>
+      </div>
+
+      <div class="consulta-paso">
+        <p class="label-caps">2 · ¿De qué tamaño?</p>
+        <div class="consulta-opts" data-campo="tamano">
+          <button class="opt-mini" data-valor="chico" data-valor-f="chica">Chico</button>
+          <button class="opt-mini sel" data-valor="mediano" data-valor-f="mediana">Mediano</button>
+          <button class="opt-mini" data-valor="grande">Grande</button>
+        </div>
+      </div>
+
+      <div class="consulta-paso">
+        <p class="label-caps">3 · ¿Para cuándo?</p>
+        <div class="consulta-opts" data-campo="plazo">
+          <button class="opt-mini sel" data-valor="Me gustaría arrancar lo antes posible.">Lo antes posible</button>
+          <button class="opt-mini" data-valor="Estoy pensando en arrancar en uno a tres meses.">En 1 a 3 meses</button>
+          <button class="opt-mini" data-valor="Por ahora estoy averiguando.">Estoy averiguando</button>
+        </div>
+      </div>
+
+      <!-- Es un <a> de verdad, no un botón con JS: el href se reescribe con cada
+           selección. Así el navegador nunca lo trata como popup y no lo bloquea. -->
+      <a class="btn btn-primary btn-lg consulta-cta" id="consulta-wpp" href="#" target="_blank" rel="noopener">
+        Seguir por WhatsApp
         <span class="material-symbols-outlined">arrow_forward</span>
       </a>
-      <a class="btn btn-ghost btn-lg obra-cta" href="index.html#proyectos">Ver nuestras obras</a>
-    </div>
 
-    <a class="obra-ig" id="obra-ig" href="#" target="_blank" rel="noopener">
-      Seguinos en Instagram
-    </a>
+      <p class="body-sm consulta-nota" id="consulta-preview"></p>
+
+      <div class="consulta-pie">
+        <a href="index.html#proyectos">Ver nuestras obras</a>
+        <a id="consulta-ig" href="#" target="_blank" rel="noopener">Instagram</a>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -322,5 +355,6 @@
 <script src="assets/js/presupuestador-app.js"></script>
 <script src="assets/js/presupuestador/medidas.js"></script>
 <script src="assets/js/presupuestador/guiado.js"></script>
+<script src="assets/js/presupuestador/consulta.js"></script>
 </body>
 </html>

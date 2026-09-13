@@ -37,7 +37,7 @@ let datosCargados = false;
 /* ── NAVEGACIÓN ENTRE VISTAS ──
    modo 'guiado'  → flujo por preguntas (baño). El catálogo es el modo experto.
    modo 'catalogo'→ cotizador por ítems directo (resto de los tipos de obra). */
-const VIEWS = ['view-obra', 'view-inicio', 'view-guia', 'view-cot', 'view-form', 'view-gracias'];
+const VIEWS = ['view-consulta', 'view-inicio', 'view-guia', 'view-cot', 'view-form', 'view-gracias'];
 let modo = 'guiado';
 
 /* ── MODO OBRA ──
@@ -752,23 +752,17 @@ document.querySelectorAll('#tipo-grid .tipo-card').forEach(btn => {
 /* ── ARRANQUE ──
    En modo obra no se carga nada del cotizador: solo se arman los links de contacto. */
 (function arrancar() {
-  // mostrarVista apaga las demás: si entrara solo por classList.add, la pantalla
-  // de obra (que viene con `active` en el HTML) quedaría visible arriba del form.
+  // mostrarVista apaga las demás: si entrara solo por classList.add, la consulta
+  // rápida (que viene con `active` en el HTML) quedaría visible arriba del form.
   if (!EN_OBRA) { mostrarVista('view-inicio'); return; }
 
   document.body.classList.add('en-obra');
-  mostrarVista('view-obra');
-
-  const c = CFG.contacto || {};
-  const wpp = document.getElementById('obra-wpp');
-  if (wpp && c.whatsapp) {
-    wpp.href = `https://wa.me/${c.whatsapp}?text=${encodeURIComponent(c.mensajeWhatsapp || '')}`;
-    wpp.target = '_blank';
-    wpp.rel = 'noopener';
-  }
-  const ig = document.getElementById('obra-ig');
-  if (ig && c.instagram) ig.href = `https://instagram.com/${c.instagram}`;
-  else if (ig) ig.style.display = 'none';
+  mostrarVista('view-consulta');
+  // consulta.js se carga DESPUÉS de este archivo, así que todavía no existe.
+  // Los <script> del final del body terminan antes de DOMContentLoaded.
+  document.addEventListener('DOMContentLoaded', () => {
+    if (window.CuboConsulta) window.CuboConsulta.iniciar();
+  });
 })();
 
 /* Rehidratar un presupuesto a medio hacer. Antes un F5 perdía todo. */
