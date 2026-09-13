@@ -68,6 +68,10 @@
 }
 .hero .btn-primary { background: var(--cream); color: var(--charcoal); border-color: var(--cream); }
 .hero .btn-primary:hover { background: transparent; color: var(--cream); }
+/* El hero no lleva la clase section--dark, así que el botón secundario caía en el
+   estilo por defecto: charcoal sobre una foto oscura, o sea invisible. */
+.hero .btn-ghost { color: var(--cream); border-color: rgba(251, 249, 249, 0.55); }
+.hero .btn-ghost:hover { background: var(--cream); color: var(--charcoal); border-color: var(--cream); }
 
 /* ============================================================
    SECCIÓN HEAD (label + título + línea horizontal)
@@ -173,6 +177,7 @@
   .bento-card.med   { grid-column: span 4; grid-row: span 1; }
   .bento-card.small { grid-column: span 4; grid-row: span 1; }
   .bento-card.wide  { grid-column: span 12; grid-row: span 1; }
+  .bento-card.half  { grid-column: span 6;  grid-row: span 1; }
 }
 
 .bento-card img {

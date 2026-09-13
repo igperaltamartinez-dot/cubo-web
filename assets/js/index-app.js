@@ -47,7 +47,17 @@ async function cargarHero() {
 }
 
 /* ── BENTO PROYECTOS ── */
+/* El patrón de cuatro está pensado para grupos de 3 o más: la card grande ocupa
+   dos filas y las chicas rellenan la columna de al lado. Con una o dos obras ese
+   mismo patrón deja un hueco enorme a la derecha, así que esos casos tienen su
+   propio reparto. */
 const BENTO_LAYOUTS = ['big', 'med', 'small', 'wide'];
+
+function layoutsDe(cantidad) {
+  if (cantidad === 1) return ['wide'];
+  if (cantidad === 2) return ['half', 'half'];
+  return null;   // 3 o más: ciclo normal
+}
 let _obrasCache = {};
 
 async function cargarBento() {
@@ -67,7 +77,7 @@ async function cargarBento() {
   const realizadas = (obras || []).filter(o => o.fase !== 'en_curso' && o.fase !== 'proxima');
 
   document.getElementById('bento-grid-realizadas').innerHTML = realizadas.length
-    ? realizadas.map((o, i) => _bentoCard(o, i)).join('')
+    ? realizadas.map((o, i) => _bentoCard(o, i, layoutsDe(realizadas.length))).join('')
     : '<div class="bento-empty body-sm">Las fotos de obras realizadas van a aparecer acá pronto.</div>';
 
   _bloqueOpcional('en-curso-head', 'bento-grid-en-curso', enCurso);
@@ -81,11 +91,12 @@ function _bloqueOpcional(headId, gridId, obras) {
   const grid = document.getElementById(gridId);
   if (!obras.length) { head.style.display = 'none'; grid.innerHTML = ''; return; }
   head.style.display = '';
-  grid.innerHTML = obras.map((o, i) => _bentoCard(o, i)).join('');
+  grid.innerHTML = obras.map((o, i) => _bentoCard(o, i, layoutsDe(obras.length))).join('');
 }
 
-function _bentoCard(o, i) {
-  return `<button type="button" class="bento-card ${BENTO_LAYOUTS[i % BENTO_LAYOUTS.length]}" onclick="abrirProyModal('${o.id}')">
+function _bentoCard(o, i, layouts) {
+  const clase = layouts ? layouts[i] : BENTO_LAYOUTS[i % BENTO_LAYOUTS.length];
+  return `<button type="button" class="bento-card ${clase}" onclick="abrirProyModal('${o.id}')">
     <img src="${o.imagen_url}" alt="${o.titulo || 'Obra CUBO'}" loading="lazy">
     ${o.fase === 'en_curso'
       ? '<span class="bento-live"><span class="bento-live-dot"></span>En obra</span>' : ''}
