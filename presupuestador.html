@@ -14,6 +14,8 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/presupuestador.css">
+<link rel="stylesheet" href="assets/css/guiado.css">
+<link rel="stylesheet" href="assets/css/construccion.css">
 </head>
 <body class="body-presu">
 
@@ -34,14 +36,80 @@
 <main>
 
 <!-- ════════════════════════════════════════════════════
-     VISTA 1 — CAPTACIÓN DE LEAD
+     VISTA 0 — EN CONSTRUCCIÓN
+     El tráfico de Instagram entra directo acá, así que esta pantalla no es un
+     cartel: es la landing de ese tráfico y tiene que convertir a WhatsApp.
+     Se apaga poniendo presupuestadorEnConstruccion: false en config.js.
      ════════════════════════════════════════════════════ -->
-<section id="view-lead" class="view active">
+<section id="view-obra" class="view active">
+  <div class="container obra-wrap">
+
+    <!-- Cubo isométrico dibujándose, como un plano técnico en progreso.
+         pathLength="1" deja animar el trazo sin calcular su largo real. -->
+    <svg class="obra-cubo" viewBox="0 0 200 200" role="img" aria-label="Cubo en construcción">
+      <g class="obra-cubo-g">
+        <path class="obra-face" pathLength="1" d="M100 40 L152 70 L100 100 L48 70 Z"/>
+        <path class="obra-face" pathLength="1" d="M48 70 L100 100 L100 160 L48 130 Z"/>
+        <path class="obra-face" pathLength="1" d="M152 70 L100 100 L100 160 L152 130 Z"/>
+      </g>
+    </svg>
+
+    <p class="label-caps obra-label">Presupuestador online</p>
+    <h1 class="display-lg obra-tit">EN<br>CONSTRUCCIÓN</h1>
+    <div class="obra-linea"></div>
+    <p class="body-lg obra-desc">
+      Estamos terminando el cotizador para que puedas armar tu presupuesto en minutos.
+      Mientras tanto, contanos qué querés reformar y te lo pasamos nosotros.
+    </p>
+
+    <div class="obra-btns">
+      <a class="btn btn-primary btn-lg obra-cta" id="obra-wpp" href="#">
+        Escribinos por WhatsApp
+        <span class="material-symbols-outlined">arrow_forward</span>
+      </a>
+      <a class="btn btn-ghost btn-lg obra-cta" href="index.html#proyectos">Ver nuestras obras</a>
+    </div>
+
+    <a class="obra-ig" id="obra-ig" href="#" target="_blank" rel="noopener">
+      Seguinos en Instagram
+    </a>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
+     VISTA 1 — ENTRADA: qué obra + dos datos de contacto
+     Solo nombre y WhatsApp. El muro de 5 campos antes de ver nada
+     era la fricción más alta para el tráfico de Instagram.
+     ════════════════════════════════════════════════════ -->
+<section id="view-inicio" class="view">
   <div class="container view-inner">
     <div class="lead-card">
       <p class="label-caps">Presupuestador online</p>
-      <h1 class="display-lg">Antes de empezar, contanos un poco.</h1>
-      <p class="body-md lead-desc">En segundos accedés al cotizador y armás un presupuesto orientativo para tu obra. Te contactamos para ajustar los detalles.</p>
+      <h1 class="display-lg">¿Qué querés reformar?</h1>
+      <p class="body-md lead-desc">Elegí los ambientes que querés reformar. Te hacemos unas preguntas simples y armamos tu presupuesto orientativo. Sin compromiso.</p>
+
+      <p class="label-caps tipo-label">Podés elegir más de uno</p>
+      <div class="tipo-grid" id="tipo-grid">
+        <button class="tipo-card sel" data-amb="bano" aria-pressed="true">
+          <span class="material-symbols-outlined">bathtub</span>
+          <span class="tipo-nom">Baño</span>
+          <span class="tipo-tick"><span class="material-symbols-outlined">check</span></span>
+        </button>
+        <button class="tipo-card" data-amb="cocina" aria-pressed="false">
+          <span class="material-symbols-outlined">countertops</span>
+          <span class="tipo-nom">Cocina</span>
+          <span class="tipo-tick"><span class="material-symbols-outlined">check</span></span>
+        </button>
+        <button class="tipo-card" data-amb="living" aria-pressed="false">
+          <span class="material-symbols-outlined">weekend</span>
+          <span class="tipo-nom">Living o dormitorio</span>
+          <span class="tipo-tick"><span class="material-symbols-outlined">check</span></span>
+        </button>
+      </div>
+      <button class="tipo-otro" id="tipo-otro" onclick="elegirOtraObra()">
+        <span class="material-symbols-outlined">more_horiz</span>
+        Mi obra no es ninguna de estas
+      </button>
 
       <div class="field-row">
         <div class="field">
@@ -49,36 +117,13 @@
           <input class="input" id="ml-nombre" placeholder="Tu nombre" autocomplete="name">
         </div>
         <div class="field">
-          <label for="ml-tel">Teléfono / WhatsApp *</label>
+          <label for="ml-tel">WhatsApp *</label>
           <input class="input" id="ml-tel" placeholder="+54 11 ..." autocomplete="tel" inputmode="tel">
         </div>
       </div>
-      <div class="field">
-        <label for="ml-email">Email *</label>
-        <input class="input" id="ml-email" type="email" placeholder="tu@email.com" autocomplete="email" inputmode="email">
-      </div>
-      <div class="field-row">
-        <div class="field">
-          <label for="ml-tipo">Tipo de obra</label>
-          <select class="select" id="ml-tipo">
-            <option value="">Seleccioná una opción</option>
-            <option value="baño">Baño</option>
-            <option value="cocina">Cocina</option>
-            <option value="reforma_integral">Reforma integral</option>
-            <option value="ampliacion">Ampliación / construcción nueva</option>
-            <option value="pintura">Pintura</option>
-            <option value="pisos">Pisos y revestimientos</option>
-            <option value="instalaciones">Instalaciones (elec/sanit/gas)</option>
-            <option value="otro">Otro</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="ml-zona">Zona / Barrio *</label>
-          <input class="input" id="ml-zona" placeholder="Ej: Palermo, Belgrano…" autocomplete="address-level3">
-        </div>
-      </div>
-      <button class="btn btn-primary btn-lg lead-btn" id="ml-btn" onclick="guardarLead()">
-        Ir al cotizador
+
+      <button class="btn btn-primary btn-lg lead-btn" id="ml-btn" onclick="empezar()">
+        Empezar
         <span class="material-symbols-outlined">arrow_forward</span>
       </button>
       <p class="body-sm lead-legal">Tus datos son confidenciales y solo se usan para contactarte sobre tu obra.</p>
@@ -87,9 +132,37 @@
 </section>
 
 <!-- ════════════════════════════════════════════════════
+     VISTA 2 — FLUJO GUIADO (una pregunta por pantalla)
+     ════════════════════════════════════════════════════ -->
+<section id="view-guia" class="view">
+  <div class="container view-inner">
+    <div class="guia-card" id="guia-body"></div>
+    <div class="guia-nav">
+      <button class="btn btn-ghost" id="guia-back" onclick="CuboGuiado.retroceder()">
+        <span class="material-symbols-outlined">arrow_back</span> Atrás
+      </button>
+      <button class="btn btn-primary btn-lg" id="guia-next" onclick="CuboGuiado.avanzar()">
+        Continuar <span class="material-symbols-outlined">arrow_forward</span>
+      </button>
+    </div>
+    <!-- El que se cansa a mitad del cuestionario igual llega a un número: el resto
+         de las preguntas ya tienen respuesta por default. -->
+    <button class="guia-skip" id="guia-skip" onclick="CuboGuiado.irAlResumen()" style="display:none">
+      Saltar el resto y ver mi presupuesto
+    </button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════
      VISTA 2 — COTIZADOR
      ════════════════════════════════════════════════════ -->
 <section id="view-cot" class="view">
+  <div class="container">
+    <button class="form-back" id="cot-volver" onclick="volverAlResumen()" style="display:none">
+      <span class="material-symbols-outlined">arrow_back</span>
+      Volver a mi presupuesto
+    </button>
+  </div>
   <div class="cot-aviso">
     <span class="material-symbols-outlined">info</span>
     <span><strong>Precios orientativos.</strong> El valor final se confirma con una visita técnica.</span>
@@ -147,7 +220,7 @@
 <section id="view-form" class="view">
   <div class="container view-inner">
     <div class="lead-card">
-      <button class="form-back" onclick="volverACotizador()">
+      <button class="form-back" onclick="volverDesdeForm()">
         <span class="material-symbols-outlined">arrow_back</span>
         Volver al cotizador
       </button>
@@ -160,6 +233,16 @@
         <div id="form-resumen"></div>
       </div>
 
+      <div class="field-row">
+        <div class="field">
+          <label for="f-email">Email *</label>
+          <input class="input" id="f-email" type="email" placeholder="tu@email.com" autocomplete="email" inputmode="email">
+        </div>
+        <div class="field">
+          <label for="f-zona">Zona / Barrio *</label>
+          <input class="input" id="f-zona" placeholder="Ej: Palermo, Belgrano…" autocomplete="address-level3">
+        </div>
+      </div>
       <div class="field">
         <label for="f-msg">¿Algo más que quieras contarnos?</label>
         <textarea class="textarea" id="f-msg" placeholder="Detalles del estado actual, fechas tentativas, dudas…"></textarea>
@@ -235,6 +318,9 @@
   </div>
 </div>
 
+<script src="assets/js/config.js"></script>
 <script src="assets/js/presupuestador-app.js"></script>
+<script src="assets/js/presupuestador/medidas.js"></script>
+<script src="assets/js/presupuestador/guiado.js"></script>
 </body>
 </html>

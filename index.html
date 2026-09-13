@@ -130,6 +130,16 @@
         <div class="bento-empty body-sm">Cargando obras...</div>
       </div>
 
+      <!-- La obra en curso va antes que las próximas: mostrar que hay gente
+           trabajando hoy pesa más que mostrar lo que todavía no arrancó. -->
+      <div class="section-head section-head--sub" id="en-curso-head" style="display:none">
+        <div>
+          <p class="label-caps">Trabajando ahora</p>
+          <h2 class="display-md">Obras en curso.</h2>
+        </div>
+      </div>
+      <div class="bento-grid" id="bento-grid-en-curso"></div>
+
       <div class="section-head section-head--sub" id="proximas-head" style="display:none">
         <div>
           <p class="label-caps">En proyecto</p>
@@ -239,6 +249,7 @@
   <p class="footer-legal">© 2025 CUBO construcción y diseño · Todos los precios son orientativos.</p>
 </footer>
 
+<script src="assets/js/config.js"></script>
 <script src="assets/js/index-app.js"></script>
 </body>
 </html>

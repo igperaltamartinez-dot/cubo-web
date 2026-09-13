@@ -1,0 +1,385 @@
+/* ============================================================
+   GUIADO.CSS — Flujo por preguntas del presupuestador.
+   Mobile-first: se diseña para 360–390px y recién después escala.
+   Una pregunta por pantalla, target táctil grande, sin sombras.
+   ============================================================ */
+
+/* ── VISTA 1: elección de ambientes (selección múltiple) ── */
+.tipo-label { color: var(--secondary); margin-top: 24px; }
+
+.tipo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 12px 0 12px;
+}
+
+.tipo-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 16px 14px;
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--r-lg);
+  background: var(--cream);
+  text-align: left;
+  transition: border-color var(--t-fast), background var(--t-fast);
+}
+.tipo-card .material-symbols-outlined { font-size: 24px; margin-bottom: 6px; color: var(--secondary); }
+.tipo-nom  { font-family: var(--font-display); font-weight: 700; font-size: 15px; letter-spacing: -0.01em; line-height: 1.25; }
+.tipo-desc { font-size: 12px; color: var(--secondary); }
+
+.tipo-card.sel {
+  border-color: var(--charcoal);
+  border-width: 2px;
+  padding: 15px 13px;   /* compensa el borde de 2px para que no salte */
+  background: var(--surface);
+}
+.tipo-card.sel .material-symbols-outlined { color: var(--charcoal); }
+
+/* El tilde es lo que comunica que se puede elegir más de uno. */
+.tipo-tick {
+  position: absolute;
+  top: 12px; right: 12px;
+  width: 22px; height: 22px;
+  border: 1.5px solid var(--outline);
+  border-radius: var(--r);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cream);
+}
+.tipo-tick .material-symbols-outlined {
+  font-size: 16px !important;
+  margin: 0 !important;
+  color: var(--cream) !important;
+}
+.tipo-card.sel .tipo-tick { background: var(--charcoal); border-color: var(--charcoal); }
+
+.tipo-otro {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 28px;
+  border: 1px dashed var(--outline-variant);
+  border-radius: var(--r-lg);
+  background: transparent;
+  font-size: 14px;
+  color: var(--on-surface-variant);
+  text-align: left;
+  transition: border-color var(--t-fast), color var(--t-fast);
+}
+.tipo-otro:hover { border-color: var(--outline); color: var(--charcoal); }
+.tipo-otro .material-symbols-outlined { font-size: 20px; }
+.tipo-otro.sel {
+  border-style: solid;
+  border-color: var(--charcoal);
+  background: var(--surface);
+  color: var(--charcoal);
+  font-weight: 600;
+}
+
+/* ── SHELL DEL FLUJO ── */
+.guia-card {
+  background: var(--cream);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--r-lg);
+  padding: 24px 20px 28px;
+}
+
+.guia-head { margin-bottom: 24px; }
+.guia-head h2 { margin-bottom: 10px; }
+.guia-bajada { color: var(--on-surface-variant); }
+
+.guia-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+  padding-bottom: 8px;
+}
+.guia-nav .btn-lg { flex: 1; justify-content: center; }
+#guia-back { flex-shrink: 0; padding-inline: 16px; }
+#guia-back .material-symbols-outlined { transition: none; }
+#guia-back:hover .material-symbols-outlined { transform: translateX(-3px); }
+
+/* ── OPCIONES (cards tocables) ── */
+.guia-opts { display: flex; flex-direction: column; gap: 10px; }
+
+.opt-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  min-height: 60px;
+  padding: 16px 18px;
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--r-lg);
+  background: var(--cream);
+  text-align: left;
+  transition: border-color var(--t-fast), background var(--t-fast);
+}
+.opt-card:hover { border-color: var(--outline); }
+.opt-card.sel {
+  border-color: var(--charcoal);
+  border-width: 2px;
+  background: var(--surface);
+  padding: 15px 17px;   /* compensa el borde de 2px para que no salte */
+}
+
+.opt-label {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+.opt-desc { font-size: 13px; line-height: 1.45; color: var(--secondary); }
+
+/* ── CHECKLIST ── */
+.guia-checks { display: flex; flex-direction: column; gap: 8px; }
+
+.chk-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 12px 16px;
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--r-lg);
+  cursor: pointer;
+  transition: border-color var(--t-fast), background var(--t-fast);
+}
+.chk-row:hover { border-color: var(--outline); }
+.chk-row.sel { border-color: var(--charcoal); background: var(--surface); }
+.chk-row input { position: absolute; opacity: 0; pointer-events: none; }
+
+.chk-box {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid var(--outline);
+  border-radius: var(--r);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cream);
+}
+.chk-box .material-symbols-outlined { font-size: 16px !important; color: var(--cream); }
+.chk-row.sel .chk-box { background: var(--charcoal); border-color: var(--charcoal); }
+
+.chk-label { font-size: 15px; font-weight: 500; }
+
+/* ── MEDIDAS ── */
+.guia-medidas {
+  margin-top: 18px;
+  border-top: 1px solid var(--outline-variant);
+  padding-top: 16px;
+}
+.guia-medidas summary {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--on-surface-variant);
+  list-style: none;
+}
+.guia-medidas summary::-webkit-details-marker { display: none; }
+.guia-medidas summary::before { content: '+ '; font-weight: 700; }
+.guia-medidas[open] summary::before { content: '– '; }
+.guia-medidas summary:hover { color: var(--charcoal); }
+
+.med-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+.med-grid .field { margin-bottom: 0; }
+
+.guia-calc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  font-size: 14px;
+  color: var(--on-surface-variant);
+}
+.guia-calc strong { color: var(--charcoal); font-weight: 600; }
+.guia-calc .material-symbols-outlined { font-size: 18px; }
+
+.guia-nota {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border-left: 2px solid var(--charcoal);
+  border-radius: 0 var(--r) var(--r) 0;
+  font-size: 13px;
+  color: var(--on-surface-variant);
+}
+.guia-nota .material-symbols-outlined { font-size: 18px; flex-shrink: 0; }
+
+/* ── RESUMEN ── */
+.res-total-box {
+  padding: 22px 20px;
+  margin-bottom: 28px;
+  background: var(--charcoal);
+  color: var(--cream);
+  border-radius: var(--r-lg);
+}
+.res-total-box .label-caps { color: var(--outline-variant); margin-bottom: 8px; }
+.res-total-box .body-sm { color: var(--outline-variant); margin-top: 10px; font-size: 12px; }
+
+.res-rango {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(26px, 6.5vw, 38px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.res-rango span { font-weight: 400; color: var(--outline-variant); margin: 0 2px; }
+
+.res-etapa { margin-bottom: 26px; }
+.res-etapa-tit {
+  padding-bottom: 8px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--outline-variant);
+  color: var(--secondary);
+}
+
+.res-linea {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--surface-high);
+}
+.res-linea-info { flex: 1; min-width: 0; }
+.res-linea-nom  { font-size: 15px; font-weight: 500; line-height: 1.35; }
+.res-linea-org  { font-size: 12px; color: var(--secondary); margin-top: 3px; }
+
+.res-linea-cant { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.res-linea-cant > span { font-size: 13px; color: var(--secondary); }
+
+.cant-mini {
+  width: 72px;
+  padding: 7px 10px;
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--r);
+  background: var(--cream);
+  font-size: 14px;
+  font-weight: 600;
+}
+.cant-mini:focus { outline: none; border-color: var(--charcoal); }
+
+.res-linea-quit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r);
+  color: var(--secondary);
+  transition: background var(--t-fast), color var(--t-fast);
+}
+.res-linea-quit:hover { background: var(--surface-high); color: var(--charcoal); }
+.res-linea-quit .material-symbols-outlined { font-size: 18px; }
+
+.res-linea-prec {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.res-linea-pend { opacity: .65; }
+.res-linea-pend .res-linea-prec { font-weight: 400; font-size: 13px; color: var(--secondary); }
+
+.guia-add { width: 100%; justify-content: center; margin-top: 4px; }
+.guia-add .material-symbols-outlined { transition: none; }
+.guia-add:hover .material-symbols-outlined { transform: none; }
+
+/* ── DESKTOP ── */
+@media (min-width: 768px) {
+  .tipo-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .guia-card { padding: 40px 44px 44px; }
+  .guia-head { margin-bottom: 32px; }
+  .guia-opts { gap: 12px; }
+  .opt-card { padding: 20px 24px; }
+  .opt-card.sel { padding: 19px 23px; }
+  .res-linea-cant { margin-top: 8px; }
+  .guia-nav { margin-top: 24px; }
+  #guia-back { padding-inline: 24px; }
+}
+
+@media (min-width: 1024px) {
+  #view-guia .view-inner { max-width: 760px; margin-inline: auto; }
+}
+
+.cant-fija {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--secondary);
+  padding: 7px 0;
+}
+
+/* El contador de pasos venía oculto en mobile. En un flujo de 7 pantallas saber
+   cuántas faltan es lo que evita que el cliente abandone a mitad de camino. */
+.nav-presu .nav-step { display: block; }
+
+/* ── MULTI-AMBIENTE ── */
+
+/* El nombre del ambiente arriba del título: en un flujo de 15 pantallas es lo que
+   evita que el cliente pierda de vista si está contestando por el baño o la cocina. */
+.guia-amb { color: var(--secondary); margin-bottom: 10px; }
+
+.guia-extra { margin-top: 18px; margin-bottom: 0; }
+.guia-ayuda { color: var(--secondary); margin-top: 6px; font-size: 12px; }
+
+.guia-skip {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 12px;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--secondary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--t-fast);
+}
+.guia-skip:hover { color: var(--charcoal); }
+
+/* Bloque de un ambiente dentro del resumen */
+.res-amb { margin-bottom: 32px; }
+
+.res-amb-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--charcoal);
+}
+.res-amb-sub {
+  flex-shrink: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.res-amb .res-etapa:last-child { margin-bottom: 0; }
+
+@media (min-width: 768px) {
+  .res-amb { margin-bottom: 40px; }
+}

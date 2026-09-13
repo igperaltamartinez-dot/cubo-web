@@ -51,10 +51,6 @@ const BENTO_LAYOUTS = ['big', 'med', 'small', 'wide'];
 let _obrasCache = {};
 
 async function cargarBento() {
-  const gridReal = document.getElementById('bento-grid-realizadas');
-  const gridProx = document.getElementById('bento-grid-proximas');
-  const headProx = document.getElementById('proximas-head');
-
   const { data: obras } = await sb.from('obras_portfolio')
     .select('id, titulo, zona, tipo, imagen_url, descripcion, fase, fecha, fotos')
     .eq('activo', true)
@@ -62,24 +58,37 @@ async function cargarBento() {
     .order('orden')
     .order('id', { ascending: false });
 
-  const realizadas = (obras || []).filter(o => o.fase !== 'proxima');
-  const proximas   = (obras || []).filter(o => o.fase === 'proxima');
-
   _obrasCache = Object.fromEntries((obras || []).map(o => [o.id, o]));
 
-  gridReal.innerHTML = realizadas.length
+  /* Cualquier fase desconocida cae en "realizada": si mañana alguien carga un
+     valor nuevo desde el admin, la obra se sigue viendo en vez de desaparecer. */
+  const enCurso  = (obras || []).filter(o => o.fase === 'en_curso');
+  const proximas = (obras || []).filter(o => o.fase === 'proxima');
+  const realizadas = (obras || []).filter(o => o.fase !== 'en_curso' && o.fase !== 'proxima');
+
+  document.getElementById('bento-grid-realizadas').innerHTML = realizadas.length
     ? realizadas.map((o, i) => _bentoCard(o, i)).join('')
     : '<div class="bento-empty body-sm">Las fotos de obras realizadas van a aparecer acá pronto.</div>';
 
-  if (proximas.length) {
-    headProx.style.display = '';
-    gridProx.innerHTML = proximas.map((o, i) => _bentoCard(o, i)).join('');
-  }
+  _bloqueOpcional('en-curso-head', 'bento-grid-en-curso', enCurso);
+  _bloqueOpcional('proximas-head', 'bento-grid-proximas', proximas);
+}
+
+/* Un bloque que solo existe si hay obras en esa fase: sin obras en curso, el
+   título "Obras en curso." no tiene que aparecer vacío. */
+function _bloqueOpcional(headId, gridId, obras) {
+  const head = document.getElementById(headId);
+  const grid = document.getElementById(gridId);
+  if (!obras.length) { head.style.display = 'none'; grid.innerHTML = ''; return; }
+  head.style.display = '';
+  grid.innerHTML = obras.map((o, i) => _bentoCard(o, i)).join('');
 }
 
 function _bentoCard(o, i) {
   return `<button type="button" class="bento-card ${BENTO_LAYOUTS[i % BENTO_LAYOUTS.length]}" onclick="abrirProyModal('${o.id}')">
     <img src="${o.imagen_url}" alt="${o.titulo || 'Obra CUBO'}" loading="lazy">
+    ${o.fase === 'en_curso'
+      ? '<span class="bento-live"><span class="bento-live-dot"></span>En obra</span>' : ''}
     <div class="bento-info">
       ${o.tipo ? `<span class="bento-tipo">${o.tipo}</span>` : ''}
       <h4 class="bento-title">${o.titulo || 'Obra CUBO'}</h4>
@@ -170,7 +179,8 @@ function abrirProyModal(id) {
   document.getElementById('proy-modal-desc').textContent = o.descripcion || 'Pronto vamos a contar más sobre este proyecto.';
 
   const fase = document.getElementById('proy-modal-fase');
-  if (o.fase === 'proxima') { fase.textContent = 'Próxima obra'; fase.style.display = ''; }
+  const ETIQUETA_FASE = { proxima: 'Próxima obra', en_curso: 'Obra en curso' };
+  if (ETIQUETA_FASE[o.fase]) { fase.textContent = ETIQUETA_FASE[o.fase]; fase.style.display = ''; }
   else { fase.style.display = 'none'; }
 
   const meta = [o.tipo, o.zona, o.fecha].filter(Boolean).join(' · ');
@@ -199,11 +209,21 @@ document.getElementById('proy-dots').addEventListener('click', (e) => {
 window.abrirProyModal = abrirProyModal;
 window.cerrarProyModal = cerrarProyModal;
 
-/* ── CONFIGURACIÓN (footer + drawer) ── */
+/* ── CONFIGURACIÓN (footer + drawer) ──
+   La tabla `configuracion` no era legible por visitantes anónimos, así que el pie
+   quedaba sin teléfono ni Instagram y nadie se enteraba: la consulta no falla,
+   simplemente vuelve vacía. Ahora los datos de config.js son el piso, y lo que
+   venga de la base los pisa. Así el footer funciona aunque la base no responda. */
 async function cargarConfiguracion() {
+  const local = (window.CUBO_CONFIG && window.CUBO_CONFIG.contacto) || {};
+  const cfg = {
+    email:     local.email     || null,
+    telefono:  local.telefono  || null,
+    instagram: local.instagram || null,
+  };
+
   const { data } = await sb.from('configuracion').select('clave, valor');
-  if (!data) return;
-  const cfg = Object.fromEntries(data.map(r => [r.clave, r.valor]));
+  (data || []).forEach(r => { if (r.valor) cfg[r.clave] = r.valor; });
 
   document.querySelectorAll('.footer-email').forEach(el => {
     if (cfg.email) {

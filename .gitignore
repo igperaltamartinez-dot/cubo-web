@@ -1,2 +1,17 @@
 .stitch-ref/
 .claude/settings.local.json
+
+# ── MATERIAL INTERNO — NO SUBIR ──
+# Este repositorio es PÚBLICO. Todo lo que entre acá lo puede ver cualquiera.
+# Presupuestos/ tiene carpetas con nombre de clientes reales, y Instagram Post/
+# pesa más de 1 GB (GitHub lo rechaza igual).
+Presupuestos/
+Instagram Post/
+Meta ADS/
+Analisis Competencia/
+guia-instagram-cubo.html
+MARCA CUBO.png
+
+# Salidas de trabajo local
+_*.html
+*.bak

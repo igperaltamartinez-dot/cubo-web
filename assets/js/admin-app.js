@@ -439,13 +439,19 @@ async function eliminarGrupoCorr(sugId) {
 }
 
 // ── OBRAS ──
+const FASES_OBRA = {
+  realizada: { label: 'Realizada', badge: 'badge-contactado' },
+  en_curso:  { label: 'En curso',  badge: 'badge-proceso' },
+  proxima:   { label: 'Próxima',   badge: 'badge-nuevo' },
+};
+
 function renderObras() {
   document.getElementById('obras-body').innerHTML = todasObras.length ?
     todasObras.map(o => `<tr>
       <td><strong>${o.titulo}</strong></td>
       <td>${o.tipo || '—'}</td>
       <td>${o.zona || '—'}</td>
-      <td><span class="badge ${o.fase === 'proxima' ? 'badge-nuevo' : 'badge-contactado'}">${o.fase === 'proxima' ? 'Próxima' : 'Realizada'}</span></td>
+      <td><span class="badge ${(FASES_OBRA[o.fase] || FASES_OBRA.realizada).badge}">${(FASES_OBRA[o.fase] || FASES_OBRA.realizada).label}</span></td>
       <td style="font-size:12px;color:var(--gm)">${o.fecha || '—'}</td>
       <td><label class="toggle-switch"><input type="checkbox" ${o.activo ? 'checked' : ''} onchange="toggleObra('${o.id}',this.checked)"><span class="toggle-slider"></span></label></td>
       <td style="display:flex;gap:4px">

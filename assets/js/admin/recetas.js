@@ -38,7 +38,7 @@ async function _rcCargar() {
 function _rcRenderLista() {
   const tbody = document.getElementById('rc-tbody');
   if (!_recetas.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No hay recetas todavía. Creá la primera.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No hay recetas todavía. Creá la primera.</td></tr>';
     return;
   }
   tbody.innerHTML = _recetas.map(r => {
@@ -53,8 +53,16 @@ function _rcRenderLista() {
       <td style="font-size:12px">${r.unidad}</td>
       <td style="font-size:12px;color:var(--gm)">${nComp} componente${nComp !== 1 ? 's' : ''}</td>
       <td>
-        <label class="toggle-switch">
+        <label class="toggle-switch" title="Participa del cotizador: se puede usar en plantillas y correlaciones">
           <input type="checkbox" ${r.activo_publico ? 'checked' : ''} onchange="rcToggleActivo('${r.id}',this.checked)">
+          <span class="toggle-slider"></span>
+        </label>
+      </td>
+      <td>
+        <label class="toggle-switch" title="Se muestra como card en el cotizador por categorías">
+          <input type="checkbox" ${r.visible_en_catalogo !== false ? 'checked' : ''}
+                 ${r.activo_publico ? '' : 'disabled'}
+                 onchange="rcToggleCatalogo('${r.id}',this.checked)">
           <span class="toggle-slider"></span>
         </label>
       </td>
@@ -286,7 +294,19 @@ async function rcToggleActivo(id, activo) {
   if (!error) {
     const r = _recetas.find(r => r.id === id);
     if (r) r.activo_publico = activo;
-    toast(activo ? 'Visible en cotizador ✓' : 'Oculta del cotizador');
+    _rcRenderLista();   // el toggle de catálogo depende de este
+    toast(activo ? 'Activa en el cotizador ✓' : 'Fuera del cotizador');
+  } else toast('Error al guardar', 'err');
+}
+
+/* Una receta puede participar del cotizador sin figurar como card suelta: es el
+   caso de la carpeta de nivelación, que entra sola por correlación. */
+async function rcToggleCatalogo(id, visible) {
+  const { error } = await sb.from('recetas').update({ visible_en_catalogo: visible }).eq('id', id);
+  if (!error) {
+    const r = _recetas.find(r => r.id === id);
+    if (r) r.visible_en_catalogo = visible;
+    toast(visible ? 'Se muestra en el catálogo ✓' : 'Oculta del catálogo (sigue disponible por correlación)');
   } else toast('Error al guardar', 'err');
 }
 

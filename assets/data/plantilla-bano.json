@@ -1,0 +1,204 @@
+{
+  "id": "bano",
+  "tipo_obra": "baño",
+  "nombre": "Baño",
+  "icono": "bathtub",
+  "version": 2,
+  "_nota": "Formato v2: las respuestas encienden paquetes con aplica, los paquetes arrastran otros con implica, y los items que dependen de una eleccion de producto usan segun. Los paquetes compartidos entre ambientes viven en paquetes.json. Las entradas con pendiente son recetas que todavia hay que crear en admin.",
+
+  "medidas": {
+    "derivadas": { "area_revestida": "area_revest" },
+    "presets": [
+      { "label": "Chico",   "detalle": "1,5 × 2 m", "largo": 1.5, "ancho": 2, "alto": 2.5 },
+      { "label": "Mediano", "detalle": "2 × 2 m",   "largo": 2,   "ancho": 2, "alto": 2.5, "default": true },
+      { "label": "Grande",  "detalle": "2,5 × 3 m", "largo": 2.5, "ancho": 3, "alto": 2.5 }
+    ]
+  },
+
+  "paquetes": {
+    "inst_sanitaria_bano": {
+      "nombre": "Instalación sanitaria nueva",
+      "items": [
+        { "receta": "12b89265-7590-484b-b2c5-6fb79a96affe", "_n": "Recambio Inst. Sanitaria Baño (Desagües)", "formula": "1", "etapa": "instalaciones" },
+        { "receta": "662ec1a5-33f3-4a83-acdd-2c84d8f73bf1", "_n": "Recambio Inst. Sanitaria Baño (AF/AC)",    "formula": "1", "etapa": "instalaciones" }
+      ],
+      "implica": ["sacar_revest_pared", "revocar_pared_humeda", "revestir_pared"]
+    },
+
+    "electricidad_bano": {
+      "nombre": "Bocas de luz y toma",
+      "items": [
+        { "receta": "e83881e1-0ae3-4f63-8488-ab32b0b10b96", "_n": "Boca adicional de iluminacion",   "nota": "2 bocas: centro de luz y espejo", "formula": "2", "etapa": "instalaciones" },
+        { "receta": "1a457898-29c2-4e05-9a91-7d5cd0dd399e", "_n": "Boca adicional de tomacorriente", "formula": "1", "etapa": "instalaciones" }
+      ]
+    },
+
+    "ducha": {
+      "nombre": "Ducha con receptáculo",
+      "items": [
+        { "receta": "86a92793-e334-4e9f-9e94-8d3d44e4da0f", "_n": "Receptáculo Ducha Ferrum Khios", "formula": "1", "etapa": "artefactos" },
+        { "segun": "terminacion", "_n": "Grifería de lluvia", "formula": "1", "etapa": "artefactos",
+          "recetas": { "economico": "6b3797a9-8e97-48cf-bf96-66fca61b7231", "estandar": "7d990d72-c45b-4fd4-b67d-e0d63bda1676", "premium": "8349d0b6-ed4c-45a2-bfc9-c5afa6db3bcb" } }
+      ]
+    },
+
+    "banera": {
+      "nombre": "Bañera",
+      "items": [
+        { "receta": "43775640-abf8-4282-9db8-9a858da948a1", "_n": "Bañera Ferrum 150x70", "formula": "1", "etapa": "artefactos" },
+        { "segun": "terminacion", "_n": "Grifería de lluvia", "formula": "1", "etapa": "artefactos",
+          "recetas": { "economico": "6b3797a9-8e97-48cf-bf96-66fca61b7231", "estandar": "7d990d72-c45b-4fd4-b67d-e0d63bda1676", "premium": "8349d0b6-ed4c-45a2-bfc9-c5afa6db3bcb" } }
+      ]
+    },
+
+    "inodoro": {
+      "nombre": "Inodoro y depósito",
+      "items": [
+        { "receta": "325b7cf6-f488-4426-b4bb-85b58c85ece8", "_n": "Inodoro Ferrum Andina Largo Blanco", "formula": "1", "etapa": "artefactos" },
+        { "receta": "f6517969-2e1d-4dc5-a809-5e3946d0f59f", "_n": "Deposito Ferrum Bari Blanco",        "formula": "1", "etapa": "artefactos" }
+      ]
+    },
+
+    "bidet": {
+      "nombre": "Bidet",
+      "items": [
+        { "segun": "terminacion", "_n": "Bidet Ferrum", "formula": "1", "etapa": "artefactos",
+          "recetas": { "economico": "defddb72-3b69-416b-9565-06ee90aff183", "estandar": "0810d05d-de13-40e9-9bb0-7d1c12e2a41b", "premium": "0810d05d-de13-40e9-9bb0-7d1c12e2a41b" } },
+        { "segun": "terminacion", "_n": "Grifería de bidet", "formula": "1", "etapa": "artefactos",
+          "recetas": { "economico": "96c6a818-1328-494c-a0ca-24d4f2fb5415", "estandar": "d8077a76-7573-4d1f-96cf-c00f9c115ef7", "premium": "b75047c7-2780-4ae9-966e-23c3cd2daa99" } }
+      ]
+    },
+
+    "vanitory": {
+      "nombre": "Vanitory con bacha y grifería",
+      "items": [
+        { "segun": "terminacion", "_n": "Vanitory / mueble de lavatorio", "formula": "1", "etapa": "artefactos",
+          "recetas": { "economico": "3e286910-7c91-439a-bc93-b7438ccc7010", "estandar": "f83a627b-dd73-4609-88a3-e185814cb2b7", "premium": "70bee429-a70b-4117-a0ca-b0755a2fd49b" } },
+        { "receta": "a2102a3b-e335-4d84-8051-7650b64d71bc", "_n": "Bacha Ferrum Arianna Blanca", "formula": "1", "etapa": "artefactos" },
+        { "segun": "terminacion", "_n": "Grifería de lavatorio", "formula": "1", "etapa": "artefactos",
+          "recetas": { "economico": "63303d6d-b76a-429e-a608-013b1a03ba31", "estandar": "72a04ea6-5c06-4348-8c6f-7d7d447906a3", "premium": "94af33a8-a006-40a8-bec2-41b209084de3" } }
+      ]
+    }
+  },
+
+  "pasos": [
+    {
+      "id": "medidas",
+      "tipo": "dimensiones",
+      "titulo": "¿Cuánto mide el baño?",
+      "bajada": "Con esto calculamos solos todas las cantidades. Si no lo tenés medido, elegí el tamaño que más se parezca."
+    },
+
+    {
+      "id": "alcance",
+      "tipo": "opcion",
+      "titulo": "¿Qué querés hacer?",
+      "bajada": "Define cuánto hay que sacar antes de empezar.",
+      "opciones": [
+        {
+          "id": "completa",
+          "label": "Renovar todo de cero",
+          "descripcion": "Sacamos pisos, revestimientos y artefactos, y arrancamos de nuevo.",
+          "default": true,
+          "aplica": ["sacar_piso", "sacar_revest_pared", "revocar_pared_humeda", "impermeabilizar", "revestir_pared", "revestir_piso"]
+        },
+        {
+          "id": "revestimientos",
+          "label": "Solo cambiar pisos y revestimientos",
+          "descripcion": "Se conservan los artefactos y las instalaciones donde están.",
+          "aplica": ["sacar_piso", "sacar_revest_pared", "impermeabilizar", "revestir_pared", "revestir_piso"]
+        },
+        {
+          "id": "detalles",
+          "label": "Solo pintura y detalles",
+          "descripcion": "Una puesta a punto sin obra húmeda.",
+          "aplica": []
+        }
+      ]
+    },
+
+    {
+      "id": "mover_artefactos",
+      "tipo": "si_no",
+      "titulo": "¿Movés de lugar el inodoro, la ducha o el lavatorio?",
+      "bajada": "Cambiar la posición implica rehacer desagües y cañerías de agua.",
+      "dependeDe": { "paso": "alcance", "distintoDe": ["detalles"] },
+      "defaultSi": true,
+      "permiteNoSe": true,
+      "notaNoSe": "Lo cotizamos como si sí, y lo confirmamos en la visita técnica.",
+      "aplicaSi": ["inst_sanitaria_bano"]
+    },
+
+    {
+      "id": "altura_revest",
+      "tipo": "opcion",
+      "titulo": "¿Hasta dónde revestís las paredes?",
+      "bajada": "Es lo que más mueve el número: cada metro de altura suma superficie en las cuatro paredes.",
+      "dependeDe": { "paquete": "revestir_pared" },
+      "opciones": [
+        { "id": "techo", "label": "Hasta el techo", "descripcion": "Revestimiento completo, piso a techo.", "default": true, "seteaVar": { "altura_revest": null } },
+        { "id": "h210",  "label": "Hasta 2,10 m",   "descripcion": "Lo habitual. Arriba va pintura.",       "seteaVar": { "altura_revest": 2.1 } },
+        { "id": "ducha", "label": "Solo la zona de ducha", "descripcion": "El resto de las paredes, pintadas.", "seteaVar": { "altura_revest": 0.9 } }
+      ]
+    },
+
+    {
+      "id": "revest_pared",
+      "tipo": "producto",
+      "autoConvocado": true,
+      "titulo": "¿Qué ponés en las paredes?",
+      "bajada": "Podés cambiarlo después, en el resumen.",
+      "opciones": [
+        { "id": "ceramica",     "label": "Cerámica 20×20",                 "descripcion": "La opción más económica.",          "receta": "45f4332d-912d-4fa7-a3cc-c7ca83919855" },
+        { "id": "porcelanato",  "label": "Porcelanato 35×60",              "descripcion": "Lo más elegido.", "default": true,  "receta": "92522e25-25f8-452b-b5ee-a6ad51885191" },
+        { "id": "rectificado",  "label": "Porcelanato 20×120 rectificado", "descripcion": "Formato grande, junta mínima.",     "receta": "81afee3e-f817-4240-af50-493891dd432d" },
+        { "id": "microcemento", "label": "Microcemento",                   "descripcion": "Sin juntas, terminación continua.", "receta": "fd1198ae-56fa-4f18-bb85-cb8fda96e8a5" }
+      ]
+    },
+
+    {
+      "id": "revest_piso",
+      "tipo": "producto",
+      "autoConvocado": true,
+      "titulo": "¿Y en el piso?",
+      "opciones": [
+        { "id": "ceramica",     "label": "Cerámica 20×20",                 "descripcion": "La opción más económica.",          "receta": "45f4332d-912d-4fa7-a3cc-c7ca83919855" },
+        { "id": "porcelanato",  "label": "Porcelanato 35×60",              "descripcion": "Lo más elegido.", "default": true,  "receta": "92522e25-25f8-452b-b5ee-a6ad51885191", "aplica": ["zocalo"] },
+        { "id": "rectificado",  "label": "Porcelanato 20×120 rectificado", "descripcion": "Formato grande, junta mínima.",     "receta": "81afee3e-f817-4240-af50-493891dd432d", "aplica": ["zocalo"] },
+        { "id": "microcemento", "label": "Microcemento",                   "descripcion": "Sin juntas, terminación continua.", "receta": "5358b66b-6338-47bf-8afb-cb98269e8763" }
+      ]
+    },
+
+    {
+      "id": "terminacion",
+      "tipo": "producto",
+      "autoConvocado": true,
+      "titulo": "¿Qué nivel de grifería y artefactos?",
+      "bajada": "Podés cambiar cualquier producto después, en el resumen.",
+      "opciones": [
+        { "id": "economico", "label": "Económico", "descripcion": "Línea Allegro." },
+        { "id": "estandar",  "label": "Estándar",  "descripcion": "Línea Libby.", "default": true },
+        { "id": "premium",   "label": "Premium",   "descripcion": "Línea Arizona Plus." }
+      ]
+    },
+
+    {
+      "id": "extras",
+      "tipo": "checklist",
+      "titulo": "¿Qué más incluye el baño?",
+      "bajada": "Dejamos tildado lo que lleva un baño completo. Destildá lo que no necesites.",
+      "items": [
+        { "id": "ducha",        "label": "Ducha con receptáculo",           "default": true,  "excluye": ["banera"], "aplica": ["ducha"] },
+        { "id": "banera",       "label": "Bañera",                          "default": false, "excluye": ["ducha"],  "aplica": ["banera"] },
+        { "id": "inodoro",      "label": "Inodoro y depósito nuevos",       "default": true,  "aplica": ["inodoro"] },
+        { "id": "bidet",        "label": "Bidet",                           "default": true,  "aplica": ["bidet"] },
+        { "id": "vanitory",     "label": "Vanitory con bacha y grifería",   "default": true,  "aplica": ["vanitory"] },
+        { "id": "electricidad", "label": "Bocas de luz y toma nuevas",      "default": true,  "aplica": ["electricidad_bano"] },
+        { "id": "cielorraso",   "label": "Cielorraso de durlock",           "default": true,  "aplica": ["cielorraso_durlock"] },
+        { "id": "pintura",      "label": "Pintura de paredes y cielorraso", "default": true,  "aplica": ["pintura_interior"] },
+        { "id": "puerta",       "label": "Puerta nueva",                    "default": true,  "aplica": ["puerta_placa"] },
+        { "id": "espejo",       "label": "Espejo",                          "default": true,  "aplica": ["espejo"] }
+      ]
+    }
+  ]
+}

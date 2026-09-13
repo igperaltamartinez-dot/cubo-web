@@ -516,3 +516,45 @@ button.bento-card {
   white-space: pre-line;
 }
 .cta-deco:hover .cta-icon { transform: rotate(-90deg); }
+
+/* ── OBRA EN CURSO ──
+   Va fuera de .bento-info a propósito: en desktop ese bloque está oculto hasta el
+   hover, y el estado "se está construyendo ahora" tiene que leerse de un vistazo. */
+.bento-live {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 11px;
+  background: rgba(27, 28, 28, 0.82);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: var(--r-sm);
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cream);
+  pointer-events: none;
+}
+
+.bento-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cream);
+  animation: bento-latido 2s ease-in-out infinite;
+}
+
+@keyframes bento-latido {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: .25; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bento-live-dot { animation: none; }
+}

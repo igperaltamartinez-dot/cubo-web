@@ -1,0 +1,252 @@
+{
+  "id": "cocina",
+  "tipo_obra": "cocina",
+  "nombre": "Cocina",
+  "icono": "countertops",
+  "version": 1,
+  "_nota": "BORRADOR pendiente de revisión de Nacho. Los paquetes declarados acá con el mismo nombre que uno de paquetes.json lo PISAN para este ambiente: en una cocina el revestimiento de pared es el frente entre bajo y alacena (ml_muebles x 0.6), no el perimetro completo como en un baño.",
+
+  "medidas": {
+    "derivadas": { "area_frente": "ml_muebles * 0.6", "area_revestida": "area_frente" },
+    "presets": [
+      { "label": "Chica",   "detalle": "2 × 3 m", "largo": 3, "ancho": 2, "alto": 2.6 },
+      { "label": "Mediana", "detalle": "3 × 3 m", "largo": 3, "ancho": 3, "alto": 2.6, "default": true },
+      { "label": "Grande",  "detalle": "3 × 4 m", "largo": 4, "ancho": 3, "alto": 2.6 }
+    ],
+    "extra": [
+      { "id": "ml_muebles", "label": "Metros de mueble bajo mesada", "sugerido": "largo",
+        "ayuda": "Es lo que más mueve el número en una cocina: muebles y mesada se cotizan por metro lineal." }
+    ]
+  },
+
+  "paquetes": {
+    "sacar_revest_pared": {
+      "nombre": "Retiro del revestimiento de pared",
+      "items": [
+        { "pendiente": "Retiro de revestimiento de pared", "formula": "area_frente", "etapa": "demolicion" }
+      ],
+      "implica": ["volquete"]
+    },
+
+    "revocar_pared_humeda": {
+      "nombre": "Revoque hidrófugo",
+      "items": [
+        { "receta": "5f7cb6c6-6855-4b0f-9db1-39b52898d5ee", "_n": "Revoque Hidrofugo Grueso + Fino", "formula": "area_frente", "etapa": "albanileria" }
+      ]
+    },
+
+    "revestir_pared": {
+      "nombre": "Revestimiento del frente",
+      "items": [
+        { "segun": "revest_pared", "formula": "area_frente", "nota": "frente entre bajo mesada y alacena", "etapa": "revestimientos" }
+      ]
+    },
+
+    "sacar_muebles": {
+      "nombre": "Retiro de muebles y mesada existentes",
+      "items": [
+        { "pendiente": "Retiro de muebles y mesada existentes", "formula": "1", "etapa": "demolicion" }
+      ],
+      "implica": ["volquete"]
+    },
+
+    "inst_agua_cocina": {
+      "nombre": "Instalación sanitaria nueva",
+      "items": [
+        { "receta": "96261ae4-92dc-4e11-a658-ffd13070721f", "_n": "Recambio Inst. Sanitaria Cocina (Desagües)", "formula": "1", "etapa": "instalaciones" },
+        { "pendiente": "Recambio Inst. Sanitaria Cocina (AF/AC)", "formula": "1", "etapa": "instalaciones" }
+      ],
+      "implica": ["sacar_revest_pared", "revocar_pared_humeda", "revestir_pared"]
+    },
+
+    "inst_gas_cocina": {
+      "nombre": "Instalación de gas nueva",
+      "items": [
+        { "receta": "f0a6ef09-5e70-4aad-b2d2-a5b1369c8f74", "_n": "Recambio de Instalación de Gas en Cocina", "formula": "1", "etapa": "instalaciones" }
+      ],
+      "implica": ["sacar_revest_pared", "revocar_pared_humeda", "revestir_pared"]
+    },
+
+    "electricidad_cocina": {
+      "nombre": "Bocas de luz y tomas",
+      "items": [
+        { "receta": "e83881e1-0ae3-4f63-8488-ab32b0b10b96", "_n": "Boca adicional de iluminacion",   "nota": "centro de luz y bajo alacena", "formula": "2", "etapa": "instalaciones" },
+        { "receta": "1a457898-29c2-4e05-9a91-7d5cd0dd399e", "_n": "Boca adicional de tomacorriente", "nota": "mesada, heladera, horno y microondas", "formula": "4", "etapa": "instalaciones" }
+      ]
+    },
+
+    "muebles_cocina": {
+      "nombre": "Bajo mesada y alacena",
+      "items": [
+        { "segun": "nivel_muebles", "_n": "Bajos y alacena", "formula": "ml_muebles", "etapa": "artefactos",
+          "recetas": {
+            "economico": "c1f9f218-581d-4ddb-99a6-f14c60c91a73",
+            "standard":  "c4bec58c-e575-42c9-8d69-8721d0c7510c",
+            "alto":      "a8d22d1c-326b-49e4-83f9-77437a95997e"
+          } }
+      ]
+    },
+
+    "mesada": {
+      "nombre": "Mesada",
+      "items": [
+        { "segun": "tipo_mesada", "_n": "Mesada", "formula": "area_frente", "nota": "mesada de 60 cm de profundidad", "etapa": "artefactos" }
+      ]
+    },
+
+    "pileta_cocina": {
+      "nombre": "Pileta y grifería",
+      "items": [
+        { "receta": "af58c9a4-b7df-4ca1-a9c8-cb0d31e65058", "_n": "Pileta de Cocina Doble Johnson", "formula": "1", "etapa": "artefactos" },
+        { "receta": "dfc1bd31-fd24-4eb5-ac91-b78e0b7b7c04", "_n": "Grifería Cocina Monocomando Cipres", "formula": "1", "etapa": "artefactos" }
+      ]
+    },
+
+    "campana": {
+      "nombre": "Campana extractora",
+      "items": [
+        { "pendiente": "Campana extractora", "formula": "1", "etapa": "artefactos" }
+      ]
+    }
+  },
+
+  "pasos": [
+    {
+      "id": "medidas",
+      "tipo": "dimensiones",
+      "titulo": "¿Cuánto mide la cocina?",
+      "bajada": "Con esto calculamos solos todas las cantidades. Si no la tenés medida, elegí el tamaño que más se parezca."
+    },
+
+    {
+      "id": "alcance",
+      "tipo": "opcion",
+      "titulo": "¿Qué querés hacer?",
+      "bajada": "Define cuánto hay que sacar antes de empezar.",
+      "opciones": [
+        {
+          "id": "completa",
+          "label": "Renovar todo de cero",
+          "descripcion": "Sacamos muebles, mesada, piso y revestimientos, y arrancamos de nuevo.",
+          "default": true,
+          "aplica": ["sacar_muebles", "sacar_piso", "sacar_revest_pared", "revocar_pared_humeda", "revestir_pared", "revestir_piso"]
+        },
+        {
+          "id": "muebles",
+          "label": "Solo muebles y mesada",
+          "descripcion": "Se conservan el piso, los revestimientos y las instalaciones donde están.",
+          "aplica": ["sacar_muebles"]
+        },
+        {
+          "id": "detalles",
+          "label": "Solo pintura y detalles",
+          "descripcion": "Una puesta a punto sin obra húmeda.",
+          "aplica": []
+        }
+      ]
+    },
+
+    {
+      "id": "mover_pileta",
+      "tipo": "si_no",
+      "titulo": "¿Movés de lugar la pileta?",
+      "bajada": "Cambiar la posición implica rehacer el desagüe y las cañerías de agua, y por lo tanto picar y revestir la pared de nuevo.",
+      "dependeDe": { "paso": "alcance", "distintoDe": ["detalles"] },
+      "defaultSi": true,
+      "permiteNoSe": true,
+      "notaNoSe": "Lo cotizamos como si sí, y lo confirmamos en la visita técnica.",
+      "aplicaSi": ["inst_agua_cocina"]
+    },
+
+    {
+      "id": "mover_cocina",
+      "tipo": "si_no",
+      "titulo": "¿Movés de lugar la cocina o el horno?",
+      "bajada": "Mover el punto de gas obliga a rehacer la cañería por dentro de la pared.",
+      "dependeDe": { "paso": "alcance", "distintoDe": ["detalles"] },
+      "defaultSi": false,
+      "permiteNoSe": true,
+      "notaNoSe": "Lo cotizamos como si sí, y lo confirmamos en la visita técnica.",
+      "aplicaSi": ["inst_gas_cocina"]
+    },
+
+    {
+      "id": "electricidad",
+      "tipo": "si_no",
+      "titulo": "¿Sumás tomas o luces?",
+      "bajada": "La cocina es donde más falta potencia: horno, microondas, pava eléctrica y luz bajo alacena.",
+      "dependeDe": { "paso": "alcance", "distintoDe": ["detalles"] },
+      "defaultSi": true,
+      "aplicaSi": ["electricidad_cocina"]
+    },
+
+    {
+      "id": "incluye",
+      "tipo": "checklist",
+      "titulo": "¿Qué más incluye la cocina?",
+      "bajada": "Dejamos tildado lo que lleva una cocina completa. Destildá lo que no necesites.",
+      "items": [
+        { "id": "muebles",    "label": "Muebles nuevos (bajo mesada y alacena)", "default": true, "aplica": ["muebles_cocina"] },
+        { "id": "mesada",     "label": "Mesada nueva",                           "default": true, "aplica": ["mesada"] },
+        { "id": "pileta",     "label": "Pileta doble y grifería",                "default": true, "aplica": ["pileta_cocina"] },
+        { "id": "campana",    "label": "Campana extractora",                     "default": true, "aplica": ["campana"] },
+        { "id": "cielorraso", "label": "Cielorraso de durlock",                  "default": false, "aplica": ["cielorraso_durlock"] },
+        { "id": "pintura",    "label": "Pintura de paredes y cielorraso",        "default": true, "aplica": ["pintura_interior"] },
+        { "id": "puerta",     "label": "Puerta nueva",                           "default": false, "aplica": ["puerta_placa"] }
+      ]
+    },
+
+    {
+      "id": "revest_pared",
+      "tipo": "producto",
+      "autoConvocado": true,
+      "titulo": "¿Qué ponés entre el bajo mesada y la alacena?",
+      "bajada": "Es el frente que más se ve y el que más se ensucia.",
+      "opciones": [
+        { "id": "ceramica",     "label": "Cerámica 20×20",                 "descripcion": "La opción más económica.",          "receta": "45f4332d-912d-4fa7-a3cc-c7ca83919855" },
+        { "id": "porcelanato",  "label": "Porcelanato 35×60",              "descripcion": "Lo más elegido.", "default": true,  "receta": "92522e25-25f8-452b-b5ee-a6ad51885191" },
+        { "id": "rectificado",  "label": "Porcelanato 20×120 rectificado", "descripcion": "Formato grande, junta mínima.",     "receta": "81afee3e-f817-4240-af50-493891dd432d" },
+        { "id": "microcemento", "label": "Microcemento",                   "descripcion": "Sin juntas, terminación continua.", "receta": "fd1198ae-56fa-4f18-bb85-cb8fda96e8a5" }
+      ]
+    },
+
+    {
+      "id": "revest_piso",
+      "tipo": "producto",
+      "autoConvocado": true,
+      "titulo": "¿Y en el piso?",
+      "opciones": [
+        { "id": "ceramica",     "label": "Cerámica 20×20",    "descripcion": "La opción más económica.",           "receta": "45f4332d-912d-4fa7-a3cc-c7ca83919855" },
+        { "id": "porcelanato",  "label": "Porcelanato 35×60", "descripcion": "Lo más elegido.", "default": true,   "receta": "92522e25-25f8-452b-b5ee-a6ad51885191", "aplica": ["zocalo"] },
+        { "id": "rectificado",  "label": "Porcelanato 20×120 rectificado", "descripcion": "Formato grande, junta mínima.", "receta": "81afee3e-f817-4240-af50-493891dd432d", "aplica": ["zocalo"] },
+        { "id": "microcemento", "label": "Microcemento",      "descripcion": "Sin juntas, terminación continua.",  "receta": "5358b66b-6338-47bf-8afb-cb98269e8763" }
+      ]
+    },
+
+    {
+      "id": "nivel_muebles",
+      "tipo": "producto",
+      "autoConvocado": true,
+      "titulo": "¿Qué nivel de muebles?",
+      "bajada": "Se cotizan por metro lineal de bajo mesada con su alacena.",
+      "opciones": [
+        { "id": "economico", "label": "Económico", "descripcion": "Melamina, herrajes estándar." },
+        { "id": "standard",  "label": "Estándar",  "descripcion": "Mejores herrajes y frentes.", "default": true },
+        { "id": "alto",      "label": "Alto",      "descripcion": "Herrajes con cierre suave y terminaciones premium." }
+      ]
+    },
+
+    {
+      "id": "tipo_mesada",
+      "tipo": "producto",
+      "autoConvocado": true,
+      "titulo": "¿Qué mesada querés?",
+      "opciones": [
+        { "id": "marmol_eco",  "label": "Mármol económico",     "descripcion": "La opción más accesible.",        "receta": "3c587c2a-eaa9-4796-880b-3187d111ad4b" },
+        { "id": "granito_gris","label": "Granito gris mara",    "descripcion": "Lo más elegido.", "default": true, "receta": "83c8bb65-0578-4473-ae27-468e2413cdf9" },
+        { "id": "granito_negro","label": "Granito negro brasil","descripcion": "Más duro y más oscuro.",          "receta": "979970e3-d52b-4fd2-b8c2-0644ad5726f7" },
+        { "id": "marmol_prem", "label": "Mármol premium",       "descripcion": "Veteado de primera selección.",   "receta": "d2dfc449-8d97-41de-a266-9b8d14bc3420" }
+      ]
+    }
+  ]
+}

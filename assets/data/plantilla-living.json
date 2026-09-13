@@ -1,0 +1,104 @@
+{
+  "id": "living",
+  "tipo_obra": "living o dormitorio",
+  "nombre": "Living o dormitorio",
+  "icono": "weekend",
+  "version": 1,
+  "_nota": "BORRADOR pendiente de revisión de Nacho. Ambiente seco: la variable dominante es el m² de piso, no la pared. Por eso no hay revestimiento de pared ni revoque hidrófugo.",
+
+  "medidas": {
+    "derivadas": { "area_revestida": "0" },
+    "presets": [
+      { "label": "Chico",   "detalle": "3 × 3 m",   "largo": 3,   "ancho": 3, "alto": 2.6 },
+      { "label": "Mediano", "detalle": "4 × 3,5 m", "largo": 4,   "ancho": 3.5, "alto": 2.6, "default": true },
+      { "label": "Grande",  "detalle": "5 × 4 m",   "largo": 5,   "ancho": 4, "alto": 2.6 }
+    ]
+  },
+
+  "paquetes": {
+    "electricidad_living": {
+      "nombre": "Bocas de luz y tomas",
+      "items": [
+        { "receta": "e83881e1-0ae3-4f63-8488-ab32b0b10b96", "_n": "Boca adicional de iluminacion",   "formula": "2", "etapa": "instalaciones" },
+        { "receta": "1a457898-29c2-4e05-9a91-7d5cd0dd399e", "_n": "Boca adicional de tomacorriente", "nota": "tomas de pared y para TV", "formula": "4", "etapa": "instalaciones" }
+      ]
+    },
+
+    "revocar_pared": {
+      "nombre": "Reparación de revoque",
+      "items": [
+        { "receta": "ea4c114c-d415-4968-a88f-9bfbf66264a7", "_n": "Revoque Grueso + Fino", "formula": "area_paredes", "etapa": "albanileria" }
+      ]
+    }
+  },
+
+  "pasos": [
+    {
+      "id": "medidas",
+      "tipo": "dimensiones",
+      "titulo": "¿Cuánto mide el ambiente?",
+      "bajada": "Con esto calculamos solos todas las cantidades. Si no lo tenés medido, elegí el tamaño que más se parezca."
+    },
+
+    {
+      "id": "alcance",
+      "tipo": "opcion",
+      "titulo": "¿Qué querés hacer?",
+      "opciones": [
+        {
+          "id": "completa",
+          "label": "Renovar todo de cero",
+          "descripcion": "Piso nuevo, revoque reparado, cielorraso y pintura.",
+          "default": true,
+          "aplica": ["sacar_piso", "revocar_pared", "revestir_piso"]
+        },
+        {
+          "id": "piso",
+          "label": "Solo cambiar el piso",
+          "descripcion": "Se conservan las paredes y el cielorraso como están.",
+          "aplica": ["sacar_piso", "revestir_piso"]
+        },
+        {
+          "id": "detalles",
+          "label": "Solo pintura y detalles",
+          "descripcion": "Una puesta a punto sin obra.",
+          "aplica": []
+        }
+      ]
+    },
+
+    {
+      "id": "electricidad",
+      "tipo": "si_no",
+      "titulo": "¿Sumás tomas o luces?",
+      "bajada": "Es el momento de resolverlo: después implica volver a picar y pintar.",
+      "defaultSi": true,
+      "aplicaSi": ["electricidad_living"]
+    },
+
+    {
+      "id": "incluye",
+      "tipo": "checklist",
+      "titulo": "¿Qué más incluye?",
+      "bajada": "Destildá lo que no necesites.",
+      "items": [
+        { "id": "pintura",    "label": "Pintura de paredes y cielorraso", "default": true,  "aplica": ["pintura_interior"] },
+        { "id": "cielorraso", "label": "Cielorraso de durlock",           "default": false, "aplica": ["cielorraso_durlock"] },
+        { "id": "puerta",     "label": "Puerta nueva",                    "default": false, "aplica": ["puerta_placa"] }
+      ]
+    },
+
+    {
+      "id": "revest_piso",
+      "tipo": "producto",
+      "autoConvocado": true,
+      "titulo": "¿Qué piso querés poner?",
+      "opciones": [
+        { "id": "flotante_nogal", "label": "Piso flotante nogal 6 mm",  "descripcion": "La opción más accesible.",        "receta": "dc4d02fb-f129-4303-8367-b4881c62da14" },
+        { "id": "flotante_roble", "label": "Piso flotante roble 10 mm", "descripcion": "Lo más elegido.", "default": true, "receta": "d1dd23b0-ba25-4233-afd0-a2e76fc25212" },
+        { "id": "porcelanato",    "label": "Porcelanato 35×60",         "descripcion": "Más resistente, más frío.",       "receta": "92522e25-25f8-452b-b5ee-a6ad51885191", "aplica": ["zocalo"] },
+        { "id": "microcemento",   "label": "Microcemento",              "descripcion": "Sin juntas, terminación continua.", "receta": "5358b66b-6338-47bf-8afb-cb98269e8763" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,119 @@
+{
+  "_nota": "Catálogo maestro de paquetes. Un paquete es un trabajo con sus ítems y sus consecuencias. Las respuestas de las plantillas los encienden por nombre con 'aplica'; un paquete arrastra otros con 'implica'. Acá van solo los paquetes que se comparten entre ambientes: los propios de cada ambiente viven en su plantilla. Las entradas con 'pendiente' son recetas que todavía no existen en la base.",
+  "version": 1,
+
+  "etapas": [
+    { "id": "demolicion",     "nombre": "Demolición y preparación" },
+    { "id": "instalaciones",  "nombre": "Instalaciones" },
+    { "id": "albanileria",    "nombre": "Albañilería" },
+    { "id": "revestimientos", "nombre": "Pisos y revestimientos" },
+    { "id": "artefactos",     "nombre": "Artefactos y equipamiento" },
+    { "id": "terminaciones",  "nombre": "Terminaciones" }
+  ],
+
+  "paquetes": {
+
+    "volquete": {
+      "nombre": "Retiro de escombros",
+      "items": [
+        { "pendiente": "Retiro de escombros (volquete)", "formula": "1", "etapa": "demolicion" }
+      ]
+    },
+
+    "sacar_piso": {
+      "nombre": "Retiro del piso existente",
+      "items": [
+        { "pendiente": "Retiro de revestimiento de piso", "formula": "area_piso", "etapa": "demolicion" }
+      ],
+      "implica": ["volquete"]
+    },
+
+    "sacar_revest_pared": {
+      "nombre": "Retiro del revestimiento de pared",
+      "items": [
+        { "pendiente": "Retiro de revestimiento de pared", "formula": "area_revest", "etapa": "demolicion" }
+      ],
+      "implica": ["volquete"]
+    },
+
+    "carpeta": {
+      "nombre": "Carpeta de nivelación",
+      "items": [
+        { "pendiente": "Carpeta de nivelación", "formula": "area_piso", "etapa": "albanileria" }
+      ]
+    },
+
+    "impermeabilizar": {
+      "nombre": "Impermeabilización de zona húmeda",
+      "items": [
+        { "pendiente": "Impermeabilización de zona húmeda", "formula": "area_piso + 4", "etapa": "albanileria" }
+      ]
+    },
+
+    "revocar_pared_humeda": {
+      "nombre": "Revoque hidrófugo",
+      "items": [
+        { "receta": "5f7cb6c6-6855-4b0f-9db1-39b52898d5ee", "_n": "Revoque Hidrofugo Grueso + Fino", "formula": "area_revest", "etapa": "albanileria" }
+      ]
+    },
+
+    "revocar_pared_seca": {
+      "nombre": "Revoque grueso y fino",
+      "items": [
+        { "receta": "ea4c114c-d415-4968-a88f-9bfbf66264a7", "_n": "Revoque Grueso + Fino", "formula": "area_revest", "etapa": "albanileria" }
+      ]
+    },
+
+    "revestir_pared": {
+      "nombre": "Revestimiento de pared",
+      "items": [
+        { "segun": "revest_pared", "formula": "area_revest", "etapa": "revestimientos" }
+      ]
+    },
+
+    "revestir_piso": {
+      "nombre": "Piso nuevo",
+      "items": [
+        { "segun": "revest_piso", "formula": "area_piso", "etapa": "revestimientos" }
+      ],
+      "implica": ["carpeta"]
+    },
+
+    "zocalo": {
+      "nombre": "Zócalo perimetral",
+      "items": [
+        { "receta": "bda14e87-019b-4560-8d4d-d95f44083906", "_n": "Zocalo de porcelanato", "formula": "perimetro", "etapa": "revestimientos" }
+      ]
+    },
+
+    "cielorraso_durlock": {
+      "nombre": "Cielorraso de durlock",
+      "items": [
+        { "receta": "1842cb46-0400-44d8-8c1e-1927f9b3f02f", "_n": "Cielorraso de Durlock", "formula": "area_cielorraso", "etapa": "terminaciones" }
+      ]
+    },
+
+    "pintura_interior": {
+      "nombre": "Pintura de paredes y cielorraso",
+      "items": [
+        { "receta": "d3b4f7c3-3c00-4cac-9296-38e7aec5b1f1", "_n": "Pintura látex en paredes interiores",
+          "formula": "area_paredes - area_revestida + area_cielorraso",
+          "nota": "paredes sin revestir más el cielorraso", "etapa": "terminaciones" }
+      ]
+    },
+
+    "puerta_placa": {
+      "nombre": "Puerta nueva",
+      "items": [
+        { "receta": "aa623608-e4e5-47d3-bba2-e4a01831b920", "_n": "Puerta Placa 0,80 x 2,00", "formula": "1", "etapa": "terminaciones" }
+      ]
+    },
+
+    "espejo": {
+      "nombre": "Espejo",
+      "items": [
+        { "receta": "6683bb5f-2a9d-49b5-84a2-79483eb9e0f0", "_n": "Espejo para baño", "formula": "1", "etapa": "terminaciones" }
+      ]
+    }
+  }
+}
