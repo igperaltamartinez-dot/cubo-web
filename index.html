@@ -30,6 +30,7 @@
       <a href="#inicio" class="active">Inicio</a>
       <a href="#valores">Por qué CUBO</a>
       <a href="#proyectos">Proyectos</a>
+      <a href="#portal">Portal del cliente</a>
       <a href="#nosotros">Nosotros</a>
     </nav>
     <a href="presupuestador.html" class="btn btn-primary nav-cta">Presupuestar</a>
@@ -48,6 +49,7 @@
     <a href="#inicio" onclick="cerrarMenu()">Inicio</a>
     <a href="#valores" onclick="cerrarMenu()">Por qué CUBO</a>
     <a href="#proyectos" onclick="cerrarMenu()">Proyectos</a>
+    <a href="#portal" onclick="cerrarMenu()">Portal del cliente</a>
     <a href="#nosotros" onclick="cerrarMenu()">Nosotros</a>
     <a href="presupuestador.html" onclick="cerrarMenu()">Presupuestar online →</a>
   </div>
@@ -178,15 +180,100 @@
     </div>
   </div>
 
+  <!-- ─── PORTAL DEL CLIENTE ───
+       Va acá a propósito: después de mostrar las obras (que sabemos construir) y
+       antes de contar quiénes somos. Responde la objeción que aparece justo en ese
+       punto — "¿voy a saber en qué se gasta mi plata?". -->
+  <section id="portal" class="section section-portal section--dark">
+    <div class="container portal-inner">
+
+      <div class="portal-txt">
+        <p class="label-caps reveal">Portal del cliente</p>
+        <h2 class="display-lg reveal">Seguí tu obra<br>desde el celular.</h2>
+        <p class="body-lg reveal">Cada obra que gestionamos incluye un portal privado donde ves el avance real, las fotos de cada semana, el plan de pagos y los gastos con su comprobante. Sin apps ni contraseñas: un link y listo.</p>
+
+        <div class="portal-features reveal">
+          <div class="portal-feat">
+            <span class="material-symbols-outlined">trending_up</span>
+            <h3 class="headline-sm">Avance real</h3>
+            <p class="body-sm">Porcentaje calculado sobre las tareas certificadas, no sobre una estimación.</p>
+          </div>
+          <div class="portal-feat">
+            <span class="material-symbols-outlined">photo_camera</span>
+            <h3 class="headline-sm">Fotos semanales</h3>
+            <p class="body-sm">El registro visual de cada etapa, de las fundaciones a la terminación.</p>
+          </div>
+          <div class="portal-feat">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <h3 class="headline-sm">Pagos y gastos</h3>
+            <p class="body-sm">Cuánto va, cuánto falta y en qué se gastó, con el comprobante de cada compra.</p>
+          </div>
+          <div class="portal-feat">
+            <span class="material-symbols-outlined">folder_open</span>
+            <h3 class="headline-sm">Documentos</h3>
+            <p class="body-sm">Planos, presupuestos y certificados ordenados y listos para descargar.</p>
+          </div>
+        </div>
+
+        <a class="btn btn-ghost portal-cta reveal"
+           href="assets/docs/cubo-portal-del-cliente.pdf" target="_blank" rel="noopener">
+          <span class="material-symbols-outlined">description</span>
+          Ver cómo funciona
+        </a>
+      </div>
+
+      <!-- Mockup del portal, dibujado con CSS: sin imágenes que cargar. -->
+      <div class="portal-mock reveal" aria-hidden="true">
+        <div class="portal-phone">
+          <div class="portal-notch"></div>
+          <div class="portal-head">
+            <span class="portal-logo">CUBO</span>
+            <span class="portal-obra-nom">Casa Los Robles</span>
+          </div>
+          <div class="portal-tabs">
+            <span class="on">Resumen</span><span>Fotos</span><span>Pagos</span>
+          </div>
+          <div class="portal-screen">
+            <p class="portal-estado">En obra</p>
+            <p class="portal-titulo">Casa Los Robles</p>
+            <div class="portal-card">
+              <p class="portal-lbl">Avance de obra</p>
+              <p class="portal-pct">62%</p>
+              <div class="portal-bar"><span></span></div>
+            </div>
+            <div class="portal-duo">
+              <div class="portal-card">
+                <p class="portal-lbl">Presupuesto</p>
+                <p class="portal-monto">$ 48,2M</p>
+              </div>
+              <div class="portal-card">
+                <p class="portal-lbl">Abonado</p>
+                <p class="portal-monto">$ 29,8M</p>
+              </div>
+            </div>
+            <div class="portal-card portal-prox">
+              <p class="portal-lbl">Próximo pago</p>
+              <div class="portal-prox-row">
+                <span>Etapa 4 — Instalaciones</span>
+                <strong>$ 6.400.000</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
   <!-- ─── NOSOTROS ─── -->
-  <section id="nosotros" class="section section-nosotros section--dark">
+  <section id="nosotros" class="section section-nosotros">
     <div class="container nosotros-inner">
       <div class="nosotros-txt">
         <p class="label-caps reveal">Quiénes somos</p>
-        <h2 class="display-lg reveal">Gonzalo y Nacho.</h2>
+        <h2 class="display-lg reveal">Gonzalo e Ignacio.</h2>
         <p class="body-lg reveal">Dos socios formados en obra real que armaron CUBO con una premisa clara: construcción sin sorpresas, con presupuesto definido desde el principio y el proceso completo a la vista.</p>
         <p class="body-md reveal"><strong>Gonzalo</strong> es arquitecto. 8 años entre proyecto, gestiones municipales y dirección de postventa de desarrollos inmobiliarios. Maneja el proceso de obra de principio a fin.</p>
-        <p class="body-md reveal"><strong>Nacho</strong> suma 6 años en obra: empezó como sobrestante en edificios de 8 pisos, fue jefe de obra en duplex y hoy se enfoca en la planificación técnica — presupuestos, planes de trabajo y optimización de procesos.</p>
+        <p class="body-md reveal"><strong>Ignacio</strong> arrancó como sobrestante en obras mayores, siguió como jefe de obra y hoy se dedica a la planificación técnica: presupuestos, planes de trabajo y optimización de procesos. Aprendió en el barro que una obra se gana o se pierde antes de mover el primer ladrillo, y por eso pelea cada número hasta que cierra.</p>
         <p class="body-md reveal">CUBO nació para hacer lo que aprendimos a hacer bien: presupuestos serios, plazos cumplidos, y un cliente que sepa siempre dónde está parado.</p>
       </div>
       <div class="nosotros-stats reveal">

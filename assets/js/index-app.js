@@ -232,12 +232,17 @@ async function cargarConfiguracion() {
       el.style.display = '';
     }
   });
+  /* Antes era un `tel:`, y el navegador preguntaba con qué aplicación abrirlo en vez
+     de hacer nada útil. El número lo queremos para que escriban, no para que llamen:
+     va directo a WhatsApp con el mensaje ya escrito. */
   document.querySelectorAll('.footer-tel').forEach(el => {
-    if (cfg.telefono) {
-      el.href = 'tel:' + cfg.telefono.replace(/\s/g, '');
-      el.textContent = cfg.telefono;
-      el.style.display = '';
-    }
+    if (!cfg.telefono) return;
+    const numero = local.whatsapp || cfg.telefono.replace(/\D/g, '');
+    el.href = `https://wa.me/${numero}?text=${encodeURIComponent(local.mensajeWhatsapp || '')}`;
+    el.target = '_blank';
+    el.rel = 'noopener';
+    el.textContent = cfg.telefono;
+    el.style.display = '';
   });
   document.querySelectorAll('.footer-instagram').forEach(el => {
     if (cfg.instagram) {

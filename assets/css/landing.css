@@ -246,27 +246,29 @@
 .nosotros-txt h2 { margin-bottom: 28px; }
 .nosotros-txt .body-lg { margin-bottom: 20px; }
 .nosotros-txt .body-md { margin-bottom: 16px; }
-.nosotros-txt strong { color: var(--cream); font-weight: 600; }
+/* La sección era charcoal y los nombres iban en cream. Ahora es cream, así que
+   heredan el color del texto y se destacan solo por el peso. */
+.nosotros-txt strong { color: var(--charcoal); font-weight: 600; }
 
 .nosotros-stats {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0;
-  border-top: 1px solid rgba(251,249,249,0.2);
+  border-top: 1px solid var(--outline-variant);
 }
 .stat {
   padding: 28px 0;
-  border-bottom: 1px solid rgba(251,249,249,0.2);
+  border-bottom: 1px solid var(--outline-variant);
 }
 .stat:last-child { border-bottom: 0; }
 .stat-num {
-  color: var(--cream);
+  color: var(--charcoal);
   font-weight: 800;
   letter-spacing: -0.04em;
   line-height: 1;
   margin-bottom: 8px;
 }
-.stat .label-caps { color: rgba(251,249,249,0.55); }
+.stat .label-caps { color: var(--secondary); }
 
 /* ============================================================
    CTA FINAL
@@ -558,3 +560,189 @@ button.bento-card {
 @media (prefers-reduced-motion: reduce) {
   .bento-live-dot { animation: none; }
 }
+
+/* ============================================================
+   PORTAL DEL CLIENTE
+   Sección charcoal entre Proyectos y Nosotros. El mockup del teléfono está
+   dibujado con CSS: no hay imágenes que cargar ni que mantener.
+   ============================================================ */
+
+.portal-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.portal-txt h2 { margin: 12px 0 20px; }
+.portal-txt .body-lg { max-width: 46ch; }
+
+/* ── Los cuatro qué-ves ── */
+.portal-features {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+  margin-top: 40px;
+}
+
+.portal-feat .material-symbols-outlined {
+  font-size: 26px;
+  color: var(--cream);
+  opacity: .55;
+  margin-bottom: 10px;
+}
+.portal-feat h3 { color: var(--cream); margin-bottom: 6px; }
+.portal-feat .body-sm { color: rgba(251, 249, 249, 0.65); }
+
+/* ── Mockup ── */
+.portal-mock { display: flex; justify-content: center; }
+
+.portal-phone {
+  position: relative;
+  width: 100%;
+  max-width: min(300px, 100%);
+  padding: 10px 10px 18px;
+  background: var(--charcoal);
+  border: 2px solid rgba(251, 249, 249, 0.22);
+  border-radius: 28px;
+}
+
+.portal-notch {
+  width: 58px;
+  height: 4px;
+  margin: 2px auto 12px;
+  background: rgba(251, 249, 249, 0.25);
+  border-radius: 4px;
+}
+
+.portal-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 0 6px 10px;
+}
+.portal-logo {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: -0.03em;
+  color: var(--cream);
+}
+.portal-obra-nom { font-size: 11px; color: rgba(251, 249, 249, 0.5); }
+
+.portal-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 4px 10px;
+}
+.portal-tabs span {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 5px 9px;
+  border-radius: var(--r);
+  color: rgba(251, 249, 249, 0.45);
+  white-space: nowrap;
+}
+.portal-tabs .on { background: var(--cream); color: var(--charcoal); font-weight: 600; }
+
+/* La pantalla es cream sobre el charcoal del teléfono: el contraste tonal es
+   el que hace que se lea como una app y no como un bloque más de la sección. */
+.portal-screen {
+  background: var(--cream);
+  border-radius: 16px;
+  padding: 14px 12px;
+  color: var(--charcoal);
+}
+
+.portal-estado {
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--secondary);
+}
+.portal-titulo {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  margin: 2px 0 12px;
+}
+
+.portal-card {
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--r-lg);
+  padding: 11px 12px;
+  margin-bottom: 8px;
+  background: var(--cream);
+}
+.portal-lbl {
+  font-family: var(--font-display);
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--secondary);
+  margin-bottom: 5px;
+}
+.portal-pct {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 30px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.portal-bar {
+  height: 5px;
+  margin-top: 9px;
+  border-radius: 4px;
+  background: var(--surface-high);
+  overflow: hidden;
+}
+.portal-bar span {
+  display: block;
+  width: 62%;
+  height: 100%;
+  background: var(--charcoal);
+  border-radius: 4px;
+}
+
+.portal-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.portal-duo .portal-card { margin-bottom: 8px; }
+.portal-monto {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+
+.portal-prox { margin-bottom: 0; }
+.portal-prox-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--on-surface-variant);
+}
+.portal-prox-row strong {
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--charcoal);
+  white-space: nowrap;
+}
+
+/* ── DESKTOP: texto a la izquierda, teléfono a la derecha ── */
+@media (min-width: 900px) {
+  .portal-inner {
+    flex-direction: row;
+    align-items: center;
+    gap: 80px;
+  }
+  .portal-txt { flex: 1; }
+  .portal-mock { flex-shrink: 0; }
+  .portal-features { grid-template-columns: 1fr 1fr; gap: 32px 40px; }
+}
+
+.portal-cta { margin-top: 36px; }
+.portal-cta .material-symbols-outlined { font-size: 19px; }

@@ -22,7 +22,7 @@ window.CUBO_CONFIG = {
     whatsapp: '5491178288632',          // +54 9 11 7828-8632
     telefono: '+54 9 11 7828-8632',     // como se muestra en pantalla
     instagram: 'cubo.proyectos',
-    email: 'info@cuboconstruccion.com.ar',
+    email: 'infocuboproyectos@gmail.com',
     mensajeWhatsapp: 'Hola CUBO, quiero presupuestar una reforma.',
   },
 };
