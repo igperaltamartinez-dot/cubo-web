@@ -32,7 +32,7 @@
 .hero-overlay {
   position: absolute; inset: 0;
   background:
-    linear-gradient(180deg, rgba(27,28,28,0.65) 0%, rgba(27,28,28,0.85) 100%);
+    linear-gradient(180deg, rgba(25, 25, 25,0.65) 0%, rgba(25, 25, 25,0.85) 100%);
 }
 
 .hero-inner {
@@ -40,7 +40,7 @@
   width: 100%;
 }
 .hero-tag {
-  color: rgba(251,249,249,0.7);
+  color: rgba(242, 240, 239,0.7);
   margin-bottom: 20px;
 }
 .hero-title {
@@ -53,7 +53,7 @@
   margin-bottom: 28px;
 }
 .hero-sub {
-  color: rgba(251,249,249,0.78);
+  color: rgba(242, 240, 239,0.78);
   max-width: 540px;
   margin-bottom: 36px;
 }
@@ -70,7 +70,7 @@
 .hero .btn-primary:hover { background: transparent; color: var(--cream); }
 /* El hero no lleva la clase section--dark, así que el botón secundario caía en el
    estilo por defecto: charcoal sobre una foto oscura, o sea invisible. */
-.hero .btn-ghost { color: var(--cream); border-color: rgba(251, 249, 249, 0.55); }
+.hero .btn-ghost { color: var(--cream); border-color: rgba(242, 240, 239, 0.55); }
 .hero .btn-ghost:hover { background: var(--cream); color: var(--charcoal); border-color: var(--cream); }
 
 /* ============================================================
@@ -193,7 +193,7 @@
   flex-direction: column;
   justify-content: flex-end;
   padding: 20px;
-  background: linear-gradient(to top, rgba(27,28,28,0.85) 0%, rgba(27,28,28,0) 55%);
+  background: linear-gradient(to top, rgba(25, 25, 25,0.85) 0%, rgba(25, 25, 25,0) 55%);
   color: var(--cream);
   opacity: 1;
   transition: opacity var(--t);
@@ -208,7 +208,7 @@
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(251,249,249,0.75);
+  color: rgba(242, 240, 239,0.75);
   margin-bottom: 6px;
 }
 .bento-title {
@@ -220,7 +220,7 @@
 }
 .bento-zona {
   font-size: 12px;
-  color: rgba(251,249,249,0.65);
+  color: rgba(242, 240, 239,0.65);
   margin-top: 4px;
 }
 
@@ -303,7 +303,7 @@
 @media (min-width: 900px) { .cta-deco { display: flex; } }
 .cta-square {
   display: flex; align-items: center; justify-content: center;
-  border: 1px solid rgba(251,249,249,0.25);
+  border: 1px solid rgba(242, 240, 239,0.25);
   transition: transform 1s ease;
 }
 .cta-square-1 {
@@ -316,7 +316,7 @@
 }
 .cta-icon {
   font-size: 64px !important;
-  color: rgba(251,249,249,0.45);
+  color: rgba(242, 240, 239,0.45);
   transform: rotate(-45deg);
   transition: transform 1s ease;
 }
@@ -350,7 +350,7 @@ button.bento-card {
 
 .proy-modal {
   position: fixed; inset: 0;
-  background: rgba(27,28,28,0.78);
+  background: rgba(25, 25, 25,0.78);
   display: none;
   align-items: center; justify-content: center;
   padding: 16px;
@@ -371,7 +371,7 @@ button.bento-card {
 .proy-modal-close {
   position: absolute; top: 12px; right: 12px;
   width: 40px; height: 40px;
-  background: rgba(251,249,249,0.92);
+  background: rgba(242, 240, 239,0.92);
   border: 0; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
@@ -420,7 +420,7 @@ button.bento-card {
   top: 50%;
   transform: translateY(-50%);
   width: 44px; height: 44px;
-  background: rgba(251,249,249,0.92);
+  background: rgba(242, 240, 239,0.92);
   color: var(--charcoal);
   border: 0;
   border-radius: 50%;
@@ -444,7 +444,7 @@ button.bento-card {
 .proy-gallery-counter {
   position: absolute;
   top: 12px; left: 12px;
-  background: rgba(27,28,28,0.72);
+  background: rgba(25, 25, 25,0.72);
   color: var(--cream);
   font-family: var(--font-display);
   font-size: 11px;
@@ -469,7 +469,7 @@ button.bento-card {
 .proy-gallery-dot {
   width: 6px; height: 6px;
   border-radius: 50%;
-  background: rgba(251,249,249,0.4);
+  background: rgba(242, 240, 239,0.4);
   border: 0;
   padding: 0;
   cursor: pointer;
@@ -536,7 +536,7 @@ button.bento-card {
   align-items: center;
   gap: 7px;
   padding: 6px 11px;
-  background: rgba(27, 28, 28, 0.82);
+  background: rgba(25, 25, 25, 0.82);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   border-radius: var(--r-sm);
@@ -596,7 +596,7 @@ button.bento-card {
   margin-bottom: 10px;
 }
 .portal-feat h3 { color: var(--cream); margin-bottom: 6px; }
-.portal-feat .body-sm { color: rgba(251, 249, 249, 0.65); }
+.portal-feat .body-sm { color: rgba(242, 240, 239, 0.65); }
 
 /* ── Mockup ── */
 .portal-mock { display: flex; justify-content: center; }
@@ -607,7 +607,7 @@ button.bento-card {
   max-width: min(300px, 100%);
   padding: 10px 10px 18px;
   background: var(--charcoal);
-  border: 2px solid rgba(251, 249, 249, 0.22);
+  border: 2px solid rgba(242, 240, 239, 0.22);
   border-radius: 28px;
 }
 
@@ -615,7 +615,7 @@ button.bento-card {
   width: 58px;
   height: 4px;
   margin: 2px auto 12px;
-  background: rgba(251, 249, 249, 0.25);
+  background: rgba(242, 240, 239, 0.25);
   border-radius: 4px;
 }
 
@@ -632,7 +632,7 @@ button.bento-card {
   letter-spacing: -0.03em;
   color: var(--cream);
 }
-.portal-obra-nom { font-size: 11px; color: rgba(251, 249, 249, 0.5); }
+.portal-obra-nom { font-size: 11px; color: rgba(242, 240, 239, 0.5); }
 
 .portal-tabs {
   display: flex;
@@ -644,7 +644,7 @@ button.bento-card {
   font-weight: 500;
   padding: 5px 9px;
   border-radius: var(--r);
-  color: rgba(251, 249, 249, 0.45);
+  color: rgba(242, 240, 239, 0.45);
   white-space: nowrap;
 }
 .portal-tabs .on { background: var(--cream); color: var(--charcoal); font-weight: 600; }

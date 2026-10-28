@@ -8,7 +8,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -24,7 +24,7 @@
       <button class="nav-burger" aria-label="Abrir menú" onclick="abrirMenu()">
         <span class="material-symbols-outlined">menu</span>
       </button>
-      <a href="#inicio" class="nav-logo">CUBO<span class="iso">Λ3</span></a>
+      <a href="#inicio" class="nav-logo" aria-label="CUBO"></a>
     </div>
     <nav class="nav-links">
       <a href="#inicio" class="active">Inicio</a>
@@ -40,7 +40,7 @@
 <!-- Drawer mobile -->
 <div class="nav-drawer" id="nav-drawer">
   <div class="nav-drawer-head">
-    <span class="nav-logo">CUBO<span class="iso">Λ3</span></span>
+    <span class="nav-logo" role="img" aria-label="CUBO"></span>
     <button class="nav-drawer-close" aria-label="Cerrar menú" onclick="cerrarMenu()">
       <span class="material-symbols-outlined">close</span>
     </button>
@@ -201,7 +201,7 @@
           <div class="portal-feat">
             <span class="material-symbols-outlined">photo_camera</span>
             <h3 class="headline-sm">Fotos semanales</h3>
-            <p class="body-sm">El registro visual de cada etapa, de las fundaciones a la terminación.</p>
+            <p class="body-sm">El registro visual de cada etapa, de la demolición a la terminación.</p>
           </div>
           <div class="portal-feat">
             <span class="material-symbols-outlined">receipt_long</span>
@@ -228,34 +228,34 @@
           <div class="portal-notch"></div>
           <div class="portal-head">
             <span class="portal-logo">CUBO</span>
-            <span class="portal-obra-nom">Casa Los Robles</span>
+            <span class="portal-obra-nom">PH Núñez</span>
           </div>
           <div class="portal-tabs">
-            <span class="on">Resumen</span><span>Fotos</span><span>Pagos</span>
+            <span class="on">Resumen</span><span>Fotos</span><span>Gastos</span>
           </div>
           <div class="portal-screen">
             <p class="portal-estado">En obra</p>
-            <p class="portal-titulo">Casa Los Robles</p>
+            <p class="portal-titulo">PH Núñez</p>
             <div class="portal-card">
               <p class="portal-lbl">Avance de obra</p>
-              <p class="portal-pct">62%</p>
+              <p class="portal-pct">65%</p>
               <div class="portal-bar"><span></span></div>
             </div>
             <div class="portal-duo">
               <div class="portal-card">
                 <p class="portal-lbl">Presupuesto</p>
-                <p class="portal-monto">$ 48,2M</p>
+                <p class="portal-monto">$ 68,0M</p>
               </div>
               <div class="portal-card">
                 <p class="portal-lbl">Abonado</p>
-                <p class="portal-monto">$ 29,8M</p>
+                <p class="portal-monto">$ 37,0M</p>
               </div>
             </div>
             <div class="portal-card portal-prox">
               <p class="portal-lbl">Próximo pago</p>
               <div class="portal-prox-row">
-                <span>Etapa 4 — Instalaciones</span>
-                <strong>$ 6.400.000</strong>
+                <span>Certificado N° 3</span>
+                <strong>$ 11.500.000</strong>
               </div>
             </div>
           </div>
@@ -326,8 +326,8 @@
 <footer class="footer">
   <div class="footer-inner">
     <div class="footer-brand">
-      <span class="nav-logo">CUBO<span class="iso">Λ3</span></span>
-      <p class="footer-tag">Construcción y diseño · Buenos Aires</p>
+      <span class="nav-logo" role="img" aria-label="CUBO"></span>
+      <p class="footer-tag">Proyectá en grande, proyectá con CUBO</p>
     </div>
     <div class="footer-links">
       <a href="presupuestador.html">Presupuestador</a>

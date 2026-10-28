@@ -480,7 +480,7 @@
 .modal-ov {
   position: fixed;
   inset: 0;
-  background: rgba(27,28,28,0.7);
+  background: rgba(25, 25, 25,0.7);
   z-index: 400;
   display: none;
   align-items: center;

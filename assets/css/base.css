@@ -8,22 +8,22 @@
 
 :root {
   /* Colores */
-  --charcoal: #1B1C1C;
-  --charcoal-soft: #303031;
-  --cream: #FBF9F9;
-  --surface-low: #F5F3F3;
-  --surface: #EFEDED;
-  --surface-high: #E3E2E2;
-  --outline-variant: #C4C7C7;
-  --outline: #747878;
-  --on-surface-variant: #444748;
-  --secondary: #5D5F5F;
+  --charcoal: #191919;
+  --charcoal-soft: #2E2E2D;
+  --cream: #F2F0EF;
+  --surface-low: #EAE8E7;
+  --surface: #E2E1E0;
+  --surface-high: #D8D7D6;
+  --outline-variant: #CDCCCC;
+  --outline: #9B9B9A;
+  --on-surface-variant: #464645;
+  --secondary: #5C5C5B;
   --error: #BA1A1A;
   --success: #2E7D32;
 
   /* Tipografía */
   --font-display: 'Space Grotesk', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
+  --font-body: 'Poppins', system-ui, sans-serif;
 
   /* Espaciado */
   --base: 8px;
@@ -125,7 +125,7 @@ input, select, textarea { font-family: inherit; color: inherit; }
   background: var(--charcoal);
   color: var(--cream);
 }
-.section--dark .label-caps { color: rgba(251, 249, 249, 0.6); }
+.section--dark .label-caps { color: rgba(242, 240, 239, 0.6); }
 .section--dark .display-xl,
 .section--dark .display-lg,
 .section--dark .display-md,
@@ -134,7 +134,7 @@ input, select, textarea { font-family: inherit; color: inherit; }
 .section--dark .headline-sm { color: var(--cream); }
 .section--dark .body-md,
 .section--dark .body-lg,
-.section--dark .body-sm { color: rgba(251, 249, 249, 0.75); }
+.section--dark .body-sm { color: rgba(242, 240, 239, 0.75); }
 
 /* ============================================================
    BOTONES
@@ -222,9 +222,9 @@ input, select, textarea { font-family: inherit; color: inherit; }
 }
 .input:focus, .select:focus, .textarea:focus {
   border-color: var(--charcoal);
-  background: #fff;
+  background: #FAF9F8;
 }
-.input::placeholder, .textarea::placeholder { color: #9a9c9c; font-weight: 400; }
+.input::placeholder, .textarea::placeholder { color: #6F6F6E; font-weight: 400; }
 
 .textarea { min-height: 96px; resize: vertical; }
 
@@ -261,19 +261,16 @@ input, select, textarea { font-family: inherit; color: inherit; }
 }
 @media (min-width: 900px) { .nav-burger { display: none; } }
 
+/* El logo es el dibujo del manual (assets/marca), no texto: la tipografía del "CUBO" no está confirmada.
+   Va como máscara para que tome el color del contexto con currentColor. */
 .nav-logo {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.04em;
+  display: inline-block;
+  height: 18px;
+  aspect-ratio: 1353 / 266;
   color: var(--charcoal);
-}
-.nav-logo .iso {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--outline);
-  margin-left: 4px;
-  letter-spacing: 0;
+  background-color: currentColor;
+  -webkit-mask: url(../marca/cubo-horizontal.png) no-repeat center / contain;
+  mask: url(../marca/cubo-horizontal.png) no-repeat center / contain;
 }
 
 .nav-links {
@@ -338,16 +335,16 @@ input, select, textarea { font-family: inherit; color: inherit; }
   letter-spacing: -0.02em;
   color: var(--cream);
 }
-.nav-drawer-links a.active { color: rgba(251,249,249,0.5); }
+.nav-drawer-links a.active { color: rgba(242, 240, 239,0.5); }
 .nav-drawer-foot {
-  border-top: 1px solid rgba(251,249,249,0.15);
+  border-top: 1px solid rgba(242, 240, 239,0.15);
   padding-top: 24px;
   display: flex; flex-direction: column; gap: 12px;
 }
 .nav-drawer-foot a {
   font-family: var(--font-body);
   font-size: 13px;
-  color: rgba(251,249,249,0.7);
+  color: rgba(242, 240, 239,0.7);
 }
 
 /* ============================================================
@@ -372,14 +369,13 @@ input, select, textarea { font-family: inherit; color: inherit; }
 @media (min-width: 768px) {
   .footer-inner { flex-direction: row; justify-content: space-between; align-items: flex-start; gap: 64px; }
 }
-.footer-brand .nav-logo { color: var(--cream); font-size: 32px; }
-.footer-brand .nav-logo .iso { color: rgba(251,249,249,0.5); }
+.footer-brand .nav-logo { color: var(--cream); height: 30px; }
 .footer-tag {
   font-family: var(--font-body);
   font-size: 11px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(251,249,249,0.55);
+  color: rgba(242, 240, 239,0.55);
   margin-top: 10px;
 }
 .footer-links {
@@ -396,7 +392,7 @@ input, select, textarea { font-family: inherit; color: inherit; }
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(251,249,249,0.7);
+  color: rgba(242, 240, 239,0.7);
   transition: color var(--t-fast);
 }
 .footer-links a:hover { color: var(--cream); }
@@ -405,10 +401,10 @@ input, select, textarea { font-family: inherit; color: inherit; }
   margin-inline: auto;
   margin-top: 40px;
   padding-top: 24px;
-  border-top: 1px solid rgba(251,249,249,0.1);
+  border-top: 1px solid rgba(242, 240, 239,0.1);
   font-family: var(--font-body);
   font-size: 11px;
-  color: rgba(251,249,249,0.4);
+  color: rgba(242, 240, 239,0.4);
   letter-spacing: 0.05em;
 }
 

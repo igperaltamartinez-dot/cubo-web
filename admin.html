@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CUBO · Panel Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="stylesheet" href="assets/css/admin.css">
 </head>
@@ -14,8 +14,7 @@
 <div class="login-wrap" id="login-wrap">
   <div class="login-card">
     <div>
-      <span class="login-logo">CUBO</span>
-      <span class="login-iso">Λ3</span>
+      <span class="login-logo" role="img" aria-label="CUBO"></span>
     </div>
     <div class="login-sub">panel de administración</div>
     <h2 class="login-tit">Acceso privado</h2>
@@ -33,8 +32,7 @@
 <div class="app" id="app">
   <aside class="sidebar">
     <div class="sb-logo">
-      <span class="sb-logo-txt">CUBO</span>
-      <span class="sb-logo-iso">Λ3</span>
+      <span class="sb-logo-txt" role="img" aria-label="CUBO"></span>
       <span class="sb-logo-sub">panel admin</span>
     </div>
     <nav class="sb-nav">
@@ -226,7 +224,7 @@
 
             <div style="display:flex;gap:10px">
               <button class="btn-add" id="is-btn-sync" style="flex:1;padding:14px;font-size:13px">Sincronizar catálogo</button>
-              <button id="is-btn-cancelar" style="background:#fff;color:var(--gm);border:2px solid var(--gc);padding:14px;font-family:Nunito,sans-serif;font-weight:700;font-size:12px;cursor:pointer;border-radius:8px">Cancelar</button>
+              <button id="is-btn-cancelar" style="background:#fff;color:var(--gm);border:2px solid var(--gc);padding:14px;font-family:inherit;font-weight:700;font-size:12px;cursor:pointer;border-radius:8px">Cancelar</button>
             </div>
           </div>
 
@@ -290,7 +288,7 @@
         <div style="padding:24px;display:flex;flex-direction:column;gap:16px">
           <div>
             <label class="m-label">Email de contacto</label>
-            <input class="m-input" id="cfg-email" type="email" placeholder="info@cuboconstruccion.com.ar">
+            <input class="m-input" id="cfg-email" type="email" placeholder="infocuboproyectos@gmail.com">
           </div>
           <div>
             <label class="m-label">Teléfono / WhatsApp</label>
@@ -298,7 +296,7 @@
           </div>
           <div>
             <label class="m-label">Instagram</label>
-            <input class="m-input" id="cfg-instagram" placeholder="@cuboconstruccion">
+            <input class="m-input" id="cfg-instagram" placeholder="@cubo.proyectos">
           </div>
           <div>
             <label class="m-label">Zona de trabajo</label>

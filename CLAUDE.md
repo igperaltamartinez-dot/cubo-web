@@ -22,18 +22,20 @@ tiene que responder a: ¿esto genera confianza? ¿facilita que el usuario llegue
 
 ## Identidad de marca CUBO
 
-Estilo: **arquitectónico, sobrio, mobile-first**. Foto arquitectónica como protagonista del hero, secciones alternadas cream/charcoal, tipografía bold geométrica, paleta charcoal sobre cream. Sin dorado, sin acentos de color.
+Fuente de verdad desde 2026-10-27: el manual de marca (`Marketing/conocimiento/manual-marca/`, fuera del repo).
+Estilo: **arquitectónico, sobrio, mobile-first**. Foto arquitectónica como protagonista del hero, secciones alternadas blanco cálido/negro, tipografía bold geométrica, paleta de grises. Sin dorado, sin acentos de color.
 
 | Elemento | Valor |
 |---|---|
+| Logo | **CUBO ^3** (caret, no Λ). Es el dibujo del manual, no texto: `assets/marca/cubo-horizontal.png` (barra, footer), `cubo-isologotipo.png` (apilado), `cubo-isotipo.png` (^3). Son máscaras blancas con alfa: se usan con `mask` + `background-color: currentColor` (ver `.nav-logo` en `base.css`). La tipografía del "CUBO" no está confirmada: no recomponerlo con texto |
+| Tagline | "Proyectá en grande, proyectá con CUBO" (voseo) |
 | Titulares | `Space Grotesk` (700/800) — sans bold geométrica |
-| Cuerpo y labels | `Inter` (400/500/600) |
-| Texto / charcoal | `#1B1C1C` (cuasi-negro arquitectónico) |
-| Fondo principal | `#FBF9F9` (cream sutil, no blanco puro) |
-| Fondo alterno | `#1B1C1C` (charcoal — hero, CTAs grandes, footer) |
-| Surface gris | `#EFEDED`, `#E3E2E2` (containers sutiles) |
-| Borde/outline | `#C4C7C7` (variant), `#747878` (full) |
-| Símbolo marca | Λ3 — watermark sutil o acento |
+| Cuerpo y labels | `Poppins` (400/500/600) |
+| Negro | `#191919` — texto, fondo alterno (hero, CTAs grandes, footer) |
+| Blanco cálido | `#F2F0EF` — fondo principal |
+| Gris claro | `#CDCCCC` — bordes, containers. Surfaces intermedias derivadas: `#EAE8E7`, `#E2E1E0`, `#D8D7D6` |
+| Gris medio | `#9B9B9A` — **solo** fondo de logos y titulares grandes, o bordes. Nunca detrás de párrafos ni como color de texto chico (contraste 2,4:1) |
+| Texto secundario | `#464645`, `#5C5C5B` (labels) |
 | Border-radius | 4px default, 8px en cards/inputs grandes, 0 en botones rectangulares |
 | Sombras | Ninguna decorativa. Profundidad por contraste tonal (cream vs charcoal) |
 | Íconos | Material Symbols Outlined (thin-stroke, wght 400) o números grandes |
@@ -75,8 +77,8 @@ presupuestos, planes de trabajo, optimización de procesos. Estudia Ingeniería 
 **Gonzalo:** 8 años en la industria. Área de proyecto, gestiones municipales y
 postventa de desarrollos inmobiliarios. Conoce el proceso de obra de principio a fin.
 
-**Obras:** 2 reformas integrales realizadas. 3 proyectos en cartera (2 con aprobación
-municipal pendiente, 1 por arrancar).
+**Obras (al 2026-10-28):** 3 reformas terminadas (Uriburu, Casa Benavidez, Marcelo T),
+ninguna en curso y 2 proyectos en cartera.
 
 ## Servicios que ofrece CUBO
 
